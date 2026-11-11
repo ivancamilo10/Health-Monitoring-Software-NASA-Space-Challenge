@@ -1,0 +1,94 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// -----------------------------------------------------------------------------
+// ENUMS DE TELEMETRÍA Y ESTADOS DE MISIÓN ESPACIAL
+// -----------------------------------------------------------------------------
+
+enum ActivityState {
+  SLEEP
+  REST
+  EXERCISE
+  EVA_SPACEWALK
+}
+
+enum SyncStatus {
+  LOCAL_AUTONOMOUS // Registrado y procesado localmente en la nave (latencia alta)
+  SYNCED_EARTH     // Paquete telemetrado y sincronizado con Mission Control Houston
+}
+
+enum SeverityLevel {
+  NOMINAL
+  CAUTION
+  WARNING
+  EMERGENCY
+}
+
+// -----------------------------------------------------------------------------
+// MODELOS DE DATOS DE LA TRIPULACIÓN Y TELEMETRÍA
+// -----------------------------------------------------------------------------
+
+/// Representa a un tripulante en la misión espacial y su perfil fisiológico basal.
+model Astronaut {
+  id                 String             @id @default(uuid())
+  name               String
+  missionRole        String             // Ej: 'Commander', 'Flight Engineer', 'Payload Specialist'
+  baselineHR         Float              // Frecuencia cardíaca en reposo basal (BPM)
+  baselineSpo2       Float              // Nivel basal de saturación de oxígeno (%)
+  maxRadiationLimit  Float              // Umbral máximo de dosis de radiación tolerada (mSv / Sieverts)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  telemetryLogs      TelemetryLog[]
+  medicalIncidents   MedicalIncident[]
+
+  @@map("astronauts")
+}
+
+/// Registro continuo de telemetría biomédica y ambiental de soporte vital (ECLSS).
+model TelemetryLog {
+  id                  String        @id @default(uuid())
+  astronautId         String
+  astronaut           Astronaut     @relation(fields: [astronautId], references: [id], onDelete: Cascade)
+
+  // Signos vitales del astronauta
+  heartRate           Float         // Frecuencia cardíaca actual (BPM)
+  hrv                 Float         // Heart Rate Variability - SDNN en ms (indicador de fatiga/estrés)
+  spo2                Float         // Saturación periférica de oxígeno (%)
+  coreTemp            Float         // Temperatura corporal central (°C)
+
+  // Variables del entorno y soporte vital (Suit & ECLSS)
+  suitPressure        Float         // Presión interna del traje/cabina en psi o kPa (Normal ~ 4.3 psi EVA / 14.7 psi cabina)
+  cabinCo2            Float         // Nivel de CO2 ambiental en mmHg o ppm
+  solarRadiationIndex Float         // Dosis horaria de radiación cósmica / solar (µSv/h)
+
+  // Metadatos operacionales
+  activityState       ActivityState @default(REST)
+  syncStatus          SyncStatus    @default(LOCAL_AUTONOMOUS)
+  timestamp           DateTime      @default(now())
+
+  @@index([astronautId, timestamp(sort: Desc)])
+  @@map("telemetry_logs")
+}
+
+/// Eventos clínicos e incidentes anómalos detectados con mitigación autónoma.
+model MedicalIncident {
+  id                    String        @id @default(uuid())
+  astronautId           String
+  astronaut             Astronaut     @relation(fields: [astronautId], references: [id], onDelete: Cascade)
+
+  severity              SeverityLevel @default(NOMINAL)
+  anomalyType           String        // Ej: 'HYPOXIA_CRITICAL', 'CO2_NARCOSIS', 'ACUTE_RADIATION_EVENT', 'SUIT_DECOMPRESSION'
+  autonomousActionTaken String        // Contramedida inmediata ejecutada a bordo (sin esperar handshake terrestre)
+  timestamp             DateTime      @default(now())
+
+  @@index([astronautId, timestamp(sort: Desc)])
+  @@map("medical_incidents")
+}

@@ -1,108 +1,114 @@
 # 🚀 Mins-Health — by Mins Solutions TI
 ### Autonomous Deep Space Clinical Monitoring & Triage Platform
 **NASA Space Apps Challenge 2026** &bull; Global Theme: *The Next Frontier*  
-**Challenge:** *"Create Health Monitoring Software for Astronauts on Space Missions"*
+**Challenge:** *"Create Health Monitoring Software for Astronauts on Space Missions"*  
+**Team:** Mins Solutions TI (Colombia 🇨🇴)  
+- **Ivan Mejia Triana** (`@ivanmejia1082`) — *Team Owner & Lead Architect*
+- **Giordi Gutiérrez Villegas** (`@giordigutierrez1`) — *Biomedical Systems & Clinical Logic*
+- **Camilo Canedo** (`@camilote777`) — *Full-Stack Developer & Telemetry*
+- **Samuel Buzón** (`@samuel.buzon`) — *3D Visualization & Interaction Design*
+- **Ali Riascos** (`@aliii___`) — *Scientific Evidence & Mission QA*
 
 ---
 
-## 🎯 1. Resumen Ejecutivo y Problema Abordado
+## 🎯 1. Executive Summary & The Problem
 
-En misiones de exploración hacia el espacio profundo (Artemis Gateway, Base Lunar y Tránsito a Marte), la tripulación se enfrenta a los **5 Peligros del Vuelo Espacial Humano (HRP)**:
-1. Radiación espacial ionizante (GCR y eventos solares SPE).
-2. Aislamiento y confinamiento prolongado.
-3. Distancia extrema a la Tierra (hasta 400 millones de km).
-4. Gravedad alterada (microgravedad 0g, 1/6g lunar, 3/8g marciana).
-5. Entornos cerrados y hostiles con soporte vital artificial (ECLSS).
+During deep space exploration missions (Artemis Gateway, Lunar Base, and Mars Transit), astronaut crews face the **5 Hazards of Human Spaceflight (HRP)**:
+1. Space Radiation (Galactic Cosmic Rays [GCR] and Solar Particle Events [SPE]).
+2. Isolation and Confinement.
+3. Extreme Distance from Earth (up to 400 million km).
+4. Altered Gravity Fields (microgravity 0g, Lunar 1/6g, Martian 3/8g).
+5. Hostile Closed Environments with artificial life support (ECLSS).
 
-### La "Trampa de la Latencia" en Marte:
-Entre la Tierra y Marte, las señales de radio tardan entre **4 y 24 minutos** en cada sentido de transmisión (hasta **48 minutos de retraso bidireccional**). La telemedicina convencional terrestre es físicamente inviable ante descompensaciones agudas. Los astronautas deben ser capaces de **evaluarse, entender sus riesgos y actuar con autonomía**.
+### The "Latency Trap" on Mars:
+Between Earth and Mars, radio signals take **4 to 24 minutes** each way (up to **48 minutes round-trip delay**). Conventional Earth-based telemedicine is physically incapable of responding to acute decompressions, arrhythmias, or toxic gas accumulation. Astronauts must have the capability to **self-assess, understand multi-hazard interactions, and act autonomously**.
 
-**Mins-Health** resuelve este desafío combinando:
-- **Línea Base Personalizada L-30:** No utilizamos rangos clínicos fijos terrestres; cada astronauta es su propio control estadístico.
-- **Motor de Interacción de Peligros HRP:** Cuando múltiples biomarcadores se alteran, el sistema no emite seis alarmas caóticas, sino **UNA sola alerta de patrón sinérgico** ("Por qué juntos importan más").
-- **Paquete de Traspaso SBAR con Checksum:** Generación automática de informes clínicos en formato estándar SBAR (Situation, Background, Assessment, Recommendation) sellados con checksum criptográfico, listos para exportar en JSON y PDF.
-- **Test de Vigilancia Psicomotora (NASA PVT):** Medición de tiempo de reacción a estímulos visuales para detectar lapsos y fatiga cognitiva antes de maniobras críticas o caminatas extravehiculares (EVA).
-- **Operación 100% Offline (Local First):** La cabina corre íntegramente en el navegador con persistencia en `localStorage`, sin depender de servidores terrestres ni de modelos opacos.
+**Mins-Health** solves this mission-critical challenge by combining:
+- **Personalized L-30 Baseline:** Replaces rigid terrestrial normal ranges; each astronaut serves as their own longitudinal statistical control ($Z$-score tracking).
+- **HRP Multi-Hazard Synergy Engine:** When multiple biomarkers shift simultaneously, the engine suppresses fragmented alarms and generates **ONE unified root-cause pattern alert** ("Why they matter together").
+- **Cryptographic SBAR Handover Packet:** Automatic synthesis of clinical reports in the aerospace standard SBAR (Situation, Background, Assessment, Recommendation) format, sealed with an atomic CRC32 checksum for delayed Deep Space Network (DSN) downlink.
+- **NASA Psychomotor Vigilance Task (PVT):** Integrated visual reaction time testing to detect micro-sleeps, lapses, and cognitive fatigue prior to critical EVAs or orbital burns.
+- **100% Local-First Offline Operation:** The entire cockpit executes in-browser with persistent local storage, free from external server dependencies or opaque black-box models.
 
 ---
 
-## 🧭 2. Estructura del Proyecto por Responsabilidades
+## 🧭 2. Modular Architecture & Project Structure
 
-El proyecto está diseñado de forma modular para mantenimiento enterprise:
+The project follows an aerospace-grade modular structure:
 
 ```
 src/
 ├── app/
-│   ├── layout.tsx                # Metadata oficial y configuración Mins-Health
-│   ├── page.tsx                  # Cabina de 3 zonas fijas (sin scroll en vista principal)
-│   ├── globals.css               # Sistema visual neutro oscuro y tipografía accesible
-│   └── api/v1/                   # Endpoints REST de telemetría y simulación
+│   ├── layout.tsx                # Official NASA Space Apps metadata & styling
+│   ├── page.tsx                  # 3-Zone fixed layout cockpit (zero-scroll primary view)
+│   ├── globals.css               # Neutral dark aesthetic & accessible typography
+│   └── api/v1/                   # REST telemetry & simulation endpoints
 ├── components/nasa/
-│   ├── HeaderBar.tsx             # Marca Mins-Health, selector de misión y barra de utilidades
-│   ├── BentoTelemetryRail.tsx    # Riel izquierdo: Bento Grid con 6 indicadores + radiación CANS
-│   ├── AstronautGLBViewer.tsx    # Centro Héroe: Astronauta 3D (.glb) con capa Rayos X y hotspots
-│   ├── IndicatorDetailDrawer.tsx # Panel lateral: divulgación progresiva, preguntas HRP y SBAR
-│   ├── CheckupWizardModal.tsx    # Asistente modal de telemetría diaria paso a paso
-│   ├── DemoScenariosModal.tsx    # Inyección de contingencias para el jurado (Pitch 3 min)
-│   ├── PsychomotorVigilanceModal.tsx # Test de vigilancia psicomotora (NASA PVT)
-│   ├── NasaOsdrReferenceModal.tsx# Datos reales abiertos de NASA OSDR (OSD-575 / Mayo 2024)
-│   ├── ScientificEvidenceModal.tsx# Clasificación de umbrales clínicos y "Qué hace y qué no hace"
-│   └── GuidedPitchDemoModal.tsx  # Reproductor guiado del guion de presentación para el jurado
+│   ├── HeaderBar.tsx             # Mins-Health identity, mission selector, utility bar
+│   ├── BentoTelemetryRail.tsx    # Left rail: Bento Grid with 6 indicators + CANS radiation
+│   ├── AstronautGLBViewer.tsx    # Center Hero: 3D Spacesuit (.glb) with X-ray layer & hotspots
+│   ├── IndicatorDetailDrawer.tsx # Side drawer: progressive disclosure, HRP questions & SBAR
+│   ├── CheckupWizardModal.tsx    # Step-by-step daily telemetry checkup wizard
+│   ├── DemoScenariosModal.tsx    # NASA judges' contingency injection suite (3-minute pitch)
+│   ├── PsychomotorVigilanceModal.tsx # Cognitive fatigue test (NASA PVT visual reaction)
+│   ├── NasaOsdrReferenceModal.tsx# NASA Open Science Data Repository reference (OSD-575)
+│   ├── ScientificEvidenceModal.tsx# NASA-STD-3001 evidence matrix & clinical guardrails
+│   └── GuidedPitchDemoModal.tsx  # Step-by-step interactive presentation player for judges
 ├── core/
-│   ├── rules.ts                  # Motor de inferencia (Separación estadística vs umbral clínico)
-│   ├── baseline.ts               # Cálculo de línea base personal L-30 (media, desviación típica)
-│   ├── hazard-interactions.ts    # Grafo causal de interacción entre los 5 peligros HRP
-│   ├── missions.ts               # Configuración física de ISS, Luna y Marte
-│   └── sbar-handover.ts          # Generador de reportes clínicos SBAR con firma CRC32
+│   ├── rules.ts                  # Inference engine (statistical deviation vs. clinical threshold)
+│   ├── baseline.ts               # Personal L-30 baseline math (mean, sample variance, Z-scores)
+│   ├── hazard-interactions.ts    # Causal graph modeling synergies across the 5 HRP hazards
+│   ├── missions.ts               # Physical parameters for ISS (LEO), Lunar Surface, and Mars
+│   └── sbar-handover.ts          # SBAR clinical report synthesizer with CRC32 checksum
 ├── data/
-│   └── indicators.ts             # Base de datos de los 7 biomarcadores con los 4 campos HRP
+│   └── indicators.ts             # 7 core spaceflight biomarkers with NASA HRP metadata
 └── store/
-    └── health-store.ts           # Estado global offline-first con Zustand y persistencia
+    └── health-store.ts           # Offline-first global state with Zustand & persistence
 ```
 
 ---
 
-## 🔬 3. Validez Científica y Rigor Metodológico
+## 🔬 3. Scientific Validity & Methodological Rigor
 
-### Separación entre Estadística y Clínica:
-- **Desviación de Línea Base Personal ($|Z\text{-score}| \ge 1.4\text{ a }2.5$):** Emite como **MÁXIMO** el estado `"Vigilar"` o `"Atención"`.
-- **Umbral Clínico Absoluto (NASA-STD-3001 con fuente citada):** Es el **ÚNICO** mecanismo que puede emitir `"Escalar a Tierra"`. Una glucemia de $115\text{ mg/dL}$ jamás escalará erróneamente a tierra.
+### Statistical vs. Clinical Separation:
+- **Personal Baseline Deviation ($|Z\text{-score}| \ge 1.4\text{ to }2.5$):** Emits at **MOST** a `"Watch"` or `"Caution"` state.
+- **Absolute Clinical Threshold (NASA-STD-3001):** The **EXCLUSIVE** mechanism authorized to trigger `"Escalate to Ground"`. A benign glucose reading of $115\text{ mg/dL}$ will never falsely abort an EVA.
 
-### Dosimetría de Radiación Normalizada:
-- Se compara la tasa diaria contra la tasa típica del entorno:
-  - **ISS (LEO):** $\sim 730\ \mu\text{Sv/día}$. Una tasa inferior a este límite es nominal y jamás se marca como emergencia.
-  - **Luna:** $\sim 1200\ \mu\text{Sv/día}$.
-  - **Marte:** $\sim 1800\ \mu\text{Sv/día}$.
-- Seguimiento visual del **Límite de Carrera de Radiación de la NASA (600 mSv)**.
+### Environmental Dosimetry Normalization:
+Daily radiation rates are calibrated against the ambient baseline of each mission destination:
+- **ISS (LEO):** $\sim 730\ \mu\text{Sv/day}$. Rates below this threshold are nominal and never trigger emergency alerts.
+- **Lunar Surface:** $\sim 1200\ \mu\text{Sv/day}$.
+- **Mars Transit:** $\sim 1800\ \mu\text{Sv/day}$.
+- **NASA Career Radiation Limit:** Integrated tracking against NASA’s **600 mSv** lifetime exposure cap.
 
-### Lenguaje Consultivo y Asistencial:
-Sin órdenes militares ni imperativas. Todas las contramedidas son recomendaciones no farmacológicas (sin dosis de fármacos ni diagnósticos definitivos).
+### Consultative Clinical Language:
+All automated countermeasures follow non-pharmacological, supportive care recommendations (no unsupervised prescription drugs or unverified definitive diagnoses).
 
 ---
 
-## ⚡ 4. Cómo Correr la Plataforma Localmente
+## ⚡ 4. Local Quickstart & Flight Setup
 
-### Requisitos:
-- Node.js 18+ o 20+ (probado en Node v24 LTS).
-- Navegador web moderno (Chrome, Edge, Firefox, Safari).
+### Prerequisites:
+- Node.js 18+ or 20+ (tested on Node v20/v24 LTS).
+- Modern web browser (Chrome, Edge, Firefox, Safari).
 
-### Pasos:
+### Steps:
 ```bash
-# 1. Clonar el repositorio
-git clone https://github.com/tu-usuario/Health-Monitoring-Software-NASA-Space-Challenge.git
+# 1. Clone repository
+git clone https://github.com/valen/Health-Monitoring-Software-NASA-Space-Challenge.git
 cd Health-Monitoring-Software-NASA-Space-Challenge
 
-# 2. Instalar dependencias
+# 2. Install dependencies
 npm install
 
-# 3. Iniciar el servidor de desarrollo
+# 3. Launch flight dev server
 npm run dev
 
-# 4. Abrir en el navegador
-# Visita: http://localhost:3000
+# 4. Open cockpit in browser
+# Visit: http://localhost:3000
 ```
 
-### Compilación para Producción (Verificación de Cero Errores):
+### Production Build:
 ```bash
 npm run build
 npm run start
@@ -110,19 +116,17 @@ npm run start
 
 ---
 
-## 🎤 5. Guion de Demostración en 3 Minutos para el Jurado de la NASA
+## 🎤 5. 3-Minute Pitch Script for NASA Judges
 
-Dentro de la aplicación, presiona el botón **"Guion Demo (3m)"** para abrir el asistente con subtítulos y avance automático:
+Click the **"Guided Demo (3m)"** button inside the cockpit to start the automated demo player:
 
-1. **Minuto 0:00 - 0:35:** *Apertura:* Presentar a Mins-Health y el estado inicial tranquilo (casi todo en Habitual y sueño en 6.4h en Vigilar).
-2. **Minuto 0:35 - 1:15:** *Aislamiento Prolongado:* Mostrar la sinergia de peligros cuando el sueño cae a 3.8h y el ánimo a 2/5 (alerta de patrón sistémico unificado).
-3. **Minuto 1:15 - 2:00:** *Tormenta Solar (SPE):* Inyectar radiación a 2800 µSv/día, activar la **Capa Rayos X** en el astronauta 3D para ver órganos internos y la recomendación consultiva de refugio.
-4. **Minuto 2:00 - 2:35:** *Autonomía & Traspaso SBAR:* Generar y descargar el paquete clínico SBAR con checksum criptográfico para Houston.
-5. **Minuto 2:35 - 3:00:** *Demostración Offline & Cierre:* Desconectar la red o mostrar el funcionamiento continuo local-first sin depender de internet ni de LLMs.
+1. **Minute 0:00 - 0:35:** *Opening:* Present Mins-Health and the nominal initial calm state (all vitals nominal, sleep at 6.4h in Watch).
+2. **Minute 0:35 - 1:15:** *Prolonged Isolation:* Demonstrate hazard synergy when sleep drops to 3.8h and mood drops to 2/5 (single unified systemic alert).
+3. **Minute 1:15 - 2:00:** *Solar Particle Event (SPE):* Inject radiation surge at 2800 µSv/day, activate the **3D Holographic X-Ray Layer** to inspect internal organs, and display storm shelter protocol.
+4. **Minute 2:00 - 2:35:** *Autonomy & SBAR Handover:* Generate and export the encrypted SBAR clinical handover packet with CRC32 checksum.
+5. **Minute 2:35 - 3:00:** *Local-First Demonstration & Closing:* Demonstrate zero latency under disconnected conditions and explain Earth dual-use in polar stations and isolated rural zones.
 
 ---
 
-## 📄 6. Créditos y Licencia
-- **Desarrollado por:** Mins Solutions TI para el NASA Space Apps Challenge 2026.
-- **Licencia:** Código abierto bajo [MIT License](./LICENSE).
-- **Atribuciones y Fuentes Científicas:** Consultar [CREDITS.md](./CREDITS.md).
+## 📜 6. Credits & NASA References
+Refer to [CREDITS.md](CREDITS.md) and [TECHNICAL_CODE_DOCUMENTATION.md](TECHNICAL_CODE_DOCUMENTATION.md) for complete citations of NASA-STD-3001, NASA OSDR OSD-575, and CSA Bio-Monitor data.

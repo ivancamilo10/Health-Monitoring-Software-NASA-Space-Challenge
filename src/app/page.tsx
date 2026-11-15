@@ -12,16 +12,19 @@ import { NasaOsdrReferenceModal } from "@/components/nasa/NasaOsdrReferenceModal
 import { ScientificEvidenceModal } from "@/components/nasa/ScientificEvidenceModal";
 import { GuidedPitchDemoModal } from "@/components/nasa/GuidedPitchDemoModal";
 import { WelcomeTourModal } from "@/components/nasa/WelcomeTourModal";
+import { DsnTransmissionModal } from "@/components/nasa/DsnTransmissionModal";
+import { PresentationDeckModal } from "@/components/nasa/PresentationDeckModal";
 import { IndicatorId } from "@/data/indicators";
+import { useHealthStore } from "@/store/health-store";
 
 export default function MinsHealthSpaceCockpit() {
   const [mounted, setMounted] = useState<boolean>(false);
 
-  // Indicador seleccionado en el panel de detalle
+  // Selected indicator in the detail drawer
   const [selectedIndicatorId, setSelectedIndicatorId] = useState<IndicatorId>("heart_rate");
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
 
-  // Modales especializados accesibles desde el menú "Más" o botones de acción
+  // Modals accessible from the "More" menu or direct action buttons
   const [isCheckupWizardOpen, setIsCheckupWizardOpen] = useState<boolean>(false);
   const [isDemoModalOpen, setIsDemoModalOpen] = useState<boolean>(false);
   const [isPvtModalOpen, setIsPvtModalOpen] = useState<boolean>(false);
@@ -29,10 +32,13 @@ export default function MinsHealthSpaceCockpit() {
   const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState<boolean>(false);
   const [isPitchDemoModalOpen, setIsPitchDemoModalOpen] = useState<boolean>(false);
   const [isWelcomeTourOpen, setIsWelcomeTourOpen] = useState<boolean>(false);
+  const [isPresentationModalOpen, setIsPresentationModalOpen] = useState<boolean>(false);
+
+  const { isDsnModalOpen, closeDsnModal } = useHealthStore();
 
   useEffect(() => {
     setMounted(true);
-    // Activar tour de bienvenida automáticamente solo la primera vez
+    // Automatically trigger welcome tour only on first visit
     if (typeof window !== "undefined") {
       const seen = localStorage.getItem("mins_health_welcome_seen");
       if (!seen) {
@@ -59,7 +65,7 @@ export default function MinsHealthSpaceCockpit() {
 
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col liquid-glass-bg bg-[#08090d] text-[#f1f5f9] select-none relative">
-      {/* 1. BARRA SUPERIOR (4 GRUPOS CLAROS + MENÚ MÁS) */}
+      {/* 1. TOP HEADER (BRAND + CREW ROSTER + MISSION + DSN UPLINK) */}
       <HeaderBar
         onOpenCheckupWizard={() => setIsCheckupWizardOpen(true)}
         onOpenDemoMenu={() => setIsDemoModalOpen(true)}
@@ -68,23 +74,24 @@ export default function MinsHealthSpaceCockpit() {
         onOpenEvidenceModal={() => setIsEvidenceModalOpen(true)}
         onOpenPitchDemoModal={() => setIsPitchDemoModalOpen(true)}
         onOpenWelcomeTour={() => setIsWelcomeTourOpen(true)}
+        onOpenPresentationModal={() => setIsPresentationModalOpen(true)}
       />
 
-      {/* 2. ÁREA DE CABINA DE 3 ZONAS (SIN SCROLL GLOBAL, SCROLL INTERNO INDEPENDIENTE) */}
+      {/* 2. THREE-ZONE COCKPIT (ZERO GLOBAL SCROLL) */}
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative z-10">
-        {/* ZONA 1: "¿CÓMO ESTOY?" (RIEL IZQUIERDO DE TELEMETRÍA Y ESTADO GENERAL) */}
+        {/* ZONE 1: BENTO TELEMETRY RAIL */}
         <BentoTelemetryRail
           selectedIndicatorId={selectedIndicatorId}
           onSelectIndicator={handleSelectIndicator}
         />
 
-        {/* ZONA 2: "¿DÓNDE?" (MAPA ANATÓMICO 3D CON LEYENDA FIJA Y HOTSPOTS CORREGIDOS) */}
+        {/* ZONE 2: 3D WEBGL SPACESUIT WITH ANATOMICAL HOTSPOTS */}
         <AstronautGLBViewer
           selectedIndicatorId={selectedIndicatorId}
           onSelectIndicator={handleSelectIndicator}
         />
 
-        {/* ZONA 3: "¿QUÉ HAGO?" (PANEL DE ACCIÓN Y RECOMENDACIONES EN 3 BLOQUES) */}
+        {/* ZONE 3: CLINICAL REASONING, HRP HAZARDS & SBAR HANDOVER */}
         {isDrawerOpen && (
           <IndicatorDetailDrawer
             indicatorId={selectedIndicatorId}
@@ -93,42 +100,58 @@ export default function MinsHealthSpaceCockpit() {
         )}
       </main>
 
-      {/* MODAL 1: ASISTENTE DE CHEQUEO DIARIO PASO A PASO */}
+      {/* MODAL 1: DAILY TELEMETRY CHECKUP WIZARD */}
       <CheckupWizardModal
         isOpen={isCheckupWizardOpen}
         onClose={() => setIsCheckupWizardOpen(false)}
       />
 
-      {/* MODAL 2: TOUR DE BIENVENIDA EN 3 PASOS */}
+      {/* MODAL 2: WELCOME TOUR */}
       <WelcomeTourModal
         isOpen={isWelcomeTourOpen}
         onClose={() => setIsWelcomeTourOpen(false)}
       />
 
-      {/* MODALES ADICIONALES (ACCESIBLES DESDE MENÚ "MÁS") */}
+      {/* MODAL 3: CONTINGENCY INJECTION SUITE (PITCH 3M) */}
       <DemoScenariosModal
         isOpen={isDemoModalOpen}
         onClose={() => setIsDemoModalOpen(false)}
       />
 
+      {/* MODAL 4: NASA PVT PSYCHOMOTOR VIGILANCE TEST */}
       <PsychomotorVigilanceModal
         isOpen={isPvtModalOpen}
         onClose={() => setIsPvtModalOpen(false)}
       />
 
+      {/* MODAL 5: NASA OPEN SCIENCE DATA REPOSITORY (OSDR OSD-575) */}
       <NasaOsdrReferenceModal
         isOpen={isOsdrModalOpen}
         onClose={() => setIsOsdrModalOpen(false)}
       />
 
+      {/* MODAL 6: NASA-STD-3001 SCIENTIFIC EVIDENCE MATRIX */}
       <ScientificEvidenceModal
         isOpen={isEvidenceModalOpen}
         onClose={() => setIsEvidenceModalOpen(false)}
       />
 
+      {/* MODAL 7: GUIDED PITCH SCRIPT PLAYER FOR JUDGES */}
       <GuidedPitchDemoModal
         isOpen={isPitchDemoModalOpen}
         onClose={() => setIsPitchDemoModalOpen(false)}
+      />
+
+      {/* MODAL 8: DEEP SPACE NETWORK (DSN) TELEMETRY & SBAR EXPORT */}
+      <DsnTransmissionModal
+        isOpen={isDsnModalOpen}
+        onClose={closeDsnModal}
+      />
+
+      {/* MODAL 9: REVEAL.JS OPEN SOURCE PITCH DECK */}
+      <PresentationDeckModal
+        isOpen={isPresentationModalOpen}
+        onClose={() => setIsPresentationModalOpen(false)}
       />
     </div>
   );

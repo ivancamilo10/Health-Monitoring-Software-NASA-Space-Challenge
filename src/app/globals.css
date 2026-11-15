@@ -74,7 +74,8 @@ body {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 9999px;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
 }
 
 .glass-pill-active {
@@ -82,17 +83,21 @@ body {
   border: 1px solid rgba(153, 117, 255, 0.5);
   color: #ffffff;
   box-shadow: 0 0 16px rgba(153, 117, 255, 0.3);
+  border-radius: 8px;
 }
 
 /* ========================================================
-   BOTONES Y ELEMENTOS DIDÁCTICOS
+   BOTONES Y ELEMENTOS DIDÁCTICOS (MÁS CUADRADOS Y ANCHOS)
    ======================================================== */
 .btn-primary-gradient {
   background: linear-gradient(135deg, #9975ff 0%, #794ff5 100%);
   color: #ffffff;
-  border-radius: 12px;
+  border-radius: 8px;
+  padding: 0.55rem 1.25rem;
+  min-width: 120px;
+  font-weight: 600;
   box-shadow: 0 4px 18px rgba(153, 117, 255, 0.35);
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-primary-gradient:hover {
@@ -105,8 +110,11 @@ body {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #f1f5f9;
-  border-radius: 12px;
-  transition: all 0.2s ease;
+  border-radius: 8px;
+  padding: 0.55rem 1.25rem;
+  min-width: 110px;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-secondary-glass:hover {

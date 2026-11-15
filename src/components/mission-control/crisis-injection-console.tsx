@@ -28,25 +28,25 @@ export function CrisisInjectionConsole({ onInject, isLoading }: CrisisInjectionC
   }[] = [
     {
       id: "NOMINAL",
-      label: "🟢 RESTAURAR NOMINAL",
+      label: "RESTAURAR NOMINAL",
       description: "Signos vitales estables y soporte vital 100% calibrado.",
       color: "hover:border-emerald-500 hover:bg-emerald-950/40 text-emerald-400 border-slate-800",
     },
     {
       id: "SUIT_LEAK",
-      label: "⚠️ FUGA DE TRAJE (EVA)",
+      label: "FUGA DE TRAJE (EVA)",
       description: "Caída de presión a 3.2 psi + taquicardia hipóxica.",
       color: "hover:border-red-500 hover:bg-red-950/40 text-red-400 border-slate-800",
     },
     {
       id: "CO2_TOXICITY",
-      label: "☣️ TOXICIDAD POR CO2",
+      label: "TOXICIDAD POR CO2",
       description: "Falla de LiOH ECLSS con CO2 en 7.8 mmHg.",
       color: "hover:border-amber-500 hover:bg-amber-950/40 text-amber-400 border-slate-800",
     },
     {
       id: "SOLAR_FLARE",
-      label: "☢️ TORMENTA SOLAR (SPE)",
+      label: "TORMENTA SOLAR (SPE)",
       description: "Pico de radiación cósmica a 145 µSv/h.",
       color: "hover:border-purple-500 hover:bg-purple-950/40 text-purple-400 border-slate-800",
     },

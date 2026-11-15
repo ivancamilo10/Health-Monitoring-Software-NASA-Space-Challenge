@@ -6,7 +6,9 @@ export const metadata: Metadata = {
   description:
     "Mins-Health: Autonomous Bio-Telemetry & Triage Platform for Deep Space Missions. Solution for NASA Space Apps Challenge 2026: Create Health Monitoring Software for Astronauts on Space Missions.",
   icons: {
-    icon: "/icon.svg",
+    icon: "/assets/mins-solutions-logo.png",
+    shortcut: "/assets/mins-solutions-logo.png",
+    apple: "/assets/mins-solutions-logo.png",
   },
 };
 
@@ -17,6 +19,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className="dark">
+      <head>
+        <script src="/models/skeleton-3d.js" defer></script>
+      </head>
       <body className="min-h-screen bg-space-950 text-slate-100 antialiased selection:bg-accent-cyan selection:text-black">
         {children}
       </body>

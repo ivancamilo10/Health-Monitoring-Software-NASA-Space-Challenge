@@ -9,6 +9,12 @@ import { IndicatorId } from "@/data/indicators";
 import { EvaluationState } from "@/core/rules";
 import { UI_TEXTS_ES } from "@/data/i18n";
 import {
+  createAnatomicalHeart,
+  createAnatomicalLungs,
+  createAnatomicalBrain,
+} from "@/components/nasa/AnatomicalOrgans";
+import { loadRealAnatomicalSkeleton } from "@/core/skeleton-builder";
+import {
   Brain,
   Eye,
   Heart,
@@ -17,6 +23,11 @@ import {
   Radio,
   Layers,
   Sparkles,
+  AlertTriangle,
+  RotateCcw,
+  Activity,
+  Flame,
+  Snowflake,
 } from "lucide-react";
 
 interface AstronautGLBViewerProps {
@@ -39,17 +50,17 @@ const HOTSPOTS: AnatomicalHotspot[] = [
     id: "mood",
     name: "Cerebro & Función Conductual",
     simpleName: "Cerebro y descanso",
-    zone: "Cabeza",
-    defaultCoords: { x: 50, y: 32 },
-    anchor3D: new THREE.Vector3(0, 0.96, 0.18),
+    zone: "Cabeza (Córtex cerebral)",
+    defaultCoords: { x: 50, y: 31 },
+    anchor3D: new THREE.Vector3(0, 0.94, 0.18),
     icon: <Brain className="w-4 h-4" />,
   },
   {
     id: "blood_pressure",
     name: "Ojos & Síndrome SANS",
     simpleName: "Ojos y cabeza",
-    zone: "Visor",
-    defaultCoords: { x: 50, y: 39 },
+    zone: "Visor y presiones craneales",
+    defaultCoords: { x: 50, y: 38 },
     anchor3D: new THREE.Vector3(0, 0.82, 0.26),
     icon: <Eye className="w-4 h-4" />,
   },
@@ -57,25 +68,25 @@ const HOTSPOTS: AnatomicalHotspot[] = [
     id: "heart_rate",
     name: "Corazón & Sistema Cardiovascular",
     simpleName: "Ritmo del corazón",
-    zone: "Pecho izquierdo",
-    defaultCoords: { x: 44, y: 46 },
-    anchor3D: new THREE.Vector3(-0.14, 0.44, 0.22),
+    zone: "Pecho izquierdo (Hemotórax izq.)",
+    defaultCoords: { x: 57, y: 46 }, // Lado izquierdo anatómico del astronauta (a la derecha del observador)
+    anchor3D: new THREE.Vector3(0.12, 0.43, 0.22),
     icon: <Heart className="w-4 h-4" />,
   },
   {
     id: "core_temp",
     name: "Termorregulación Central",
     simpleName: "Temperatura corporal",
-    zone: "Pecho derecho",
-    defaultCoords: { x: 56, y: 46 },
-    anchor3D: new THREE.Vector3(0.14, 0.44, 0.22),
+    zone: "Pecho derecho (Hemotórax der.)",
+    defaultCoords: { x: 43, y: 46 }, // Lado derecho anatómico del astronauta (a la izquierda del observador)
+    anchor3D: new THREE.Vector3(-0.12, 0.43, 0.22),
     icon: <Thermometer className="w-4 h-4" />,
   },
   {
     id: "glucose",
     name: "Metabolismo & Glucemia",
     simpleName: "Azúcar y energía",
-    zone: "Abdomen",
+    zone: "Abdomen (Hígado / Metabolismo)",
     defaultCoords: { x: 50, y: 56 },
     anchor3D: new THREE.Vector3(0, 0.10, 0.25),
     icon: <Zap className="w-4 h-4" />,
@@ -84,9 +95,9 @@ const HOTSPOTS: AnatomicalHotspot[] = [
     id: "radiation_dose",
     name: "Médula Ósea & Radiación",
     simpleName: "Radiación cósmica",
-    zone: "Cuerpo entero",
-    defaultCoords: { x: 50, y: 70 },
-    anchor3D: new THREE.Vector3(0, -0.32, 0.2),
+    zone: "Médula ósea y cuerpo entero",
+    defaultCoords: { x: 50, y: 76 },
+    anchor3D: new THREE.Vector3(0, -0.42, 0.20),
     icon: <Radio className="w-4 h-4" />,
   },
 ];
@@ -96,7 +107,7 @@ export function AstronautGLBViewer({
   onSelectIndicator,
 }: AstronautGLBViewerProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const { decisionReport } = useHealthStore();
+  const { decisionReport, currentReadings, activeScenarioName, resetToNominalCalm } = useHealthStore();
 
   const [isXrayActive, setIsXrayActive] = useState<boolean>(false);
   const [isLoadingModel, setIsLoadingModel] = useState<boolean>(true);
@@ -105,20 +116,39 @@ export function AstronautGLBViewer({
   const suitMaterialsRef = useRef<THREE.Material[]>([]);
   const xrayGroupRef = useRef<THREE.Group | null>(null);
   const astronautModelRef = useRef<THREE.Group | null>(null);
+  const ringMeshRef = useRef<THREE.Mesh | null>(null);
+  const innerRingMeshRef = useRef<THREE.Mesh | null>(null);
+  const keyLightRef = useRef<THREE.DirectionalLight | null>(null);
+  const fillLightRef = useRef<THREE.DirectionalLight | null>(null);
+  const heartMeshRef = useRef<THREE.Mesh | null>(null);
+  const updateHeartRef = useRef<((time: number, bpm: number, bp: number) => void) | null>(null);
+  const updateLungsRef = useRef<((time: number) => void) | null>(null);
+  const updateBrainRef = useRef<((time: number, isWarning: boolean) => void) | null>(null);
+
+  const decisionReportRef = useRef(decisionReport);
+  const currentReadingsRef = useRef(currentReadings);
+
+  useEffect(() => {
+    currentReadingsRef.current = currentReadings;
+  }, [currentReadings]);
+
+  useEffect(() => {
+    decisionReportRef.current = decisionReport;
+  }, [decisionReport]);
 
   const getStatusColor = (state: EvaluationState) => {
     switch (state) {
       case "ESCALAR_TIERRA":
-        return "#f43f5e"; // Rose / Rojo
+        return "#f43f5e";
       case "ATENCION":
-        return "#f97316"; // Naranja
+        return "#f97316";
       case "VIGILAR":
-        return "#f59e0b"; // Ámbar
+        return "#f59e0b";
       case "HABITUAL":
-        return "#10b981"; // Verde esmeralda
+        return "#10b981";
       case "SIN_DATOS":
       default:
-        return "#64748b"; // Pizarra
+        return "#64748b";
     }
   };
 
@@ -153,15 +183,15 @@ export function AstronautGLBViewer({
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.25;
     container.appendChild(renderer.domElement);
 
-    // OrbitControls: Permite rotar suavemente con el mouse, hacer zoom y controlar la cámara
+    // OrbitControls: rotación 3D fluida
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    controls.autoRotate = false; // DESACTIVADO por defecto: rotación con mouse manual
-    controls.autoRotateSpeed = 1.2;
+    controls.autoRotate = false;
+    controls.autoRotateSpeed = 1.0;
     controls.minDistance = 2.0;
     controls.maxDistance = 6.0;
     controls.enablePan = false;
@@ -169,97 +199,96 @@ export function AstronautGLBViewer({
     controls.maxPolarAngle = Math.PI * 0.85;
     controls.minPolarAngle = Math.PI * 0.15;
 
-    // Iluminación moderna Liquid Glass
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+    // Iluminación moderna aeromédica
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
     scene.add(ambientLight);
 
     const keyLight = new THREE.DirectionalLight(0xffffff, 1.8);
     keyLight.position.set(2, 3, 3);
     scene.add(keyLight);
+    keyLightRef.current = keyLight;
 
     const fillLight = new THREE.DirectionalLight(0xbca6ff, 1.0);
     fillLight.position.set(-2, 1, 2);
     scene.add(fillLight);
+    fillLightRef.current = fillLight;
 
     const softCyanGlow = new THREE.DirectionalLight(0x66d8d1, 1.2);
     softCyanGlow.position.set(0, 3, -3);
     scene.add(softCyanGlow);
 
-    // Plataforma circular translúcida estilo Liquid Glass
+    // Plataforma circular translúcida estilo Smooth UI / Liquid Glass
     const platformGeom = new THREE.CylinderGeometry(1.6, 1.6, 0.04, 48);
     const platformMat = new THREE.MeshStandardMaterial({
-      color: 0x111218,
-      roughness: 0.2,
-      metalness: 0.8,
+      color: 0x0f1117,
+      roughness: 0.18,
+      metalness: 0.85,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.75,
     });
     const platformMesh = new THREE.Mesh(platformGeom, platformMat);
     platformMesh.position.y = -1.18;
     scene.add(platformMesh);
 
-    // Anillo de luz en la base
+    // Anillo exterior de luz en la base
     const ringGeom = new THREE.RingGeometry(1.5, 1.58, 48);
     const ringMat = new THREE.MeshBasicMaterial({
       color: 0x9975ff,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.75,
     });
     const ringMesh = new THREE.Mesh(ringGeom, ringMat);
     ringMesh.rotation.x = Math.PI / 2;
     ringMesh.position.y = -1.16;
     scene.add(ringMesh);
+    ringMeshRef.current = ringMesh;
 
-    // Grupo de órganos para modo rayos X
+    // Anillo interior concéntrico estilo radar médico
+    const innerRingGeom = new THREE.RingGeometry(1.15, 1.18, 48);
+    const innerRingMat = new THREE.MeshBasicMaterial({
+      color: 0x66d8d1,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.45,
+    });
+    const innerRingMesh = new THREE.Mesh(innerRingGeom, innerRingMat);
+    innerRingMesh.rotation.x = Math.PI / 2;
+    innerRingMesh.position.y = -1.16;
+    scene.add(innerRingMesh);
+    innerRingMeshRef.current = innerRingMesh;
+
+    // Grupo de órganos y esqueleto real para modo rayos X
     const xrayGroup = new THREE.Group();
     xrayGroup.visible = false;
     xrayGroupRef.current = xrayGroup;
 
-    // Cerebro
-    const brainGeom = new THREE.SphereGeometry(0.18, 16, 16);
-    const brainMat = new THREE.MeshBasicMaterial({
-      color: 0x9975ff,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.85,
-    });
-    const brainMesh = new THREE.Mesh(brainGeom, brainMat);
-    brainMesh.position.set(0, 0.95, 0);
-    xrayGroup.add(brainMesh);
+    // 1. CORAZÓN ANATÓMICO 3D REAL (con ventrículos, aurículas, cayado aórtico, coronarias y tronco pulmonar)
+    const anatomicalHeart = createAnatomicalHeart();
+    // Ubicado en el hemitórax izquierdo del astronauta (a la derecha del observador: +X)
+    anatomicalHeart.group.position.set(0.045, 0.42, 0.02);
+    xrayGroup.add(anatomicalHeart.group);
+    heartMeshRef.current = anatomicalHeart.ventriclesMesh;
+    updateHeartRef.current = anatomicalHeart.updateHeartBeat;
 
-    // Corazón
-    const heartGeom = new THREE.OctahedronGeometry(0.13, 2);
-    const heartMat = new THREE.MeshStandardMaterial({
-      color: 0xf43f5e,
-      emissive: 0xf43f5e,
-      emissiveIntensity: 0.6,
-      roughness: 0.3,
-    });
-    const heartMesh = new THREE.Mesh(heartGeom, heartMat);
-    heartMesh.position.set(-0.11, 0.44, 0.05);
-    xrayGroup.add(heartMesh);
+    // 2. PULMONES ANATÓMICOS BILATERALES
+    const anatomicalLungs = createAnatomicalLungs();
+    xrayGroup.add(anatomicalLungs.group);
+    updateLungsRef.current = anatomicalLungs.updateRespiration;
 
-    // Glucosa / Digestivo
-    const glucoseGeom = new THREE.TorusGeometry(0.12, 0.035, 12, 24);
-    const glucoseMat = new THREE.MeshBasicMaterial({
-      color: 0xf59e0b,
-      wireframe: true,
-    });
-    const glucoseMesh = new THREE.Mesh(glucoseGeom, glucoseMat);
-    glucoseMesh.position.set(0, 0.1, 0.02);
-    glucoseMesh.rotation.x = Math.PI / 2;
-    xrayGroup.add(glucoseMesh);
+    // 3. CEREBRO ANATÓMICO TRIDIMENSIONAL (Hemisferios cerebrales, cerebelo y red sináptica)
+    const anatomicalBrain = createAnatomicalBrain();
+    xrayGroup.add(anatomicalBrain.group);
+    updateBrainRef.current = anatomicalBrain.updateBrainWaves;
 
-    // Médula / Columna
-    const spineGeom = new THREE.CylinderGeometry(0.035, 0.035, 0.75, 12);
-    const spineMat = new THREE.MeshBasicMaterial({
-      color: 0x10b981,
-      wireframe: true,
-    });
-    const spineMesh = new THREE.Mesh(spineGeom, spineMat);
-    spineMesh.position.set(0, 0.4, -0.04);
-    xrayGroup.add(spineMesh);
+    // 4. ESQUELETO HUMANO REAL 3D (BodyParts3D de mitina open-source)
+    loadRealAnatomicalSkeleton()
+      .then((skeleton) => {
+        xrayGroup.add(skeleton);
+      })
+      .catch((err) => {
+        console.warn("Carga de esqueleto 3D:", err);
+      });
 
     scene.add(xrayGroup);
 
@@ -325,6 +354,130 @@ export function AstronautGLBViewer({
     const animate = () => {
       animationId = requestAnimationFrame(animate);
       controls.update();
+
+      const time = performance.now() * 0.001;
+      const currentReport = decisionReportRef.current;
+      const overallState = currentReport?.overallState;
+      const isCrisis = overallState === "ESCALAR_TIERRA";
+      const isAttention = overallState === "ATENCION";
+      const isWarning = isCrisis || isAttention;
+
+      const hr = currentReadingsRef.current.heart_rate || 60;
+      const bp = currentReadingsRef.current.blood_pressure || 120;
+      const temp = currentReadingsRef.current.core_temp || 36.8;
+
+      // Actualizar contracción cardíaca fisiológica en tiempo real
+      if (updateHeartRef.current) {
+        updateHeartRef.current(time, hr, bp);
+      }
+
+      // Actualizar ciclo respiratorio en pulmones
+      if (updateLungsRef.current) {
+        updateLungsRef.current(time);
+      }
+
+      // Actualizar ondas cerebrales y red sináptica
+      if (updateBrainRef.current) {
+        updateBrainRef.current(time, isWarning);
+      }
+
+      // Respuesta fisiológica en el traje cuando hay emergencia o fiebre/hipotermia
+      if (astronautModelRef.current) {
+        const pulseSpeed = isCrisis ? 7 : isAttention ? 4 : 1.5;
+        const alertPulse = Math.sin(time * pulseSpeed) * 0.5 + 0.5;
+
+        // Si hay fiebre severa (temp > 38.5) o shock hipotérmico (temp < 35.0)
+        const isFever = temp >= 38.5;
+        const isHypothermia = temp <= 35.0;
+
+        suitMaterialsRef.current.forEach((mat) => {
+          // @ts-expect-error Three.js material properties
+          if (mat.emissive) {
+            if (isCrisis) {
+              // Pulso de alarma roja crítica
+              // @ts-expect-error emissive set
+              mat.emissive.setRGB(0.55 * alertPulse, 0.04, 0.08);
+              // @ts-expect-error emissiveIntensity
+              mat.emissiveIntensity = 0.35 + alertPulse * 0.45;
+            } else if (isAttention) {
+              // Pulso de atención naranja
+              // @ts-expect-error emissive set
+              mat.emissive.setRGB(0.5 * alertPulse, 0.22 * alertPulse, 0.03);
+              // @ts-expect-error emissiveIntensity
+              mat.emissiveIntensity = 0.25 + alertPulse * 0.35;
+            } else if (isFever) {
+              // Gradiente térmico infrarrojo de fiebre espacial
+              // @ts-expect-error emissive set
+              mat.emissive.setRGB(0.45 * alertPulse, 0.15 * alertPulse, 0.05);
+              // @ts-expect-error emissiveIntensity
+              mat.emissiveIntensity = 0.3 + alertPulse * 0.3;
+            } else if (isHypothermia) {
+              // Resplandor cian helado de hipotermia
+              // @ts-expect-error emissive set
+              mat.emissive.setRGB(0.05, 0.35 * alertPulse, 0.55 * alertPulse);
+              // @ts-expect-error emissiveIntensity
+              mat.emissiveIntensity = 0.3 + alertPulse * 0.3;
+            } else {
+              // @ts-expect-error emissive setHex
+              mat.emissive.setHex(0x000000);
+              // @ts-expect-error emissiveIntensity
+              mat.emissiveIntensity = 0.0;
+            }
+          }
+        });
+      }
+
+      // Anillo de luz en la base con pulso reactivo de alerta
+      if (ringMeshRef.current) {
+        const ringMat = ringMeshRef.current.material as THREE.MeshBasicMaterial;
+        if (overallState === "ESCALAR_TIERRA") {
+          ringMat.color.setHex(0xf43f5e);
+          ringMat.opacity = 0.55 + Math.sin(time * 7) * 0.45;
+        } else if (overallState === "ATENCION") {
+          ringMat.color.setHex(0xf97316);
+          ringMat.opacity = 0.55 + Math.sin(time * 4) * 0.35;
+        } else if (overallState === "VIGILAR") {
+          ringMat.color.setHex(0xf59e0b);
+          ringMat.opacity = 0.5 + Math.sin(time * 2.5) * 0.25;
+        } else {
+          ringMat.color.setHex(0x9975ff);
+          ringMat.opacity = 0.70;
+        }
+      }
+
+      if (innerRingMeshRef.current) {
+        const innerMat = innerRingMeshRef.current.material as THREE.MeshBasicMaterial;
+        innerRingMeshRef.current.rotation.z = time * 0.2;
+        if (isCrisis) {
+          innerMat.color.setHex(0xff0054);
+          innerMat.opacity = 0.6 + Math.sin(time * 8) * 0.4;
+        } else {
+          innerMat.color.setHex(0x66d8d1);
+          innerMat.opacity = 0.45;
+        }
+      }
+
+      // Iluminación ambiental y direccional reactiva de emergencia
+      if (keyLightRef.current && fillLightRef.current) {
+        if (overallState === "ESCALAR_TIERRA") {
+          const pulse = 0.5 + Math.sin(time * 6) * 0.5;
+          keyLightRef.current.color.setRGB(1.0, 0.2 * (1 - pulse), 0.25 * (1 - pulse));
+          keyLightRef.current.intensity = 2.5;
+          fillLightRef.current.color.setRGB(0.85, 0.1, 0.2);
+          fillLightRef.current.intensity = 1.7;
+        } else if (overallState === "ATENCION") {
+          keyLightRef.current.color.setRGB(1.0, 0.55, 0.15);
+          keyLightRef.current.intensity = 2.1;
+          fillLightRef.current.color.setRGB(0.8, 0.3, 0.1);
+          fillLightRef.current.intensity = 1.3;
+        } else {
+          keyLightRef.current.color.setHex(0xffffff);
+          keyLightRef.current.intensity = 1.8;
+          fillLightRef.current.color.setHex(0xbca6ff);
+          fillLightRef.current.intensity = 1.0;
+        }
+      }
+
       renderer.render(scene, camera);
     };
 
@@ -341,7 +494,30 @@ export function AstronautGLBViewer({
 
     window.addEventListener("resize", handleResize);
 
+    // Raycaster para alternar visión de órganos al hacer clic en el astronauta
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    const onPointerClick = (e: MouseEvent) => {
+      if (!container || !astronautModelRef.current) return;
+      const rect = container.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const objectsToTest: THREE.Object3D[] = [astronautModelRef.current];
+      if (xrayGroupRef.current) objectsToTest.push(xrayGroupRef.current);
+      const intersects = raycaster.intersectObjects(objectsToTest, true);
+
+      if (intersects.length > 0) {
+        setIsXrayActive((prev) => !prev);
+      }
+    };
+
+    container.addEventListener("click", onPointerClick);
+
     return () => {
+      container.removeEventListener("click", onPointerClick);
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animationId);
       controls.dispose();
@@ -352,113 +528,133 @@ export function AstronautGLBViewer({
     };
   }, []);
 
-  // Efecto modo rayos X
+  // Efecto modo rayos X: cristal translúcido ultra-limpio (Smooth UI glass), NUNCA wireframe tosco
   useEffect(() => {
     if (xrayGroupRef.current) {
       xrayGroupRef.current.visible = isXrayActive;
     }
 
     suitMaterialsRef.current.forEach((mat) => {
+      const anyMat = mat as any;
       if (isXrayActive) {
         mat.transparent = true;
-        mat.opacity = 0.35;
-        // @ts-expect-error Three.js wireframe flag
-        mat.wireframe = true;
+        mat.opacity = 0.12; // Traje como cristal aeroespacial ahumado sutil
+        anyMat.roughness = 0.10;
+        anyMat.metalness = 0.85;
+        anyMat.wireframe = false;
+        mat.depthWrite = false;
       } else {
         mat.transparent = false;
         mat.opacity = 1.0;
-        // @ts-expect-error Three.js wireframe flag
-        mat.wireframe = false;
+        anyMat.wireframe = false;
+        mat.depthWrite = true;
       }
       mat.needsUpdate = true;
     });
   }, [isXrayActive]);
 
-  const activeNode = HOTSPOTS.find((n) => n.id === selectedIndicatorId);
-  const activeEval = decisionReport.evaluations[selectedIndicatorId];
-  const activeColor = getStatusColor(activeEval?.state ?? "HABITUAL");
-  const activeStateName = getStatusSimpleName(activeEval?.state ?? "HABITUAL");
+
+  const overallState = decisionReport.overallState;
+  const isEmergencyActive = overallState === "ESCALAR_TIERRA" || overallState === "ATENCION";
+  const tempReading = currentReadings.core_temp;
+  const bpReading = currentReadings.blood_pressure;
+  const hrReading = currentReadings.heart_rate;
 
   return (
     <section className="flex-1 h-full relative flex flex-col items-center justify-center bg-[#08090d] overflow-hidden select-none">
       {/* ========================================================
-          BARRA DE CONTROLES LIQUID GLASS SUPERIOR
+          BANNER DOCK SUPERIOR DE CONTINGENCIA / EMERGENCIA CLÍNICA
+          (Acoplado al borde superior del visor 3D, nunca sobre el cuerpo del astronauta)
           ======================================================== */}
-      <div className="absolute top-4 inset-x-5 z-20 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
-        {/* Píldoras de control */}
-        <div className="flex items-center gap-2 pointer-events-auto">
-          <div className="flex items-center gap-2 px-3.5 py-1.5 glass-panel text-xs font-semibold text-white">
-            <span className="w-2 h-2 rounded-full bg-[#9975ff]" />
-            <span className="text-white font-medium">{UI_TEXTS_ES.zoneCenterTitle}</span>
-            <span className="text-slate-400">· Vista 3D interactiva</span>
+      {isEmergencyActive && (
+        <div className="absolute top-0 inset-x-0 z-30 flex items-center justify-between gap-2 px-4 py-1.5 bg-rose-950/95 border-b border-rose-500/50 backdrop-blur-xl pointer-events-auto shadow-md shadow-black/50 animate-in slide-in-from-top duration-200">
+          <div className="flex items-center gap-2 min-w-0 overflow-hidden">
+            <span className="p-1 rounded bg-rose-500/20 text-rose-400 flex-shrink-0">
+              <AlertTriangle className="w-3.5 h-3.5 animate-pulse" />
+            </span>
+            <span className="text-xs font-bold text-rose-200 uppercase tracking-wide whitespace-nowrap flex-shrink-0">
+              EMERGENCIA CLÍNICA CRÍTICA:
+            </span>
+            <span className="text-xs text-rose-100 truncate font-medium">
+              {activeScenarioName || decisionReport.primaryAction}
+            </span>
+            {tempReading && tempReading >= 38.5 && (
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/30 text-rose-200 font-mono font-semibold flex-shrink-0">
+                Fiebre {tempReading}°C
+              </span>
+            )}
+            {bpReading && bpReading >= 160 && (
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/30 text-rose-200 font-mono font-semibold flex-shrink-0">
+                TA {bpReading} mmHg
+              </span>
+            )}
           </div>
 
           <button
-            onClick={() => setIsXrayActive(!isXrayActive)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
-              isXrayActive
-                ? "bg-[#9975ff] text-white font-semibold shadow-lg shadow-purple-500/25"
-                : "glass-pill text-slate-200 hover:text-white hover:bg-white/10"
-            }`}
-            title="Muestra el interior del traje para ubicar corazón, pulmones y cerebro"
+            onClick={() => resetToNominalCalm()}
+            className="flex items-center gap-1 px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 text-xs font-semibold text-white transition-all cursor-pointer whitespace-nowrap flex-shrink-0"
+            title="Restablecer telemetría nominal de calma"
           >
-            <Layers className="w-3.5 h-3.5" />
-            <span>{isXrayActive ? "Ocultar órganos" : "Ver órganos"}</span>
+            <RotateCcw className="w-3 h-3" />
+            <span>Normalizar</span>
           </button>
         </div>
+      )}
 
-        {/* Leyenda didáctica en formato Liquid Glass */}
-        <div className="hidden lg:flex items-center gap-3 px-3.5 py-1.5 glass-panel text-xs text-slate-300 pointer-events-auto">
-          <span className="text-[11px] font-medium text-slate-400 mr-0.5">
-            {UI_TEXTS_ES.legendTitle}
-          </span>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
-            <span className="text-slate-300">{UI_TEXTS_ES.legendNormal}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50" />
-            <span className="text-slate-300">{UI_TEXTS_ES.legendWatch}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-sm shadow-orange-500/50" />
-            <span className="text-slate-300">{UI_TEXTS_ES.legendAttention}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-sm shadow-rose-500/50" />
-            <span className="text-slate-300">{UI_TEXTS_ES.legendHelp}</span>
-          </div>
-        </div>
+      {/* ========================================================
+          BOTÓN DISCRETO ESQUINA SUPERIOR DERECHA (VER ÓRGANOS)
+          (Completamente despejado, jamás en el centro ni tapando el cuerpo)
+          ======================================================== */}
+      <div
+        className={`absolute right-4 z-20 pointer-events-auto transition-all duration-200 ${
+          isEmergencyActive ? "top-11" : "top-3.5"
+        }`}
+      >
+        <button
+          onClick={() => setIsXrayActive(!isXrayActive)}
+          className={`flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer shadow-lg ${
+            isXrayActive
+              ? "bg-[#9975ff] text-white shadow-purple-500/30 ring-2 ring-purple-400/40"
+              : "glass-panel text-slate-200 hover:text-white hover:bg-white/10"
+          }`}
+          title="Alternar vista de órganos y esqueleto 3D"
+        >
+          <Layers className="w-3.5 h-3.5" />
+          <span>{isXrayActive ? "Ocultar órganos" : "Ver órganos"}</span>
+        </button>
       </div>
 
-      {/* Indicador de carga */}
+      {/* Indicador de carga inicial */}
       {isLoadingModel && (
-        <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#08090d]/80 backdrop-blur-md">
-          <div className="flex items-center gap-3 px-5 py-3 glass-panel text-xs font-medium text-purple-300">
-            <Sparkles className="w-4 h-4 animate-spin text-[#9975ff]" />
-            <span>Cargando modelo 3D del astronauta...</span>
+        <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-30 pointer-events-none">
+          <div className="glass-panel px-6 py-4 rounded-xl flex items-center gap-3">
+            <div className="w-5 h-5 rounded-full border-2 border-[#9975ff] border-t-transparent animate-spin" />
+            <span className="text-xs font-semibold text-white tracking-wide">
+              Cargando modelo 3D y anatomía médica...
+            </span>
           </div>
         </div>
       )}
 
-      {/* Canvas Three.js con OrbitControls para arrastrar */}
-      <div
-        ref={mountRef}
-        className="w-full h-full relative z-10 cursor-grab active:cursor-grabbing"
-      />
+
+      {/* Contenedor Three.js */}
+      <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
       {/* ========================================================
-          HOTSPOTS ANATÓMICOS DIDÁCTICOS CON LIQUID GLASS
+          HOTSPOTS ANATÓMICOS FLOTANTES CON PULSO
           ======================================================== */}
-      <div className="absolute inset-0 pointer-events-none z-20">
+      <div className="absolute inset-0 pointer-events-none z-10">
         {HOTSPOTS.map((node) => {
           const evalData = decisionReport.evaluations[node.id];
-          const state: EvaluationState = evalData?.state ?? "HABITUAL";
+          const state = evalData?.state ?? "HABITUAL";
           const color = getStatusColor(state);
           const simpleStateName = getStatusSimpleName(state);
           const isSelected = selectedIndicatorId === node.id;
           const isHovered = hoveredNodeId === node.id;
           const isWarning = state === "ESCALAR_TIERRA" || state === "ATENCION";
+          const isHeart = node.id === "heart_rate";
+          const heartBpm = currentReadings.heart_rate || 60;
+          const heartPeriodSec = (60 / heartBpm).toFixed(2);
 
           return (
             <div
@@ -475,11 +671,11 @@ export function AstronautGLBViewer({
                 onMouseLeave={() => setHoveredNodeId(null)}
                 className={`relative flex items-center justify-center rounded-full transition-all duration-200 focus:outline-none ${
                   isSelected
-                    ? "w-10 h-10 ring-4 ring-[#9975ff]/40 scale-110 z-30 shadow-lg shadow-purple-500/30"
-                    : "w-8 h-8 hover:scale-110 hover:ring-2 hover:ring-white/40"
+                    ? "w-11 h-11 ring-4 ring-[#9975ff]/50 scale-110 z-30 shadow-xl shadow-purple-500/40"
+                    : "w-8.5 h-8.5 hover:scale-110 hover:ring-2 hover:ring-white/40"
                 }`}
                 style={{
-                  backgroundColor: "rgba(17, 18, 24, 0.9)",
+                  backgroundColor: "rgba(17, 18, 24, 0.92)",
                   borderColor: isSelected ? "#9975ff" : color,
                   borderWidth: isSelected ? "2.5px" : "1.5px",
                   boxShadow: `0 4px 14px ${color}60`,
@@ -489,17 +685,33 @@ export function AstronautGLBViewer({
               >
                 <span style={{ color }}>{node.icon}</span>
 
-                {isWarning && (
+                {isHeart && (
                   <span
-                    className="absolute inset-0 rounded-full animate-ping opacity-50"
-                    style={{ backgroundColor: color }}
+                    className="absolute -inset-2.5 rounded-full pointer-events-none opacity-80"
+                    style={{
+                      border: `1.5px solid ${color}`,
+                      animation: `ping ${heartPeriodSec}s cubic-bezier(0, 0, 0.2, 1) infinite`,
+                    }}
                   />
+                )}
+
+                {isWarning && (
+                  <>
+                    <span
+                      className="absolute -inset-1.5 rounded-full animate-ping opacity-75"
+                      style={{ backgroundColor: color }}
+                    />
+                    <span
+                      className="absolute -inset-3.5 rounded-full animate-pulse opacity-40"
+                      style={{ backgroundColor: color }}
+                    />
+                  </>
                 )}
               </button>
 
               {/* Tooltip moderno Liquid Glass */}
               {isHovered && !isSelected && (
-                <div className="absolute left-11 top-1/2 -translate-y-1/2 whitespace-nowrap glass-panel px-3 py-1.5 text-xs text-white shadow-xl z-40 animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute left-11 top-1/2 -translate-y-1/2 whitespace-nowrap glass-panel px-3 py-1.5 text-xs text-white shadow-xl z-40 animate-in fade-in zoom-in-95 duration-150 rounded-lg">
                   <div className="font-semibold text-white">{node.simpleName}</div>
                   <div className="text-[11px] text-slate-300">
                     Estado: <strong style={{ color }}>{simpleStateName}</strong>
@@ -524,7 +736,7 @@ export function AstronautGLBViewer({
             <button
               key={node.id}
               onClick={() => onSelectIndicator(node.id)}
-              className={`text-xs px-3.5 py-1.5 rounded-full transition-all flex items-center gap-2 ${
+              className={`text-xs px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-2 font-medium cursor-pointer ${
                 isSelected
                   ? "bg-[#9975ff] text-white font-semibold shadow-lg shadow-purple-500/30 ring-2 ring-white/20"
                   : "glass-pill text-slate-300 hover:text-white hover:bg-white/10"

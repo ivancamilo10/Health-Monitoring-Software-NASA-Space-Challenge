@@ -1,73 +1,74 @@
-# 🧪 NASA SPACE CHALLENGE: MANUAL DE PRUEBAS DE VUELO Y GUION DEL PITCH
-**Rol:** Flight Test Officer & Presentation Lead (Especialista de Pruebas No Técnico / QA y Orador de Pitch)  
-**Misión:** Asegurar que el software funcione a prueba de balas antes de la presentación, validar la experiencia de usuario y ejecutar la demostración en vivo más impactante frente al jurado de la NASA.
+# 🧪 NASA SPACE CHALLENGE: FLIGHT TEST MANUAL & PITCH SCRIPT
+**Role:** Flight Test Officer & Presentation Lead (QA Lead & Pitch Speaker)  
+**Mission:** Ensure software flight readiness, validate user acceptance criteria, and execute a flawless live demonstration for NASA judges.
 
 ---
 
-## 🚀 1. CÓMO PROBAR EL PROYECTO (SIN TOCAR UNA SOLA LÍNEA DE CÓDIGO)
+## 🚀 1. HOW TO TEST THE PLATFORM (ZERO CODING REQUIRED)
 
-### Paso 1: Encender la Plataforma
-Solo necesitas pedirle a uno de los desarrolladores o ejecutar tú mismo en la terminal:
+### Step 1: Launch the Cockpit
+Run in your terminal:
 ```bash
 npm run dev
 ```
-### Paso 2: Abrir la Cabina de Misión
-Abre tu navegador (Chrome, Edge, Firefox) e ingresa a:
+
+### Step 2: Open Mission Control
+Open your web browser (Chrome, Edge, Firefox, Safari) and navigate to:
 👉 `http://localhost:3000`
 
-Deberás ver la pantalla de **"Autonomous Bio-Telemetry & Triage Platform"** con datos activos de la misión Artemis.
+You will see the **"Autonomous Bio-Telemetry & Triage Platform"** running live with Artemis mission data.
 
 ---
 
-## 📋 2. MATRIZ DE PRUEBAS DE VUELO (USER ACCEPTANCE TESTING)
+## 📋 2. FLIGHT ACCEPTANCE TESTING MATRIX (UAT)
 
-Prueba cada uno de los 4 botones de la sección **"HERRAMIENTA DEMO JURADO NASA: INYECCIÓN DE CONTINGENCIAS"** y verifica que la pantalla reaccione exactamente como se indica en esta tabla:
+Test each of the 4 contingency buttons located in the **"NASA JUDGES DEMO SUITE: CONTINGENCY INJECTION"** modal and verify that the screen responds as specified:
 
-| Botón a Presionar | ¿Qué simula? | ¿Qué DEBES ver en la pantalla si todo funciona? | ¿Pasa la prueba? |
+| Button Pressed | Contingency Simulated | Expected Cockpit Behavior | Status |
 |---|---|---|:---:|
-| **🟢 RESTAURAR NOMINAL** | Tripulación descansando en equilibrio. | • Banner superior en **VERDE** ("ESTADO OPERACIONAL NOMINAL").<br>• Risk Score bajo (10 - 25%).<br>• Ritmo cardíaco estable (~70 BPM) y SpO2 &gt; 98%.<br>• Presión de cabina a 14.7 psi. | [ ] |
-| **⚠️ FUGA DE TRAJE (EVA)** | Micrometeoroide perfora el traje espacial. | • Banner superior cambia a **ROJO PARPADEANTE** ("EMERGENCY // TRIAGE AUTÓNOMO ACTIVADO").<br>• Tarjeta del Comandante parpadea en rojo con Risk Score &gt; 85%.<br>• Presión de traje cae a 3.2 psi y pulso sube a 154 BPM.<br>• Mensaje de acción autónoma: *"Presurización auxiliar activada a 4.2 psi"*. | [ ] |
-| **☣️ TOXICIDAD POR CO2** | Falla del filtro químico de la cabina. | • Banner cambia a **ÁMBAR** ("WARNING // ALERTA AMBIENTAL").<br>• Panel ECLSS marca CO2 en 7.8 mmHg en color de alerta.<br>• Protocolo activado: *"Ventilación máxima forzada de scrubbers LiOH activada"*. | [ ] |
-| **☢️ TORMENTA SOLAR (SPE)** | Radiación cósmica letal en espacio profundo. | • Nivel de radiación sube a 145 µSv/h en color rojo/magenta.<br>• Protocolo recomienda evacuación inmediata al refugio blindado (*Storm Shelter*). | [ ] |
+| **🟢 RESTORE NOMINAL** | Crew in homeostatic equilibrium. | • Top banner turns **GREEN** ("NOMINAL OPERATIONAL STATUS").<br>• Risk Score low (10 - 25%).<br>• Heart rate nominal (~66 BPM), SpO2 > 98%.<br>• Cabin pressure at 14.7 psi. | [ ] |
+| **⚠️ SUIT LEAK (EVA)** | Micrometeoroid punctures spacesuit during spacewalk. | • Top banner flashes **RED** ("EMERGENCY // AUTONOMOUS TRIAGE ACTIVATED").<br>• Commander card pulses red with Risk Score > 85%.<br>• Suit pressure drops to 3.2 psi, heart rate spikes to 154 BPM.<br>• Autonomous advisory: *"Emergency auxiliary repressurization to 4.2 psi activated"*. | [ ] |
+| **☣️ CO2 TOXICITY** | ECLSS chemical scrubber failure. | • Banner turns **AMBER** ("WARNING // ENVIRONMENTAL ALERT").<br>• ECLSS panel flags ppCO2 at 7.8 mmHg in alert color.<br>• Protocol triggered: *"Forced ventilation and redundant LiOH scrubbers activated"*. | [ ] |
+| **☢️ SOLAR STORM (SPE)** | Cosmic particle surge in deep space. | • Radiation rate surges to 2800 µSv/day in emergency red/magenta.<br>• Protocol directs immediate crew relocation to the water-shielded *Storm Shelter*. | [ ] |
 
 ---
 
-## 🐞 3. CÓMO REPORTARLE UN ERROR A LOS PROGRAMADORES (SIN ENREDOS)
+## 🐞 3. BUG REPORT TEMPLATE FOR DEVELOPERS
 
-Si encuentras algo que no cuadra, **no necesitas saber programar**. Solo copia esta plantilla y pégala en el chat del equipo:
+If any test case fails, copy and paste this standard template into the team channel:
 
 ```markdown
-🚨 REPORTE DE ERROR DE VUELO:
-1. ¿Qué botón toqué?: (Ej: Presioné "FUGA DE TRAJE")
-2. ¿Qué pasó en pantalla?: (Ej: El botón se quedó bloqueado y la pantalla no cambió a rojo)
-3. ¿Qué debió pasar según el manual?: (Debió parpadear en rojo y salir el protocolo EVA-ABORT)
-4. Navegador usado: (Chrome / Edge / Safari)
+🚨 FLIGHT DEFECT REPORT:
+1. Action Triggered: (e.g., Clicked "SUIT LEAK")
+2. Observed Behavior: (e.g., Button locked and screen stayed green)
+3. Expected Behavior: (e.g., Immediate red flash and EVA-ABORT emergency card)
+4. Browser & OS: (Chrome on Windows 11)
 ```
 
 ---
 
-## 🎤 4. GUION MAESTRO DEL PITCH (3 MINUTOS PARA GANAR EL HACKATHON)
+## 🎤 4. MASTER 3-MINUTE PITCH SCRIPT (WINNING THE HACKATHON)
 
-Este es el guion exacto con el que vas a impresionar a los evaluadores de la NASA:
+Use this precise delivery structure to captivate NASA evaluators:
 
-### Minuto 0:00 - 0:45: EL PROBLEMA (La "Trampa de la Latencia")
-> *"Buenos días, jurado de la NASA. En la Estación Espacial Internacional, si un astronauta tiene una arritmia o una fuga en su traje, un médico en Houston enciende el micrófono y lo asesora en 2 segundos.*  
-> *Pero en una misión hacia Marte o el Polo Sur lunar, las señales de radio tardan entre **4 y 22 minutos** en llegar a la Tierra, y otros 22 minutos en regresar.*  
-> *Ante una fuga de traje o un paro cardíaco, **44 minutos es la muerte**. La telemedicina tradicional terrestre es inútil en el espacio profundo."*
+### ⏱️ Minute 0:00 - 0:45: THE PROBLEM (The "Latency Trap")
+> *"Good morning, esteemed NASA judges. Aboard the International Space Station in Low Earth Orbit, if an astronaut experiences an arrhythmia or a spacesuit pressure drop, a flight surgeon in Houston assists in less than two seconds.*  
+> *However, during a transit mission to Mars or a deep sortie to the lunar South Pole, radio signals take between **4 and 24 minutes** to reach Earth, and another 24 minutes to return.*  
+> *In acute decompression, hypoxia, or cardiac arrest, **48 minutes is fatal**. Conventional terrestrial telemedicine is useless in deep space."*
 
-### Minuto 0:45 - 1:45: LA DEMOSTRACIÓN EN VIVO (El Efecto "WOW")
-*(Muestra la pantalla en proyector con el estado en VERDE).*
-> *"Les presentamos nuestra Plataforma de Telemetría y Triaje Médico Autónomo a Bordo.*  
-> *Observen la pantalla: en este momento, el comandante Alex Vance está en una caminata espacial nominal... pero imaginemos que un micrometeoroide perfora su guante."*  
-> *(PRESIONAS EL BOTÓN EN VIVO: **"⚠️ FUGA DE TRAJE (EVA)"**).*  
-> *(La pantalla parpadea en rojo al instante).*  
-> *"En menos de **200 milisegundos**, sin esperar respuesta de Houston, la inteligencia a bordo detectó la despresurización a 3.2 psi, reconoció la taquicardia hipóxica, activó la presurización de respaldo de O2 puro y ordenó el retorno al Airlock antes del límite letal de 45 segundos."*
+### ⏱️ Minute 0:45 - 1:45: THE LIVE DEMO (The "WOW" Factor)
+*(Show live cockpit on projector in nominal GREEN state).*
+> *"We present Mins-Health: our Autonomous Onboard Bio-Telemetry and Clinical Triage Cockpit.*  
+> *Observe the screen: Commander Alex Vance is on a nominal spacewalk... but imagine a micrometeoroid punctures his suit glove."*  
+> *(TRIGGER LIVE BUTTON: **"⚠️ SUIT LEAK (EVA)"**).*  
+> *(The screen instantly flashes red).*  
+> *"In less than **200 milliseconds**, with zero connection to Houston, our onboard decision engine detected hypobaric decompression at 3.2 psi, recognized autonomic hypoxia, initiated emergency auxiliary O2 pressurization, and routed the astronaut back to the airlock well before the 45-second hypoxia threshold."*
 
-### Minuto 1:45 - 2:30: LA ARQUITECTURA TÉCNICA
-> *"Detrás de esta pantalla hay una arquitectura de grado aeroespacial:*  
-> *1. Normalización biomédica contextual: no es lo mismo 150 BPM haciendo ejercicio que durmiendo.*  
-> *2. Persistencia atómica de incidentes en Supabase para trazabilidad de vuelo.*  
-> *3. Modos autónomos y sincronización asíncrona cuando se restablece el enlace con la Tierra."*
+### ⏱️ Minute 1:45 - 2:30: FLIGHT ARCHITECTURE & SCIENTIFIC RIGOR
+> *"Behind this cockpit lies an aerospace-grade architecture:*  
+> *1. **Personalized L-30 Baseline:** We don't use generic terrestrial normal ranges; each astronaut is their own statistical control.*  
+> *2. **HRP Multi-Hazard Synergy Engine:** Rather than panicking the crew with six alarm bells, we unify anomalies into ONE root-cause diagnostic pattern.*  
+> *3. **Cryptographic SBAR Handover:** Generates loss-free medical handover packets with CRC32 checksums for delayed deep space transmission."*
 
-### Minuto 2:30 - 3:00: EL CIERRE
-> *"Con este sistema, la tripulación de Artemis y los primeros humanos en Marte no viajan solos: viajan con un médico y un ingeniero de soporte vital autónomo a bordo cada milisegundo de su viaje. Muchas gracias."*
+### ⏱️ Minute 2:30 - 3:00: IMPACT & CLOSING
+> *"With Mins-Health, the Artemis crew and the first human voyagers to Mars will never travel alone: they carry an autonomous flight surgeon and life-support engineer on duty every millisecond of their journey. Thank you."*

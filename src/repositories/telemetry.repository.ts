@@ -58,7 +58,7 @@ export async function saveTelemetryAndIncident(
     },
   });
 
-  return await prisma.$transaction(async (tx) => {
+  return await prisma.$transaction(async (tx: any) => {
     // 1. Guardar log de telemetría
     const telemetry = await tx.telemetryLog.create({
       data: {
@@ -145,7 +145,7 @@ export async function getMissionDashboardData(): Promise<DashboardMissionOvervie
 
   let worstMissionStatus: TriageSeverity = "NOMINAL";
 
-  const crewStatuses: AstronautMissionStatus[] = astronauts.map((astro) => {
+  const crewStatuses: AstronautMissionStatus[] = astronauts.map((astro: any) => {
     const latestTelemetry = astro.telemetryLogs[0];
     const latestIncident = astro.medicalIncidents[0];
 

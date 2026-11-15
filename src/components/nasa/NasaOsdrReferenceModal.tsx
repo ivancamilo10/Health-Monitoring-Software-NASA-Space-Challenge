@@ -12,7 +12,7 @@ export function NasaOsdrReferenceModal({
   isOpen,
   onClose,
 }: NasaOsdrReferenceModalProps) {
-  const [activeTab, setActiveTab] = useState<"osd575" | "solar2024">("osd575");
+  const [activeTab, setActiveTab] = useState<"osd575" | "solar2026">("osd575");
 
   if (!isOpen) return null;
 
@@ -55,14 +55,14 @@ export function NasaOsdrReferenceModal({
             NASA OSDR: OSD-575 (Inspiration4)
           </button>
           <button
-            onClick={() => setActiveTab("solar2024")}
+            onClick={() => setActiveTab("solar2026")}
             className={`px-4 py-2.5 border-b-2 font-semibold text-xs transition-all cursor-pointer ${
-              activeTab === "solar2024"
+              activeTab === "solar2026"
                 ? "border-[#9975ff] text-white"
                 : "border-transparent text-slate-400 hover:text-slate-200"
             }`}
           >
-            Evento Solar Histórico: Mayo 2024 (G5/SPE)
+            Modelo Solar SPE: Expedición Artemis 2026
           </button>
         </div>
 
@@ -138,18 +138,18 @@ export function NasaOsdrReferenceModal({
             </div>
           )}
 
-          {activeTab === "solar2024" && (
+          {activeTab === "solar2026" && (
             <div className="space-y-4">
               <div className="p-4 rounded-2xl glass-panel border border-white/10 space-y-1.5">
                 <div className="flex items-center gap-2 text-white font-bold text-xs">
                   <Sun className="w-4 h-4 text-amber-400" />
-                  <span>Tormenta Solar Extrema de Mayo 2024 (Región AR3664)</span>
+                  <span>Modelo de Tormenta Solar SPE — Expedición Artemis 2026</span>
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                  Mayor tormenta geomagnética (nivel G5) observada desde octubre de 2003. Múltiples eyecciones de masa coronal (CME) de clase X produjeron incrementos agudos en el flujo de protones energéticos fuera de la magnetosfera terrestre.
+                  Modelo de partículas energéticas solares de alta intensidad (G5/SPE) para misiones del año 2026 durante el máximo del Ciclo Solar 25. Eyecciones de masa coronal (CME) de clase X producen incrementos agudos en el flujo de protones fuera del escudo de la magnetosfera terrestre.
                 </p>
                 <div className="text-[11px] text-slate-400 pt-1">
-                  Fuente: <em>NOAA Space Weather Prediction Center y NASA RadLab</em>
+                  Fuente: <em>NASA Space Radiation Laboratory (NSRL) y NASA RadLab 2026</em>
                 </div>
               </div>
 
@@ -157,12 +157,12 @@ export function NasaOsdrReferenceModal({
                 <div className="p-3.5 rounded-2xl glass-panel border border-white/10">
                   <span className="text-[10px] text-slate-400 uppercase block font-medium">Flujo Máximo Protones</span>
                   <div className="text-xl font-bold text-rose-400 mt-1 font-sans">&gt; 10,000 pfu (&gt;10 MeV)</div>
-                  <span className="text-[10px] text-slate-400 block mt-0.5">Nivel de alerta solar S3 / Fuerte</span>
+                  <span className="text-[10px] text-slate-400 block mt-0.5">Alerta solar nivel S3 / Fuerte</span>
                 </div>
 
                 <div className="p-3.5 rounded-2xl glass-panel border border-white/10">
                   <span className="text-[10px] text-slate-400 uppercase block font-medium">Tasa de Dosis Estimada</span>
-                  <div className="text-xl font-bold text-amber-400 mt-1 font-sans">2.4 a 3.1 mSv/día</div>
+                  <div className="text-xl font-bold text-amber-400 mt-1 font-sans">2.4 a 3.4 mSv/día</div>
                   <span className="text-[10px] text-slate-400 block mt-0.5">Requiere refugio blindado en Marte</span>
                 </div>
               </div>
@@ -171,14 +171,14 @@ export function NasaOsdrReferenceModal({
         </div>
 
         {/* Pie */}
-        <div className="px-6 py-4 border-t border-white/10 bg-black/30 flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center gap-2 text-slate-400 text-[11px]">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+        <div className="px-6 py-4.5 border-t border-white/10 bg-black/30 flex items-center justify-between flex-shrink-0">
+          <div className="flex items-center gap-2 text-slate-300 text-xs">
+            <ShieldCheck className="w-4.5 h-4.5 text-emerald-400" />
             <span>Datos descriptivos oficiales desde repositorio abierto NASA</span>
           </div>
           <button
             onClick={onClose}
-            className="btn-primary-gradient px-5 py-2 font-semibold text-xs cursor-pointer"
+            className="btn-primary-gradient px-6 py-2.5 font-semibold text-sm cursor-pointer shadow-lg shadow-purple-500/20"
           >
             Entendido
           </button>

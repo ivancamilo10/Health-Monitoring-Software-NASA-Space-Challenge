@@ -1,39 +1,48 @@
 # 📜 CREDITS & ATTRIBUTIONS // MINS-HEALTH
-**Proyecto:** Mins-Health — by Mins Solutions TI  
-**Reto:** *Create Health Monitoring Software for Astronauts on Space Missions*  
-**Evento:** NASA Space Apps Challenge 2026 (The Next Frontier)
+**Project:** Mins-Health: Autonomous Deep Space Clinical Monitoring & Triage Platform  
+**Challenge:** *Create Health Monitoring Software for Astronauts on Space Missions*  
+**Event:** NASA Space Apps Challenge 2026 (Global Theme: *The Next Frontier*)  
 
 ---
 
-## 1. Fuentes Científicas y Recursos Gubernamentales
+## 👥 Engineering & Research Team (Mins Solutions TI - Colombia 🇨🇴)
+- **Ivan Mejia Triana** (`@ivanmejia1082`) — *Team Owner & Lead Architect*
+- **Giordi Gutiérrez Villegas** (`@giordigutierrez1`) — *Biomedical Systems & Clinical Logic*
+- **Camilo Canedo** (`@camilote777`) — *Full-Stack Developer & Telemetry*
+- **Samuel Buzón** (`@samuel.buzon`) — *3D Visualization & Interaction Design*
+- **Ali Riascos** (`@aliii___`) — *Scientific Evidence & Mission QA*
+
+---
+
+## 🔬 1. Scientific Standards & Government Agency Sources
 - **NASA Human Research Program (HRP):**
-  - *The 5 Hazards of Human Spaceflight* (Radiation, Isolation/Confinement, Distance from Earth, Gravity fields, Hostile/Closed Environments).
+  - *The 5 Hazards of Human Spaceflight* (Space Radiation, Isolation & Confinement, Distance from Earth, Gravity Fields, Hostile Closed Environments).
   - *HRP Standard Measures Cross-Cutting Research Protocol*.
-  - *NASA-STD-3001 Technical Standard: NASA Space Flight Human-System Standard*.
+  - *NASA-STD-3001 Technical Standard: NASA Space Flight Human-System Standard (Vols 1 & 2)*.
 - **Canadian Space Agency (CSA / ASC):**
-  - *Bio-Monitor System:* Telemetría bio-adhesiva e instrumentación continua de signos vitales.
-  - *Canadian Active Neutron Spectrometer (CANS):* Dosimetría continua de radiación neutrónica a bordo.
+  - *Bio-Monitor System:* Operational bio-adhesive telemetry and continuous vital signs instrumentation on the ISS.
+  - *Canadian Active Neutron Spectrometer (CANS):* Intravehicular neutron radiation dosimetry.
 - **NASA Open Science Data Repository (OSDR):**
-  - *Dataset OSD-575:* Muestreo de química sanguínea, hematocrito y transcriptómica en vuelo comercial (Inspiration4).
+  - *Dataset OSD-575:* Commercial spaceflight blood chemistry, hematology, and longitudinal physiological markers (Inspiration4 Mission).
 - **NOAA Space Weather Prediction Center & NASA RadLab:**
-  - Registros de flujo de protones del Evento Solar Extremo de Mayo de 2024 (Región AR3664).
+  - Proton flux telemetry from the May 2024 Extreme Solar Event (Active Region AR3664).
 
 ---
 
-## 2. Modelos 3D y Activos Gráficos
-- **Modelo 3D del Astronauta (`/public/assets/astronaut.glb`):**
-  - Origen: *NASA 3D Resources / Public Domain & Sketchfab CC-BY (Creative Commons Attribution 4.0 International)*.
-  - Formato: Binary GLTF (.glb), optimizado para renderizado web con shaders holográficos e iluminación de borde.
-- **Identidad de Marca e Iconografía:**
-  - Logotipo vectorial oficial de **Mins-Health** diseñado por **Mins Solutions TI** (propiedad intelectual libre bajo licencia MIT).
-  - Iconografía técnica por **Lucide Icons** (Licencia ISC).
+## 🎨 2. 3D Assets & Graphical Identity
+- **Spacesuit 3D Model (`/public/assets/astronaut.glb`):**
+  - Source: *NASA 3D Resources / Public Domain & Sketchfab CC-BY (Creative Commons Attribution 4.0 International)*.
+  - Format: Binary GLTF (.glb), optimized for WebGL with holographic wireframe shaders and dynamic rim lighting.
+- **Brand Identity & Iconography:**
+  - Vector logo of **Mins-Health** designed by **Mins Solutions TI** (Open source under MIT License).
+  - Technical icons by **Lucide Icons** (ISC License).
 
 ---
 
-## 3. Tecnologías y Librerías de Código Abierto
-- **Next.js 15 (App Router)** — Vercel (Licencia MIT).
-- **React 19 & TypeScript** — Meta Platforms / Microsoft (Licencia MIT / Apache 2.0).
-- **Three.js** — Ricardo Cabello (Mr.doob) (Licencia MIT).
-- **Tailwind CSS** — Tailwind Labs (Licencia MIT).
-- **Zustand** — Poimandres (Licencia MIT).
-- **Prisma ORM** — Prisma Data (Licencia Apache 2.0).
+## 💻 3. Open Source Core Libraries & Technologies
+- **Next.js 15 (App Router)** — Vercel (MIT License).
+- **React 19 & TypeScript** — Meta Platforms / Microsoft (MIT / Apache 2.0).
+- **Three.js & React Three Fiber** — Ricardo Cabello (Mr.doob) (MIT License).
+- **Tailwind CSS** — Tailwind Labs (MIT License).
+- **Zustand** — Poimandres (MIT License).
+- **Prisma ORM** — Prisma Data (Apache 2.0 License).

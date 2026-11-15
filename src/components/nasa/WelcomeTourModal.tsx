@@ -75,7 +75,7 @@ export function WelcomeTourModal({ isOpen, onClose }: WelcomeTourModalProps) {
                 {UI_TEXTS_ES.tourStep1Body}
               </p>
               <div className="p-3.5 rounded-2xl glass-panel border border-white/10 text-xs text-slate-300">
-                💡 <strong>Sin jerga:</strong> Comparamos tu lectura de hoy con lo que es <em>normal para ti</em>, no con promedios terrestres abstractos.
+                <strong>Sin jerga:</strong> Comparamos tu lectura de hoy con lo que es <em>normal para ti</em>, no con promedios terrestres abstractos.
               </div>
             </div>
           )}
@@ -92,7 +92,7 @@ export function WelcomeTourModal({ isOpen, onClose }: WelcomeTourModalProps) {
                 {UI_TEXTS_ES.tourStep2Body}
               </p>
               <div className="p-3.5 rounded-2xl glass-panel border border-white/10 text-xs text-slate-300">
-                💡 <strong>Fácil de recordar:</strong> Verde = Normal · Amarillo = Vigilar · Naranja = Atención · Rojo = Pedir ayuda.
+                <strong>Fácil de recordar:</strong> Verde = Normal · Amarillo = Vigilar · Naranja = Atención · Rojo = Pedir ayuda.
               </div>
             </div>
           )}
@@ -109,7 +109,7 @@ export function WelcomeTourModal({ isOpen, onClose }: WelcomeTourModalProps) {
                 {UI_TEXTS_ES.tourStep3Body}
               </p>
               <div className="p-3.5 rounded-2xl glass-panel border border-white/10 text-xs text-slate-300">
-                💡 <strong>Siempre funciona sin internet:</strong> Todos tus datos se procesan en la cabina y están listos aunque no haya señal con Houston.
+                <strong>Siempre funciona sin internet:</strong> Todos tus datos se procesan en la cabina y están listos aunque no haya señal con Houston.
               </div>
             </div>
           )}

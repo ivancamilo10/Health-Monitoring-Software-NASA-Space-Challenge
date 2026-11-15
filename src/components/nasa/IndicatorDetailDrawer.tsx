@@ -5,7 +5,7 @@ import { useHealthStore } from "@/store/health-store";
 import { IndicatorId, HEALTH_INDICATORS } from "@/data/indicators";
 import { EvaluationState } from "@/core/rules";
 import { evaluateHazardSynergy } from "@/core/hazard-interactions";
-import { SIMPLE_INDICATORS_ES, UI_TEXTS_ES } from "@/data/i18n";
+import { getSimpleIndicators, getTexts } from "@/data/i18n";
 import {
   generateSBARHandoverPacket,
   downloadSBARPacketJSON,
@@ -21,6 +21,7 @@ import {
   Printer,
   Sparkles,
   Info,
+  Radio,
 } from "lucide-react";
 
 interface IndicatorDetailDrawerProps {
@@ -41,10 +42,14 @@ export function IndicatorDetailDrawer({
     astronautRole,
     careerRadiationAccumulatedMilliSv,
     careerRadiationLimitMilliSv,
+    openDsnModal,
+    language,
   } = useHealthStore();
 
+  const texts = getTexts(language);
+  const simpleIndicators = getSimpleIndicators(language);
   const def = HEALTH_INDICATORS[indicatorId];
-  const simple = SIMPLE_INDICATORS_ES[indicatorId];
+  const simple = simpleIndicators[indicatorId];
   const evalData = decisionReport.evaluations[indicatorId];
   const baseline = baselines[indicatorId];
   const val = currentReadings[indicatorId];
@@ -170,14 +175,14 @@ export function IndicatorDetailDrawer({
       <div className="space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-white/10">
           <div className="flex items-center gap-2">
-            <h2 className="text-xs font-bold text-white uppercase tracking-wider">
-              {UI_TEXTS_ES.zoneRightTitle}
+            <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+              {texts.zoneRightTitle}
             </h2>
-            <span className="text-xs text-slate-400">· Plan y recomendaciones</span>
+            <span className="text-xs text-slate-300 font-medium">· Plan y recomendaciones</span>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             aria-label="Cerrar panel de detalle"
           >
             <X className="w-4 h-4" />
@@ -187,16 +192,16 @@ export function IndicatorDetailDrawer({
         {/* Nombre del indicador y estado con icono y forma */}
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-xl font-bold text-white leading-tight">
+            <h3 className="text-2xl font-extrabold text-white leading-tight">
               {simple.name}
             </h3>
-            <span className="text-xs text-slate-400 mt-0.5 block">
+            <span className="text-xs text-slate-300 mt-0.5 block font-medium">
               Zona anatómica: {simple.bodyZone}
             </span>
           </div>
 
           <div
-            className="px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-2 flex-shrink-0 border"
+            className="px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 flex-shrink-0 border shadow-sm"
             style={{
               backgroundColor: status.bgColor,
               color: status.color,
@@ -211,17 +216,17 @@ export function IndicatorDetailDrawer({
         {/* ========================================================
             BLOQUE (A): "¿CÓMO ESTÁS?" EN LENGUAJE SIMPLE
             ======================================================== */}
-        <div className="p-4 rounded-2xl glass-panel border border-white/10">
-          <div className="flex items-baseline justify-between mb-1.5">
-            <span className="text-xs font-semibold text-[#bca6ff] uppercase tracking-wide">
+        <div className="p-4 rounded-2xl glass-panel border border-white/10 shadow-lg">
+          <div className="flex items-baseline justify-between mb-2">
+            <span className="text-sm font-bold text-[#bca6ff] uppercase tracking-wide">
               ¿Cómo estás hoy?
             </span>
-            <div className="text-right text-xs text-slate-400">
+            <div className="text-right text-xs text-slate-300 font-medium">
               Tu normal: <strong className="text-white">{baseline.mean}</strong> {def.unit}
             </div>
           </div>
 
-          <p className="text-xs text-slate-200 leading-relaxed font-sans">
+          <p className="text-sm text-slate-100 leading-relaxed font-sans">
             {getPlainExplanation()}
           </p>
         </div>
@@ -233,7 +238,7 @@ export function IndicatorDetailDrawer({
               <Sparkles className="w-4 h-4 text-orange-400 flex-shrink-0" />
               <span>Cuidado combinado: {activeSynergy.title}</span>
             </div>
-            <p className="text-[11px] text-slate-300 leading-relaxed font-sans">
+            <p className="text-xs text-slate-300 leading-relaxed font-sans">
               {activeSynergy.whyTogetherTheyMatterMore}
             </p>
           </div>
@@ -243,13 +248,13 @@ export function IndicatorDetailDrawer({
             BLOQUE (B): "¿QUÉ HAGO?" - ACCIÓN PRINCIPAL Y CHECKLIST
             ======================================================== */}
         <div className="space-y-3">
-          <div className="p-3.5 rounded-2xl bg-[#9975ff]/15 border border-[#9975ff]/30 text-slate-100 flex items-start gap-3 shadow-md shadow-purple-500/10">
+          <div className="p-4 rounded-2xl bg-[#9975ff]/15 border border-[#9975ff]/30 text-slate-100 flex items-start gap-3 shadow-md shadow-purple-500/10">
             <ShieldCheck className="w-5 h-5 text-[#bca6ff] flex-shrink-0 mt-0.5" />
             <div>
-              <span className="text-[11px] font-bold text-[#bca6ff] block uppercase tracking-wide">
+              <span className="text-xs font-bold text-[#bca6ff] block uppercase tracking-wide">
                 Paso recomendado:
               </span>
-              <p className="text-xs leading-relaxed font-medium text-white mt-0.5">
+              <p className="text-sm leading-relaxed font-medium text-white mt-0.5">
                 {evalData.escalation.actionRequired}
               </p>
             </div>
@@ -257,11 +262,11 @@ export function IndicatorDetailDrawer({
 
           {/* Checklist de autocuidado a bordo */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs text-slate-400">
-              <span className="font-semibold uppercase text-[11px] tracking-wide text-slate-300">
+            <div className="flex items-center justify-between text-xs text-slate-300">
+              <span className="font-bold uppercase text-xs tracking-wide text-slate-200">
                 Tareas de autocuidado:
               </span>
-              <span className="text-emerald-400 font-medium">
+              <span className="text-emerald-400 font-semibold">
                 {Object.values(completedActions).filter(Boolean).length} de {def.acciones.length} completadas
               </span>
             </div>
@@ -273,10 +278,10 @@ export function IndicatorDetailDrawer({
                   <button
                     key={idx}
                     onClick={() => toggleAction(idx)}
-                    className={`w-full p-2.5 rounded-xl border text-left text-xs transition-all flex items-start gap-2.5 cursor-pointer ${
+                    className={`w-full p-3 rounded-xl border text-left text-sm transition-all duration-200 flex items-start gap-2.5 cursor-pointer ${
                       isChecked
                         ? "bg-emerald-950/25 border-emerald-500/40 text-emerald-200 line-through opacity-80"
-                        : "glass-panel glass-panel-hover text-slate-200"
+                        : "glass-panel glass-panel-hover text-slate-100"
                     }`}
                   >
                     {isChecked ? (
@@ -298,46 +303,46 @@ export function IndicatorDetailDrawer({
         <div className="rounded-2xl glass-panel border border-white/10 overflow-hidden">
           <button
             onClick={() => setIsTechnicalAccordionOpen(!isTechnicalAccordionOpen)}
-            className="w-full p-3 flex items-center justify-between text-xs font-semibold text-slate-200 hover:text-white transition-colors cursor-pointer"
+            className="w-full p-3.5 flex items-center justify-between text-sm font-semibold text-slate-200 hover:text-white transition-colors cursor-pointer"
           >
             <div className="flex items-center gap-2">
               <Info className="w-4 h-4 text-[#66d8d1]" />
-              <span>{UI_TEXTS_ES.seeMoreAccordion}</span>
+              <span>{texts.seeMoreAccordion}</span>
             </div>
             <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isTechnicalAccordionOpen ? "rotate-180" : ""}`} />
           </button>
 
           {isTechnicalAccordionOpen && (
-            <div className="p-3.5 border-t border-white/10 space-y-3 text-xs text-slate-300 animate-in fade-in duration-150">
+            <div className="p-4 border-t border-white/10 space-y-3 text-xs text-slate-200 animate-in fade-in duration-150">
               {/* 4 Preguntas clave explicadas en palabras sencillas */}
               <div className="space-y-2.5">
                 <div>
-                  <strong className="text-white block font-medium">¿Cómo se mide en el espacio?:</strong>
-                  <p className="text-slate-400 text-[11px] leading-relaxed mt-0.5">{simple.howToMeasure}</p>
+                  <strong className="text-white block font-semibold text-xs">¿Cómo se mide en el espacio?:</strong>
+                  <p className="text-slate-300 text-xs leading-relaxed mt-0.5">{simple.howToMeasure}</p>
                 </div>
                 <div>
-                  <strong className="text-white block font-medium">¿Por qué importa este examen?:</strong>
-                  <p className="text-slate-400 text-[11px] leading-relaxed mt-0.5">{simple.whyItMatters}</p>
+                  <strong className="text-white block font-semibold text-xs">¿Por qué importa este examen?:</strong>
+                  <p className="text-slate-300 text-xs leading-relaxed mt-0.5">{simple.whyItMatters}</p>
                 </div>
                 <div>
-                  <strong className="text-white block font-medium">¿Qué lo afecta en el espacio?:</strong>
-                  <p className="text-slate-400 text-[11px] leading-relaxed mt-0.5">{simple.whatAffectsItInSpace}</p>
+                  <strong className="text-white block font-semibold text-xs">¿Qué lo afecta en el espacio?:</strong>
+                  <p className="text-slate-300 text-xs leading-relaxed mt-0.5">{simple.whatAffectsItInSpace}</p>
                 </div>
                 <div>
-                  <strong className="text-white block font-medium">¿Cuándo pedir ayuda?:</strong>
-                  <p className="text-slate-400 text-[11px] leading-relaxed mt-0.5">{simple.whenToAskForHelp}</p>
+                  <strong className="text-white block font-semibold text-xs">¿Cuándo pedir ayuda?:</strong>
+                  <p className="text-slate-300 text-xs leading-relaxed mt-0.5">{simple.whenToAskForHelp}</p>
                 </div>
               </div>
 
               {/* Parámetros estadísticos y fuentes técnicas */}
-              <div className="pt-2.5 border-t border-white/10 space-y-1 text-[11px] text-slate-400">
+              <div className="pt-2.5 border-t border-white/10 space-y-1 text-xs text-slate-400">
                 <div>
                   Línea base personal: <strong className="text-white">{baseline.mean} {def.unit}</strong> (desviación típica: ± {baseline.standardDeviation})
                 </div>
                 <div>
                   Rango normal esperado: {(baseline.mean - baseline.standardDeviation).toFixed(1)} a {(baseline.mean + baseline.standardDeviation).toFixed(1)} {def.unit}
                 </div>
-                <div className="text-[10px] text-slate-500 pt-1">
+                <div className="text-[11px] text-slate-500 pt-1">
                   Fuente científica: {def.fuenteReferencia} ({def.isProvisional ? "Regla provisional de vuelo" : "Norma clínica NASA-STD / CSA"})
                 </div>
               </div>
@@ -350,24 +355,35 @@ export function IndicatorDetailDrawer({
           BOTONES DE REPORTE PARA EL MÉDICO DE VUELO (SBAR / PDF)
           ======================================================== */}
       <div className="pt-4 border-t border-white/10 space-y-2.5 mt-4">
-        <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
-          <Info className="w-3.5 h-3.5 text-[#66d8d1]" />
+        <div className="text-xs text-slate-300 flex items-center gap-1.5 font-medium">
+          <Info className="w-4 h-4 text-[#66d8d1]" />
           <span>Para enviar a los cirujanos de vuelo en Houston:</span>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={openDsnModal}
+            className="btn-primary-gradient w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold cursor-pointer shadow-md shadow-purple-500/20"
+            title="Abrir telemetría y transmisión en vivo por la Red de Espacio Profundo"
+          >
+            <Radio className="w-4 h-4 text-white animate-pulse" />
+            <span>Transmitir por Enlace DSN</span>
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2">
           <button
             onClick={handleExportJSON}
-            className="btn-secondary-glass flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold cursor-pointer"
+            className="btn-secondary-glass flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold cursor-pointer"
             title="Descargar paquete de datos clínicos con código de verificación para Houston"
           >
             <FileDown className="w-4 h-4 text-[#66d8d1]" />
-            <span>Reporte digital</span>
+            <span>Exportar JSON</span>
           </button>
 
           <button
             onClick={handlePrintPDF}
-            className="btn-secondary-glass flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold cursor-pointer"
+            className="btn-secondary-glass flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold cursor-pointer"
             title="Imprimir o guardar reporte clínico aeroespacial en formato PDF legible"
           >
             <Printer className="w-4 h-4 text-[#bca6ff]" />

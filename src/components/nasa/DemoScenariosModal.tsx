@@ -14,7 +14,7 @@ export function DemoScenariosModal({ isOpen, onClose }: DemoScenariosModalProps)
 
   if (!isOpen) return null;
 
-  const handleSelect = (sc: "RUTINA_NORMAL" | "TORMENTA_SOLAR" | "AISLAMIENTO_PROLONGADO" | "SIN_DATOS") => {
+  const handleSelect = (sc: "RUTINA_NORMAL" | "TORMENTA_SOLAR" | "FUGA_DE_TRAJE" | "AISLAMIENTO_PROLONGADO" | "SIN_DATOS") => {
     loadDemoScenario(sc);
     onClose();
   };
@@ -66,35 +66,49 @@ export function DemoScenariosModal({ isOpen, onClose }: DemoScenariosModalProps)
           >
             <div className="flex items-center gap-2 text-xs font-bold text-rose-400 mb-1">
               <AlertOctagon className="w-4 h-4" />
-              <span>2. Tormenta solar aguda (SPE) - Patrón sistémico</span>
+              <span>2. Tormenta solar aguda (SPE) - Multiórgano Crítico</span>
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Tasa de radiación salta a 2800 µSv/día. Activa UNA sola alerta de patrón sistémico con recomendación de protocolo de refugio.
+              Radiación 3400 µSv/día, fiebre central 39.1 °C ("Space Fever"), presión 168 mmHg y taquicardia 126 BPM. Alerta unificada de refugio.
             </p>
           </button>
 
-          {/* 3. AISLAMIENTO PROLONGADO */}
+          {/* 3. FUGA DE TRAJE EVA */}
+          <button
+            onClick={() => handleSelect("FUGA_DE_TRAJE")}
+            className="w-full p-4 rounded-2xl glass-panel glass-panel-hover border border-white/10 hover:border-red-500/50 text-left transition-all cursor-pointer bg-rose-500/5"
+          >
+            <div className="flex items-center gap-2 text-xs font-bold text-red-400 mb-1">
+              <AlertOctagon className="w-4 h-4 animate-pulse" />
+              <span>3. Fuga de traje espacial (EVA) - Despresurización</span>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Presión cae en shock a 76 mmHg, pulso salta a 152 BPM por hipoxia y temperatura corporal desciende a 34.6 °C por pérdida térmica en vacío.
+            </p>
+          </button>
+
+          {/* 4. AISLAMIENTO PROLONGADO */}
           <button
             onClick={() => handleSelect("AISLAMIENTO_PROLONGADO")}
             className="w-full p-4 rounded-2xl glass-panel glass-panel-hover border border-white/10 hover:border-orange-500/50 text-left transition-all cursor-pointer"
           >
             <div className="flex items-center gap-2 text-xs font-bold text-orange-400 mb-1">
               <Moon className="w-4 h-4" />
-              <span>3. Aislamiento prolongado (Sueño 3.8 h & Ánimo 2/5)</span>
+              <span>4. Aislamiento prolongado (Sueño 3.2 h & Ánimo 1/5)</span>
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
               Desincronización circadiana por distancia a la Tierra. Activa patrón de fatiga y confinamiento.
             </p>
           </button>
 
-          {/* 4. INTEGRIDAD: SIN DATOS */}
+          {/* 5. INTEGRIDAD: SIN DATOS */}
           <button
             onClick={() => handleSelect("SIN_DATOS")}
             className="w-full p-4 rounded-2xl glass-panel glass-panel-hover border border-white/10 hover:border-cyan-500/50 text-left transition-all cursor-pointer"
           >
             <div className="flex items-center gap-2 text-xs font-bold text-slate-200 mb-1">
               <HelpCircle className="w-4 h-4 text-[#66d8d1]" />
-              <span>4. Integridad de telemetría (Dato faltante = Gris)</span>
+              <span>5. Integridad de telemetría (Dato faltante = Gris)</span>
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
               Demuestra que un sensor desconectado se cataloga como Sin Datos y no engaña al sistema.

@@ -92,7 +92,7 @@ export function DecisionPanel() {
                     : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
                 }`}
               >
-                {dest === "ISS" ? "🛰️ ISS (LEO)" : dest === "LUNA" ? "🌕 LUNA (ARTEMIS)" : "🔴 MARTE (PROFUNDO)"}
+                {dest === "ISS" ? "ISS (LEO)" : dest === "LUNA" ? "LUNA (ARTEMIS)" : "MARTE (PROFUNDO)"}
               </button>
             ))}
           </div>
@@ -132,7 +132,7 @@ export function DecisionPanel() {
           <div className="flex flex-col md:flex-row items-end md:items-center gap-3 font-mono text-xs">
             {decisionReport.missingIndicatorsCount > 0 && (
               <span className="px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-slate-300">
-                ⚠️ {decisionReport.missingIndicatorsCount} Sin Datos (Gris)
+                {decisionReport.missingIndicatorsCount} Sin Datos (Gris)
               </span>
             )}
             <span className="px-3 py-1 rounded bg-slate-900 border border-slate-800 text-cyan-300">

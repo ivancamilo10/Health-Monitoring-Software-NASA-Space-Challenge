@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { IndicatorId } from "../data/indicators";
+import { Language } from "../data/i18n";
 import { BaselineStats, DEFAULT_ASTRONAUT_BASELINES } from "../core/baseline";
 import {
   generateMissionDecisionReport,
@@ -11,12 +12,103 @@ import {
   FlightSurgeonReportPacket,
   packageFlightSurgeonReport,
 } from "../core/escalation";
+import {
+  playEmergencyAlarm,
+  playCautionTone,
+  playNominalChime,
+  playTelemetryClick,
+} from "../lib/space-audio";
+
+export interface CrewMemberProfile {
+  id: string;
+  name: string;
+  role: string;
+  callsign: string;
+  avatarInitials: string;
+  careerRadiationMilliSv: number;
+  readings: Record<IndicatorId, number | null>;
+}
+
+export const ARTEMIS_CREW_ROSTER: CrewMemberProfile[] = [
+  {
+    id: "alex-vance",
+    name: "Cmdr. Alex Vance",
+    role: "Mission Commander & EVA Lead",
+    callsign: "VANCE-01",
+    avatarInitials: "AV",
+    careerRadiationMilliSv: 142.5,
+    readings: {
+      blood_pressure: 118,
+      heart_rate: 66,
+      glucose: 90,
+      core_temp: 36.8,
+      sleep_hours: 6.4,
+      mood: 4,
+      radiation_dose: 520,
+    },
+  },
+  {
+    id: "jessica-watkins",
+    name: "Dr. Jessica Watkins",
+    role: "Crew Medical Officer & Geologist",
+    callsign: "WATKINS-02",
+    avatarInitials: "JW",
+    careerRadiationMilliSv: 88.0,
+    readings: {
+      blood_pressure: 112,
+      heart_rate: 60,
+      glucose: 88,
+      core_temp: 36.6,
+      sleep_hours: 7.2,
+      mood: 5,
+      radiation_dose: 490,
+    },
+  },
+  {
+    id: "reid-wiseman",
+    name: "Pilot Reid Wiseman",
+    role: "Flight Systems & Propulsion Pilot",
+    callsign: "WISEMAN-03",
+    avatarInitials: "RW",
+    careerRadiationMilliSv: 165.2,
+    readings: {
+      blood_pressure: 124,
+      heart_rate: 74,
+      glucose: 95,
+      core_temp: 36.9,
+      sleep_hours: 5.9,
+      mood: 4,
+      radiation_dose: 540,
+    },
+  },
+  {
+    id: "jeremy-hansen",
+    name: "Specialist Jeremy Hansen",
+    role: "Robotics & Life Support Specialist",
+    callsign: "HANSEN-04",
+    avatarInitials: "JH",
+    careerRadiationMilliSv: 110.0,
+    readings: {
+      blood_pressure: 116,
+      heart_rate: 68,
+      glucose: 91,
+      core_temp: 36.7,
+      sleep_hours: 6.8,
+      mood: 4,
+      radiation_dose: 510,
+    },
+  },
+];
 
 export interface HealthState {
   mission: MissionDestination;
+  selectedCrewId: string;
   astronautName: string;
   astronautRole: string;
+  language: Language;
   isOnline: boolean;
+  isAudioMuted: boolean;
+  isDsnModalOpen: boolean;
   
   // Dosis acumulada total de carrera del astronauta (NASA Career Limit: 600 mSv)
   careerRadiationAccumulatedMilliSv: number;
@@ -32,42 +124,38 @@ export interface HealthState {
   activeScenarioName: string;
 
   // Acciones
+  setLanguage: (language: Language) => void;
   setMission: (mission: MissionDestination) => void;
+  selectCrewMember: (crewId: string) => void;
+  toggleAudio: () => void;
+  openDsnModal: () => void;
+  closeDsnModal: () => void;
   setReading: (id: IndicatorId, value: number | null) => void;
   setAllReadings: (readings: Partial<Record<IndicatorId, number | null>>) => void;
   evaluateHealth: () => void;
-  loadDemoScenario: (scenario: "RUTINA_NORMAL" | "TORMENTA_SOLAR" | "AISLAMIENTO_PROLONGADO" | "SIN_DATOS") => void;
+  loadDemoScenario: (scenario: "RUTINA_NORMAL" | "TORMENTA_SOLAR" | "FUGA_DE_TRAJE" | "AISLAMIENTO_PROLONGADO" | "SIN_DATOS") => void;
   sendReportToEarth: () => FlightSurgeonReportPacket;
   decrementCountdown: () => void;
   resetToNominalCalm: () => void;
   resetToBaselines: () => void;
 }
 
-// -----------------------------------------------------------------------------
-// ESTADO INICIAL TRANQUILO (CALMA):
-// Casi todos "Habitual", y un indicador en "Vigilar" (Sueño a 6.4h, leve variación)
-// Radiación a 520 µSv/día (normal en ISS, jamás emergencia).
-// -----------------------------------------------------------------------------
-const INITIAL_CALM_READINGS: Record<IndicatorId, number | null> = {
-  blood_pressure: 118, // Habitual (Base 116)
-  heart_rate: 66,      // Habitual (Base 64)
-  glucose: 90,         // Habitual (Base 88)
-  core_temp: 36.8,     // Habitual (Base 36.7)
-  sleep_hours: 6.4,    // VIGILAR: Leve variación por ciclo de trabajo (Base 7.6h)
-  mood: 4,             // Habitual (Base 4.4)
-  radiation_dose: 520, // Habitual: Tasa típica nominal ISS (< 730 µSv/día)
-};
+const INITIAL_CALM_READINGS = ARTEMIS_CREW_ROSTER[0].readings;
 
 export const useHealthStore = create<HealthState>()(
   persist(
     (set, get) => ({
       mission: "ISS",
+      selectedCrewId: "alex-vance",
       astronautName: "Cmdr. Alex Vance",
-      astronautRole: "Flight Engineer / EVA Specialist",
+      astronautRole: "Mission Commander & EVA Lead",
+      language: "es",
       isOnline: true,
+      isAudioMuted: false,
+      isDsnModalOpen: false,
       
-      careerRadiationAccumulatedMilliSv: 142.5, // 142.5 mSv acumulados en misiones previas
-      careerRadiationLimitMilliSv: 600.0,       // Límite de carrera NASA (600 mSv)
+      careerRadiationAccumulatedMilliSv: 142.5,
+      careerRadiationLimitMilliSv: 600.0,
       
       currentReadings: INITIAL_CALM_READINGS,
       baselines: DEFAULT_ASTRONAUT_BASELINES,
@@ -76,9 +164,43 @@ export const useHealthStore = create<HealthState>()(
       commsCountdownSeconds: null,
       activeScenarioName: "Rutina Normal de Vuelo (Tranquilo)",
 
+      setLanguage: (language: Language) => {
+        set({ language });
+        if (!get().isAudioMuted) playTelemetryClick();
+      },
+
       setMission: (mission) => {
         set({ mission });
+        if (!get().isAudioMuted) playTelemetryClick();
         get().evaluateHealth();
+      },
+
+      selectCrewMember: (crewId: string) => {
+        const member = ARTEMIS_CREW_ROSTER.find((c) => c.id === crewId) || ARTEMIS_CREW_ROSTER[0];
+        set({
+          selectedCrewId: member.id,
+          astronautName: member.name,
+          astronautRole: member.role,
+          careerRadiationAccumulatedMilliSv: member.careerRadiationMilliSv,
+          currentReadings: member.readings,
+        });
+        if (!get().isAudioMuted) playNominalChime();
+        get().evaluateHealth();
+      },
+
+      toggleAudio: () => {
+        const next = !get().isAudioMuted;
+        set({ isAudioMuted: next });
+        if (!next) playNominalChime();
+      },
+
+      openDsnModal: () => {
+        set({ isDsnModalOpen: true });
+        if (!get().isAudioMuted) playTelemetryClick();
+      },
+
+      closeDsnModal: () => {
+        set({ isDsnModalOpen: false });
       },
 
       setReading: (id, value) => {
@@ -99,48 +221,60 @@ export const useHealthStore = create<HealthState>()(
         set({ decisionReport: report });
       },
 
-      // -----------------------------------------------------------------------
-      // ESCENARIOS DEMO ACTUALIZADOS:
-      // (a) Rutina normal (tranquilo)
-      // (b) Tormenta solar (radiación sube, alertas agrupadas de patrón)
-      // (c) Aislamiento prolongado (sueño y ánimo bajan)
-      // -----------------------------------------------------------------------
       loadDemoScenario: (scenario) => {
         if (scenario === "TORMENTA_SOLAR") {
-          // Escenario: Evento de partículas solares (SPE) agudo en espacio profundo
+          // Evento de partículas solares (SPE) agudo con síndrome agudo de radiación y fiebre espacial
           const speReadings: Record<IndicatorId, number | null> = {
-            blood_pressure: 138,  // Leve hipertensión reactiva por estrés
-            heart_rate: 98,       // Taquicardia compensatoria
-            glucose: 96,
-            core_temp: 37.3,
-            sleep_hours: 4.8,     // Sueño fragmentado por alarma de radiación
-            mood: 3,
-            radiation_dose: 2800, // Tormenta solar crítica (> 2000 µSv/día)
+            blood_pressure: 168,  // Crisis hipertensiva por descarga adrenérgica / PIC
+            heart_rate: 126,       // Taquicardia crítica por choque hipovolémico/radiación
+            glucose: 182,         // Hiperglucemia reactiva aguda de estrés
+            core_temp: 39.1,      // Hipertermia extrema "Space Fever" por radiación ionizante
+            sleep_hours: 2.8,     // Colapso de descanso por alerta de refugio
+            mood: 2,              // Estrés severo
+            radiation_dose: 3400, // Tormenta solar crítica letal (> 2000 µSv/día)
           };
           set({
             mission: "MARTE",
             currentReadings: speReadings,
-            careerRadiationAccumulatedMilliSv: 185.3,
-            activeScenarioName: "Tormenta Solar Aguda (SPE) - Alertas Agrupadas",
+            careerRadiationAccumulatedMilliSv: 195.4,
+            activeScenarioName: "Tormenta Solar Crítica (SPE) - Multiórgano en Alerta",
           });
+          if (!get().isAudioMuted) playEmergencyAlarm();
+        } else if (scenario === "FUGA_DE_TRAJE") {
+          // Emergencia EVA: Micrometeoroide perfora el traje espacial con despresurización rápida
+          const suitLeakReadings: Record<IndicatorId, number | null> = {
+            blood_pressure: 76,   // Hipotensión severa por despresurización barométrica
+            heart_rate: 152,      // Taquicardia hipóxica crítica de emergencia
+            glucose: 68,
+            core_temp: 34.6,      // Hipotermia por fuga del sublimador térmico de vacío
+            sleep_hours: 4.0,
+            mood: 1,              // Pánico / Alerta vital máxima
+            radiation_dose: 2400, // Exposición directa sin blindaje de módulo
+          };
+          set({
+            mission: "LUNA",
+            currentReadings: suitLeakReadings,
+            careerRadiationAccumulatedMilliSv: 154.0,
+            activeScenarioName: "Fuga de Traje EVA - Despresurización & Choque Hipóxico",
+          });
+          if (!get().isAudioMuted) playEmergencyAlarm();
         } else if (scenario === "AISLAMIENTO_PROLONGADO") {
-          // Escenario: Confinamiento y distancia a la Tierra de 2 años
           const isolationReadings: Record<IndicatorId, number | null> = {
-            blood_pressure: 122,
-            heart_rate: 74,
-            glucose: 94,
-            core_temp: 36.9,
-            sleep_hours: 3.8,     // Privación circadiana severa (< 4h)
-            mood: 2,              // Ánimo bajo persistente
-            radiation_dose: 1650, // Nivel típico en Marte (1500-2000 µSv/día)
+            blood_pressure: 138,
+            heart_rate: 88,
+            glucose: 105,
+            core_temp: 37.6,
+            sleep_hours: 3.2,     // Privación circadiana severa (< 4h)
+            mood: 1,              // Apatía severa / depresión de confinamiento
+            radiation_dose: 1850, // Nivel típico en Marte (1500-2000 µSv/día)
           };
           set({
             mission: "MARTE",
             currentReadings: isolationReadings,
-            activeScenarioName: "Aislamiento Prolongado - Sueño y Ánimo Reducidos",
+            activeScenarioName: "Aislamiento Prolongado - Desincronización Circadiana",
           });
+          if (!get().isAudioMuted) playCautionTone();
         } else if (scenario === "SIN_DATOS") {
-          // Demostración de Integridad: Dato faltante = Gris
           const missingReadings: Record<IndicatorId, number | null> = {
             blood_pressure: null,
             heart_rate: 66,
@@ -154,14 +288,15 @@ export const useHealthStore = create<HealthState>()(
             currentReadings: missingReadings,
             activeScenarioName: "Integridad de Telemetría (Campos Sin Datos en Gris)",
           });
+          if (!get().isAudioMuted) playTelemetryClick();
         } else {
-          // RUTINA NORMAL (Tranquilo)
           set({
             mission: "ISS",
             currentReadings: INITIAL_CALM_READINGS,
             careerRadiationAccumulatedMilliSv: 142.5,
             activeScenarioName: "Rutina Normal de Vuelo (Tranquilo)",
           });
+          if (!get().isAudioMuted) playNominalChime();
         }
         get().evaluateHealth();
       },
@@ -176,6 +311,7 @@ export const useHealthStore = create<HealthState>()(
           commsCountdownSeconds: Math.floor(delaySec),
         }));
 
+        if (!get().isAudioMuted) playNominalChime();
         return packet;
       },
 
@@ -189,11 +325,17 @@ export const useHealthStore = create<HealthState>()(
       },
 
       resetToNominalCalm: () => {
+        const alex = ARTEMIS_CREW_ROSTER[0];
         set({
           mission: "ISS",
-          currentReadings: INITIAL_CALM_READINGS,
+          selectedCrewId: alex.id,
+          astronautName: alex.name,
+          astronautRole: alex.role,
+          careerRadiationAccumulatedMilliSv: alex.careerRadiationMilliSv,
+          currentReadings: alex.readings,
           activeScenarioName: "Rutina Normal de Vuelo (Tranquilo)",
         });
+        if (!get().isAudioMuted) playNominalChime();
         get().evaluateHealth();
       },
 
@@ -202,7 +344,7 @@ export const useHealthStore = create<HealthState>()(
       },
     }),
     {
-      name: "aegis-space-health-2026",
+      name: "mins-health-telemetry-v2",
       storage: createJSONStorage(() => localStorage),
     }
   )

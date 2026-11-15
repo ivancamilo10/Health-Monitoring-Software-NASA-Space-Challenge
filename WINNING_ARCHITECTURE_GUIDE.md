@@ -1,64 +1,55 @@
 # 🚀 NASA SPACE APPS CHALLENGE: WINNING ARCHITECTURE & FLIGHT CREW GUIDE
-**Proyecto:** Health-Monitoring-Software-NASA-Space-Challenge  
-**Misión de Hackathon:** Ganar el desafío desplegando una plataforma de triaje biomédico y soporte vital autónomo para el espacio profundo (Artemis / Mars Transit), eliminando la vulnerabilidad de la latencia de radio Tierra-Nave (4 a 44 min).
+**Project:** Mins-Health: Autonomous Deep Space Clinical Monitoring & Triage Platform  
+**Challenge:** *Create Health Monitoring Software for Astronauts on Space Missions*  
+**Global Theme:** *The Next Frontier*  
+**Team:** Mins Solutions TI (Colombia 🇨🇴)  
 
 ---
 
-## 👨‍🚀 1. ORGANIGRAMA DE LA TRIPULACIÓN COMPLETA (5 INTEGRANTES)
+## 👨‍🚀 1. FLIGHT CREW ORGANIZATIONAL STRUCTURE (5 CREW MEMBERS)
 
-Para ganar un hackathon de la NASA se necesita sincronía militar. Cada integrante tiene un rol crítico, sin estorbarse ni pisarse archivos:
+To excel in the NASA Space Apps Challenge, team synchronization is structured as an aerospace flight crew:
 
 ```
                                     ┌────────────────────────────────────────────────────────┐
-                                    │       CONTRATO UNIVERSAL (Single Source of Truth)      │
+                                    │         UNIVERSAL CONTRACT (Single Source of Truth)    │
                                     │           /src/types/mission-health.types.ts           │
                                     └────────────────────────────────────────────────────────┘
                                             ▲                   ▲                   ▲
-                  ┌─────────────────────────┴──┐     ┌──────────┴──────────────┐    └──────────────────────────────────┐
-                  │      DESARROLLADOR A       │     │       DESARROLLADOR B   │     │          DESARROLLADOR C         │
-                  │   (APIs, Datos & Supabase) │     │  (Lógica Biomédica & Triage)  │ (Frontend & Mission Control HUD) │
-                  └────────────────────────────┘     └─────────────────────────┘     └──────────────────────────────────┘
-                                 ▲                                                                     ▲
-                                 │                                                                     │
-              ┌──────────────────┴─────────────────────────────────────────────────────────────────────┴──────────────────┐
-              │                                                                                                           │
-   ┌────────────────────────────────────────┐                                                 ┌────────────────────────────────────────┐
-   │          DISEÑADOR GRÁFICO             │                                                 │     FLIGHT TEST OFFICER / QA TESTER    │
-   │        (UI/UX Espacial & Assets)       │                                                 │    (Validación No Técnica & Pitch)     │
-   ├────────────────────────────────────────┤                                                 ├────────────────────────────────────────┤
-   │ • Manual de estilo y tokens Tailwind   │                                                 │ • Pruebas de aceptación UAT sin código │
-   │ • Paleta de seguridad MIL-STD-1472     │                                                 │ • Reporte estructurado de fallos       │
-   │ • Insignias de misión y fotos en /assets│                                                │ • Orador del Pitch de 3 min al jurado  │
-   │ • Diapositivas y Pitch Deck de apoyo   │                                                 │ • Guía: FLIGHT_TEST_MANUAL.md          │
-   │ • Guía: DESIGN_SYSTEM_GUIDE.md         │                                                 │                                        │
-   └────────────────────────────────────────┘                                                 └────────────────────────────────────────┘
+                   ┌────────────────────────┴──┐     ┌──────────┴──────────────┐    └──────────────────────────────────┐
+                   │    LEAD ARCHITECT (DEV A) │     │   BIOMEDICAL ENG (DEV B)│     │      FULL-STACK / HUD (DEV C)    │
+                   │    Ivan Mejia Triana      │     │  Giordi Gutiérrez       │     │          Camilo Canedo           │
+                   │ (Data Models, Architecture)│     │(Clinical Logic & HRP Engine)│    │   (Mission Control HUD & Store)  │
+                   └────────────────────────────┘     └─────────────────────────┘     └──────────────────────────────────┘
+                                  ▲                                                                     ▲
+                                  │                                                                     │
+               ┌──────────────────┴─────────────────────────────────────────────────────────────────────┴──────────────────┐
+               │                                                                                                           │
+    ┌────────────────────────────────────────┐                                                 ┌────────────────────────────────────────┐
+    │      3D & INTERACTION SPECIALIST       │                                                 │         MISSION QA & PITCH LEAD        │
+    │              Samuel Buzón              │                                                 │               Ali Riascos              │
+    │         (UI/UX & WebGL Shaders)        │                                                 │     (Non-Technical QA & Presentation)  │
+    ├────────────────────────────────────────┤                                                 ├────────────────────────────────────────┤
+    │ • 3D Spacesuit (.glb) Three.js shaders │                                                 │ • Flight Acceptance UAT testing        │
+    │ • MIL-STD-1472 color palette & tokens  │                                                 │ • Structured Defect reporting          │
+    │ • Mission badges & anatomical hotspots │                                                 │ • 3-minute Master Pitch for NASA judges│
+    │ • Reference: DESIGN_SYSTEM_GUIDE.md    │                                                 │ • Reference: FLIGHT_TEST_MANUAL.md     │
+    └────────────────────────────────────────┘                                                 └────────────────────────────────────────┘
 ```
 
 ---
 
-## 🗺️ 2. MATRIZ DE RESPONSABILIDADES POR INTEGRANTE
+## 🗺️ 2. RESPONSIBILITY MATRIX BY CREW MEMBER
 
-| Integrante | Rol | Zona de Archivos | Responsabilidad Concreta | Guía de Referencia |
+| Member | Mission Role | Primary File Scope | Concrete Responsibilities | Reference Guide |
 |---|---|---|---|---|
-| **Dev A** | 📡 APIs, Datos & Cloud | `/src/app/api/v1/*`<br>`/src/repositories/*`<br>`/prisma/*` | Endpoints Next.js, transacciones con Prisma, esquema relacional en PostgreSQL/Supabase. | Este documento |
-| **Dev B** | 🧬 Bio-Logic & Triage | `/src/core-logic/*` | Algoritmos fisiológicos, normalización según actividad (sueño vs. EVA), cálculo de `riskScore` y contramedidas autónomas. | Este documento |
-| **Dev C** | 💻 Frontend & HUD | `/src/components/*`<br>`/src/hooks/*`<br>`/src/app/page.tsx` | Consola de vuelo interactiva, integración del hook de telemetría y botones de crisis para el pitch. | Este documento |
-| **Diseñador** | 🎨 UI/UX & Arte Visual | `tailwind.config.ts`<br>`src/app/globals.css`<br>`/public/assets/*` | Paleta de colores espacial, identidad de misión (Mission Patch), avatares de la tripulación y estética de cabina NASA. | [`DESIGN_SYSTEM_GUIDE.md`](./DESIGN_SYSTEM_GUIDE.md) |
-| **Tester No Dev** | 🧪 QA & Pitch Orator | Navegador (`localhost:3000`) | Probar los 4 escenarios de contingencia, verificar la interfaz, reportar fallos y recitar el pitch de 3 minutos al jurado. | [`FLIGHT_TEST_MANUAL.md`](./FLIGHT_TEST_MANUAL.md) |
+| **Ivan Mejia Triana** | 📡 Team Owner & Lead Architect | `/src/core/*`<br>`/src/repositories/*`<br>`/prisma/*` | System architecture, SBAR cryptographic packets, and API integrity. | `TECHNICAL_CODE_DOCUMENTATION.md` |
+| **Giordi Gutiérrez** | 🧬 Biomedical Systems & Clinical Logic | `/src/core/rules.ts`<br>`/src/core/baseline.ts`<br>`/src/core/hazard-interactions.ts` | Physiological algorithms, L-30 Z-score baselines, HRP multi-hazard synergy engine, and NASA-STD-3001 guardrails. | `TECHNICAL_CODE_DOCUMENTATION.md` |
+| **Camilo Canedo** | 💻 Full-Stack & Telemetry Systems | `/src/components/*`<br>`/src/store/*`<br>`/src/app/page.tsx` | Interactive flight cockpit, offline-first Zustand persistence, and contingency injection modal. | `TECHNICAL_CODE_DOCUMENTATION.md` |
+| **Samuel Buzón** | 🎨 3D Visualization & Interaction Design | `src/components/nasa/AstronautGLBViewer.tsx`<br>`tailwind.config.ts`<br>`src/app/globals.css` | 3D WebGL astronaut viewer, holographic X-ray shader, anatomical hotspots, and MIL-STD-1472 ergonomic safety palette. | `DESIGN_SYSTEM_GUIDE.md` |
+| **Ali Riascos** | 🧪 Mission QA & Scientific Validation | Browser (`localhost:3000`) & Testing Suite | Contingency UAT validation (Suit Leak, SPE Storm, CO2 toxicity), defect tracking, and 3-minute pitch deck delivery. | `FLIGHT_TEST_MANUAL.md` |
 
 ---
 
-## ⚡ 3. CÓMO TRABAJA EL EQUIPO EN PARALELO (SIN BLOQUEOS)
-
-1. **El Diseñador Gráfico** abre [`DESIGN_SYSTEM_GUIDE.md`](./DESIGN_SYSTEM_GUIDE.md), ajusta las variables de color en `tailwind.config.ts` y coloca los gráficos e insignias en `/public/assets/`.
-2. **El Desarrollador A** prueba y conecta las APIs en `/src/app/api/v1/` usando los mocks temporales ya listos en `core-logic`, sin esperar a que Dev B termine las fórmulas.
-3. **El Desarrollador B** implementa las fórmulas biomédicas en `/src/core-logic/` resolviendo los `// TODO [DEV-LOGICA]:` en funciones puras sin necesidad de levantar bases de datos.
-4. **El Desarrollador C** perfecciona los componentes visuales en `/src/components/mission-control/` usando el buffer de datos del hook `useMissionTelemetry`.
-5. **El Tester No Técnico** levanta la aplicación con `npm run dev`, sigue la tabla de [`FLIGHT_TEST_MANUAL.md`](./FLIGHT_TEST_MANUAL.md), pulsa los botones de crisis en vivo y ensaya el guion del pitch cronometrado.
-
----
-
-## 🏆 4. EL SECRETO PARA GANAR EL HACKATHON
-- **El Jurado busca realismo científico:** Nuestro sistema reconoce que un pulso de 155 BPM en reposo es taquicardia severa, pero en una caminata espacial (EVA) con traje rígido puede ser estrés metabólico compensado.
-- **El Jurado busca autonomía radical:** Frente a la latencia de Marte (4 a 44 minutos de radio), un médico en la Tierra no puede evitar la muerte por ebullismo ante una fisura en el traje. **Nuestro software actúa en < 200 ms**.
-- **El Jurado busca impacto visual:** La combinación del diseño de cabina oscura (Diseñador) y la inyección de crisis en 1 click (Tester/Orador) genera un impacto demoledor e inolvidable.
+## 🔬 3. SCIENTIFIC EVIDENCE GROUNDING
+All physiological thresholding strictly complies with **NASA-STD-3001** and is validated against commercial spaceflight human multi-omics data from **NASA Open Science Data Repository (OSDR Dataset OSD-575)**.

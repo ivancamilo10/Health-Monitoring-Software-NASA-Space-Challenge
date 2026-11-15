@@ -1,5 +1,6 @@
 // Diccionario centralizado de lenguaje claro e i18n para Mins-Health
 // Reemplaza toda la jerga técnica por lenguaje accesible para tripulantes y evaluadores no médicos
+// Soporte bilingüe completo Español (ES) e Inglés (EN)
 
 export type Language = "es" | "en";
 
@@ -95,6 +96,86 @@ export const SIMPLE_INDICATORS_ES: Record<string, IndicatorSimpleText> = {
   },
 };
 
+export const SIMPLE_INDICATORS_EN: Record<string, IndicatorSimpleText> = {
+  blood_pressure: {
+    id: "blood_pressure",
+    name: "Blood pressure",
+    shortName: "Pressure",
+    bodyZone: "Eyes & head",
+    howToMeasure: "Place the inflatable cuff on your left arm at heart level while resting.",
+    whyItMatters: "In space, fluid shifts toward the head can increase intracranial pressure and affect ocular vision (SANS).",
+    whatAffectsItInSpace: "Microgravity redistributes blood toward the chest and head (the 'puffy-face' effect).",
+    whenToAskForHelp: "If systolic exceeds 140 or diastolic exceeds 90 mmHg, or if you experience blurred vision.",
+    technicalTermTooltip: "Force exerted by circulating blood against arterial walls. Monitors spaceflight-associated neuro-ocular syndrome.",
+  },
+  heart_rate: {
+    id: "heart_rate",
+    name: "Heart rate",
+    shortName: "Heart",
+    bodyZone: "Chest (heart)",
+    howToMeasure: "Flight smartwatch or chest strap measures continuous heart rate during rest.",
+    whyItMatters: "Indicates how your cardiovascular system adapts to workload, mission stress, and microgravity.",
+    whatAffectsItInSpace: "Without gravity, the heart pumps against less resistance, altering autonomic cardiac regulation.",
+    whenToAskForHelp: "If resting heart rate exceeds 100 BPM or drops below 45 BPM consistently.",
+    technicalTermTooltip: "Beats per minute during rest. Compared against your personalized astronaut baseline.",
+  },
+  glucose: {
+    id: "glucose",
+    name: "Blood glucose",
+    shortName: "Glucose",
+    bodyZone: "Abdomen (metabolism)",
+    howToMeasure: "Apply a small fingerstick blood drop to the portable glucometer strip before breakfast.",
+    whyItMatters: "Primary fuel for muscles and brain. Large deviations cause dizziness, weakness, or mental fog.",
+    whatAffectsItInSpace: "Space packaged diet and microgravity alter insulin sensitivity and carbohydrate kinetics.",
+    whenToAskForHelp: "If fasting glucose exceeds 126 mg/dL or drops below 70 mg/dL.",
+    technicalTermTooltip: "Circulating blood glucose level. Microgravity slows glucose processing and clearance.",
+  },
+  core_temp: {
+    id: "core_temp",
+    name: "Core body temperature",
+    shortName: "Temperature",
+    bodyZone: "Whole body",
+    howToMeasure: "Use tympanic optical sensor or forehead dermal patch.",
+    whyItMatters: "Detects infection, inflammation, or exercise-induced space fever early.",
+    whatAffectsItInSpace: "Sweat does not evaporate naturally in weightlessness, creating a heat film on skin ('space fever').",
+    whenToAskForHelp: "If core temperature exceeds 38.0 °C or falls below 35.5 °C.",
+    technicalTermTooltip: "Internal vital temperature. Astronauts average 0.5–1.0 °C higher core temperature during long-duration flight.",
+  },
+  sleep_hours: {
+    id: "sleep_hours",
+    name: "Sleep hours",
+    shortName: "Sleep",
+    bodyZone: "Brain & recovery",
+    howToMeasure: "Automatically monitored via sleep-berth sensor and biometric cabin watch.",
+    whyItMatters: "Poor sleep degrades reflexes, increases fatigue, and impairs mission-critical decisions.",
+    whatAffectsItInSpace: "Experiencing 16 sunrises daily and constant ventilation noise disrupts circadian entrainment.",
+    whenToAskForHelp: "If sleep duration is less than 5 hours for two consecutive days or inadvertent micro-sleep occurs.",
+    technicalTermTooltip: "Total restorative sleep time. Primary driver of cognitive and operational fatigue in spaceflight.",
+  },
+  mood: {
+    id: "mood",
+    name: "Mood & energy",
+    shortName: "Mood",
+    bodyZone: "Mental health",
+    howToMeasure: "Rate 1 to 5 during daily checkup assessing psychological state and energy level.",
+    whyItMatters: "Confinement, isolation, and sensory deprivation can trigger sadness, irritability, or acute stress.",
+    whatAffectsItInSpace: "Distance from Earth, artificial illumination, and delayed communication with family and ground control.",
+    whenToAskForHelp: "If rating is 1 or 2 for consecutive days or high subjective overwhelm is felt.",
+    technicalTermTooltip: "Psychometric assessment of emotional well-being and crew cohesion to mitigate isolation stress.",
+  },
+  radiation_dose: {
+    id: "radiation_dose",
+    name: "Cosmic radiation",
+    shortName: "Radiation",
+    bodyZone: "Bone marrow & DNA",
+    howToMeasure: "Personal lapel dosimeter continuously logs ionizing space particles traversing the spacecraft.",
+    whyItMatters: "Galactic cosmic rays and solar particles penetrate human tissue, posing cellular and oncological risks.",
+    whatAffectsItInSpace: "Beyond Earth's magnetosphere, radiation flux is 10 to 100 times higher, especially en route to the Moon or Mars.",
+    whenToAskForHelp: "If a sudden solar proton event (SPE) exceeds 100 µSv/day, requiring relocation to the storm shelter.",
+    technicalTermTooltip: "Absorbed ionizing radiation dose in daily µSv and cumulative career mSv against NASA REID safety limits.",
+  },
+};
+
 export const UI_TEXTS_ES = {
   appName: "Mins-Health",
   byCompany: "by Mins Solutions TI",
@@ -122,6 +203,7 @@ export const UI_TEXTS_ES = {
   nasaRealData: "Datos reales de NASA (Estudio Inspiration4)",
   scientificSources: "Fuentes científicas y reglas",
   demoPitchScript: "Guion de presentación (3 min)",
+  presentationSlides: "Diapositivas de Presentación (Pitch Deck)",
   restartWelcomeTour: "Repetir recorrido de bienvenida",
   noConnectionDesc: "Toda la información se procesa en este dispositivo. No necesitas conexión a la Tierra.",
   howIsAstronautToday: "Cómo está hoy el astronauta",
@@ -153,3 +235,71 @@ export const UI_TEXTS_ES = {
   tourNext: "Siguiente",
   tourDone: "¡Empezar!",
 };
+
+export const UI_TEXTS_EN = {
+  appName: "Mins-Health",
+  byCompany: "by Mins Solutions TI",
+  challengeName: "Create Health Monitoring Software for Astronauts on Space Missions · NASA Space Apps 2026",
+  zoneLeftTitle: "How am I?",
+  zoneCenterTitle: "Where?",
+  zoneRightTitle: "What to do?",
+  touchBodyHint: "Touch a body zone or vital indicator to inspect details",
+  legendTitle: "Color significance:",
+  legendNormal: "Normal",
+  legendNormalDesc: "Within your healthy baseline",
+  legendWatch: "Watch",
+  legendWatchDesc: "Mild deviation, keep in mind",
+  legendAttention: "Attention",
+  legendAttentionDesc: "Outside normal range, action recommended",
+  legendHelp: "Request Help",
+  legendHelpDesc: "Alert crew or request ground surgeon",
+  todayCheckupButton: "Daily Health Checkup",
+  offlineBadge: "Operates 100% Offline",
+  demoBadge: "Demonstration · Non-certified medical device",
+  moreMenuButton: "More",
+  moreMenuTitle: "Mission Tools & Tests",
+  scenarioTester: "Simulate Contingencies (SPE Solar Storm, EVA...)",
+  reactionTest: "Psychomotor Vigilance Test (3 min)",
+  nasaRealData: "NASA Real Data (Inspiration4 Study OSD-575)",
+  scientificSources: "Scientific Evidence & Flight Rules",
+  demoPitchScript: "Presentation Pitch Script (3 min)",
+  presentationSlides: "Presentation Slides (Pitch Deck)",
+  restartWelcomeTour: "Restart Welcome Tour",
+  noConnectionDesc: "All clinical logic processes locally on this device. Zero cloud dependency.",
+  howIsAstronautToday: "Astronaut Physiological Status",
+  allGoodToday: "All vitals in nominal flight balance",
+  watchNotice: "Generally stable, but monitor closely",
+  attentionNotice: "One or more indicators require timely action",
+  helpNotice: "Priority situation: consult clinical handover protocol",
+  systemicPatternTitle: "Systemic multi-organ pattern:",
+  primaryActionTitle: "Recommended primary action:",
+  yourNormal: "Your baseline",
+  todayValue: "Today",
+  withinNormal: "within normal",
+  diffFromNormal: "vs. baseline",
+  last7Days: "Last 7 days",
+  normalRangeBand: "Nominal baseline band",
+  noDataYet: "No telemetry recorded",
+  seeMoreAccordion: "Learn more & clinical details",
+  sbarReportButton: "Download Flight Surgeon SBAR Report",
+  sbarPdfButton: "Print Clinical Report (PDF)",
+  radiationCareer: "Cumulative Mission Radiation:",
+  careerLimitNotice: "Safe Career Limit:",
+  tourStep1Title: "1. How are you today?",
+  tourStep1Body: "On the left rail you see your physiological summary and vital signs with clear indicators and color coding.",
+  tourStep2Title: "2. Explore the 3D body",
+  tourStep2Body: "In the center 3D viewport, inspect the anatomical twin. Touch any organ to review status in green (normal), yellow (watch), or red (help).",
+  tourStep3Title: "3. Daily checkup",
+  tourStep3Body: "Use the prominent 'Daily Health Checkup' button at the top right to record your physiological measurements in under 2 minutes.",
+  tourSkip: "Skip tour",
+  tourNext: "Next",
+  tourDone: "Get started!",
+};
+
+export function getTexts(lang: Language = "es") {
+  return lang === "en" ? UI_TEXTS_EN : UI_TEXTS_ES;
+}
+
+export function getSimpleIndicators(lang: Language = "es") {
+  return lang === "en" ? SIMPLE_INDICATORS_EN : SIMPLE_INDICATORS_ES;
+}

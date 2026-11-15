@@ -1,15 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #050b14;
-  --foreground: #e2e8f0;
+  --background: #08090d;
+  --foreground: #f1f5f9;
+  --surface: #111218;
+  --surface-hover: #171822;
+  --primary: #9975ff;
+  --primary-light: #bca6ff;
+  --accent-cyan: #66d8d1;
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html,
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  overflow-x: hidden;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #08090d;
+  color: #f1f5f9;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ========================================================
+   FONDO CÓSMICO LIQUID GLASS (GRADIENTES RADIALES SUAVES)
+   ======================================================== */
+.liquid-glass-bg {
+  background-color: #08090d;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(153, 117, 255, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(102, 216, 209, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(20, 24, 38, 0.5) 0%, transparent 70%);
+  background-attachment: fixed;
+}
+
+/* ========================================================
+   ESTILOS LIQUID GLASS
+   ======================================================== */
+.glass-panel {
+  background: rgba(17, 18, 24, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  border-radius: 16px;
+}
+
+.glass-panel-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-hover:hover {
+  background: rgba(23, 24, 34, 0.85);
+  border-color: rgba(153, 117, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px 0 rgba(153, 117, 255, 0.12);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+}
+
+.glass-pill-active {
+  background: rgba(153, 117, 255, 0.18);
+  border: 1px solid rgba(153, 117, 255, 0.5);
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(153, 117, 255, 0.3);
+}
+
+/* ========================================================
+   BOTONES Y ELEMENTOS DIDÁCTICOS
+   ======================================================== */
+.btn-primary-gradient {
+  background: linear-gradient(135deg, #9975ff 0%, #794ff5 100%);
+  color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(153, 117, 255, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-primary-gradient:hover {
+  background: linear-gradient(135deg, #a787ff 0%, #875ffa 100%);
+  box-shadow: 0 6px 24px rgba(153, 117, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-secondary-glass {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary-glass:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* ========================================================
+   SCROLLBAR SUAVE Y ELEGANTE
+   ======================================================== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(153, 117, 255, 0.4);
+}
+
+/* Respeta la preferencia del sistema para reducir movimiento */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

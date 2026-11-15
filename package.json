@@ -1,8 +1,8 @@
 {
-  "name": "health-monitoring-software-nasa-space-challenge",
+  "name": "mins-health",
   "version": "1.0.0",
   "private": true,
-  "description": "Autonomous Bio-Telemetry & Triage Platform for Deep Space Missions - NASA Space Apps Challenge",
+  "description": "Mins-Health by Mins Solutions TI — Autonomous Bio-Telemetry & Triage Platform for Astronauts on Space Missions (NASA Space Apps Challenge 2026)",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -14,14 +14,21 @@
   },
   "dependencies": {
     "@prisma/client": "^6.4.0",
+    "@types/three": "^0.187.0",
+    "framer-motion": "^14.14.0",
+    "lucide-react": "^1.73.0",
     "next": "^15.1.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "three": "^0.187.0",
+    "zustand": "^5.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.6.2",
     "postcss": "^8.4.49",
     "prisma": "^6.4.0",
     "tailwindcss": "^3.4.16",

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Mins-Health · NASA Space Apps Challenge 2026 Pitch Deck</title>
   
-  <!-- Reveal.js Open Source Presentation Framework -->
+  <!-- Reveal.js Open Source Presentation Framework CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reset.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/black.min.css">
@@ -18,7 +18,7 @@
       --danger: #f43f5e;
       --warning: #f59e0b;
       --success: #10b981;
-      --dark-card: rgba(17, 18, 24, 0.85);
+      --dark-card: rgba(17, 18, 24, 0.90);
       --border-card: rgba(255, 255, 255, 0.12);
     }
 
@@ -133,11 +133,6 @@
       font-weight: 600;
     }
 
-    .highlight-text {
-      color: var(--secondary);
-      font-weight: 600;
-    }
-
     .return-link {
       position: fixed;
       top: 18px;
@@ -178,7 +173,7 @@
 </head>
 <body>
 
-  <a href="/" class="return-link">Volver a la Cabina Mins-Health</a>
+  <a href="/" class="return-link">Return to Mins-Health Cockpit</a>
 
   <div class="footer-bar">
     <span>NASA Space Apps Challenge 2026 · The Next Frontier</span>
@@ -188,247 +183,248 @@
   <div class="reveal">
     <div class="slides">
 
-      <!-- SLIDE 1: PORTADA -->
+      <!-- SLIDE 1: TITLE SLIDE -->
       <section data-background-gradient="radial-gradient(circle at center, #1b1633 0%, #08090d 100%)">
         <div class="brand-badge">
-          NASA Space Apps Challenge 2026 · Desafío Oficial
+          NASA Space Apps Challenge 2026 · Official Global Hackathon
         </div>
         <h1 style="color: #ffffff; font-weight: 800; margin-bottom: 12px;">
           MINS-HEALTH
         </h1>
         <h3 style="color: #66d8d1; font-weight: 500; font-size: 1.25em; margin-bottom: 24px;">
-          Sistema Autónomo de Monitorización Bioclínica y Telemetría de Astronautas
+          Autonomous Bio-Astronautics & Health Monitoring System for Deep Space Expeditions
         </h3>
-        <p style="font-size: 16px; color: #94a3b8; max-width: 780px; margin: 0 auto 30px auto;">
-          Diseñado para expediciones lunares de larga duración (Artemis III/IV) y tránsito a Marte. 
-          100% autónomo, arquitectura offline-first con gemelo digital 3D y razonamiento médico basado en NASA-STD-3001.
+        <p style="font-size: 16px; color: #94a3b8; max-width: 820px; margin: 0 auto 30px auto; line-height: 1.6;">
+          Engineered for long-duration lunar surface stays (Artemis III/IV) and interplanetary Mars transit. 
+          100% autonomous edge execution with 3D anatomical digital twin and NASA-STD-3001 clinical inference engine.
         </p>
         <div class="tag-grid">
-          <span class="tag-pill" style="border-color: #9975ff; color: #bca6ff;">Desarrollado por Mins Solutions TI</span>
+          <span class="tag-pill" style="border-color: #9975ff; color: #bca6ff;">Developed by Mins Solutions TI</span>
           <span class="tag-pill">Next.js 15 & React 19</span>
           <span class="tag-pill">Three.js WebGL</span>
-          <span class="tag-pill">NASA OSDR Inspiration4</span>
-          <span class="tag-pill">Protocolo SBAR CRC32</span>
+          <span class="tag-pill">NASA OSDR Inspiration4 (OSD-575)</span>
+          <span class="tag-pill">SBAR CRC32 Protocol</span>
         </div>
       </section>
 
-      <!-- SLIDE 2: EL PROBLEMA -->
+      <!-- SLIDE 2: THE DEEP SPACE PROBLEM -->
       <section>
-        <h2>El Desafío en Espacio Profundo</h2>
-        <h3 style="font-size: 1.05em; color: #94a3b8;">La telemedicina terrestre es inviable más allá de la órbita baja</h3>
+        <h2>The Deep Space Challenge</h2>
+        <h3 style="font-size: 1.05em; color: #94a3b8;">Why Terrestrial Telemedicine Fails Beyond Low Earth Orbit (LEO)</h3>
         
         <div class="grid-3">
           <div class="deck-card" style="border-left: 3px solid var(--danger);">
-            <h4>Latencia Extrema DSN</h4>
+            <h4>Deep Space Delay</h4>
             <div class="stat-number">~20 min</div>
-            <div class="stat-label">Retraso en Marte</div>
-            <p style="margin-top: 10px;">En una emergencia aguda (tormenta solar o fibrilación) esperar instrucciones desde Houston cuesta vidas.</p>
+            <div class="stat-label">One-Way Mars Latency</div>
+            <p style="margin-top: 10px;">During acute clinical emergencies (solar storm radiation sickness, cardiac arrhythmia, suit puncture), waiting 40 minutes round-trip for Houston flight surgeons is fatal.</p>
           </div>
 
           <div class="deck-card" style="border-left: 3px solid var(--warning);">
-            <h4>Sinergias Ocultas</h4>
+            <h4>Multi-Organ Synergies</h4>
             <div class="stat-number">3x</div>
-            <div class="stat-label">Multiplicador de Riesgo</div>
-            <p style="margin-top: 10px;">La radiación ionizante más el déficit de sueño genera taquicardia refleja que un algoritmo terrestre ignora.</p>
+            <div class="stat-label">Combined Hazard Multiplier</div>
+            <p style="margin-top: 10px;">Ionizing radiation combined with sleep deficit compromises cellular DNA repair and induces reflex tachycardia that single-parameter Earth algorithms misdiagnose.</p>
           </div>
 
           <div class="deck-card" style="border-left: 3px solid var(--secondary);">
-            <h4>Sobrecarga Cognitiva</h4>
+            <h4>Cognitive Overload</h4>
             <div class="stat-number">100%</div>
-            <div class="stat-label">Triage Autónomo</div>
-            <p style="margin-top: 10px;">El astronauta no es médico especialista; necesita lenguaje humano claro y pasos de acción inmediatos.</p>
+            <div class="stat-label">Autonomous Edge Triage</div>
+            <p style="margin-top: 10px;">Astronauts are pilots, engineers, and scientists—not ICU specialists. They require rapid, plain-language triage and actionable procedural checklists.</p>
           </div>
         </div>
       </section>
 
-      <!-- SLIDE 3: LA SOLUCIÓN MINS-HEALTH -->
+      <!-- SLIDE 3: SYSTEM ARCHITECTURE -->
       <section>
-        <h2>La Solución: Cockpit de 3 Zonas</h2>
-        <h3 style="font-size: 1.05em; color: #94a3b8;">Diseño de alta densidad de información sin scroll global</h3>
+        <h2>The Solution: 3-Zone Cockpit</h2>
+        <h3 style="font-size: 1.05em; color: #94a3b8;">Zero-Global-Scroll High-Information-Density Design</h3>
         
         <div class="grid-3">
           <div class="deck-card">
-            <h4>Zona 1: ¿Cómo estoy?</h4>
-            <p style="color: #cbd5e1; font-weight: 600; margin-bottom: 8px;">Telemetría Bento Viva a 60 FPS</p>
-            <p>Tarjetas biométricas táctiles con trazado dinámico SVG de ondas cardiacas, micro-jitter fisiológico y comparación vs. línea base individual.</p>
+            <h4>Zone 1: How am I?</h4>
+            <p style="color: #cbd5e1; font-weight: 600; margin-bottom: 8px;">60 FPS Live Bento Telemetry</p>
+            <p>Interactive vital cards featuring dynamic SVG cardiac waveforms, biological micro-jitter, and personalized individual astronaut baselines.</p>
           </div>
 
           <div class="deck-card" style="border-color: var(--primary);">
-            <h4>Zona 2: ¿Dónde?</h4>
-            <p style="color: #cbd5e1; font-weight: 600; margin-bottom: 8px;">Gemelo Digital 3D Interactivo</p>
-            <p>Traje espacial traslúcido, esqueleto humano real 3D (BodyParts3D) y corazón anatómico con sístole y coronarias vinculadas a los BPM reales.</p>
+            <h4>Zone 2: Where?</h4>
+            <p style="color: #cbd5e1; font-weight: 600; margin-bottom: 8px;">3D Anatomical Digital Twin</p>
+            <p>Frosted translucent suit, real human 3D skeleton (BodyParts3D), and procedural systolic heart with coronary LAD and aorta driven by live BPM.</p>
           </div>
 
           <div class="deck-card">
-            <h4>Zona 3: ¿Qué hago?</h4>
-            <p style="color: #cbd5e1; font-weight: 600; margin-bottom: 8px;">Motor de Triage & SBAR</p>
-            <p>Reglas clínicas NASA-STD-3001, detección de patrones sinérgicos (HRP Hazards) y exportación de traspaso clínico con firma criptográfica CRC32.</p>
+            <h4>Zone 3: What to do?</h4>
+            <p style="color: #cbd5e1; font-weight: 600; margin-bottom: 8px;">Clinical Engine & SBAR</p>
+            <p>NASA-STD-3001 rules, HRP Hazard cross-impact evaluation, and automated generation of clinical handover packets with CRC32 cryptographic checksums.</p>
           </div>
         </div>
       </section>
 
-      <!-- SLIDE 4: DATOS REALES NASA OSDR -->
+      <!-- SLIDE 4: NASA OPEN SCIENCE DATA (OSDR) -->
       <section>
-        <h2>Evidencia Científica & NASA OSDR</h2>
-        <h3 style="font-size: 1.05em; color: #94a3b8;">Fundamentado en muestras transcriptómicas y clínicas espaciales</h3>
+        <h2>Scientific Grounding & NASA OSDR</h2>
+        <h3 style="font-size: 1.05em; color: #94a3b8;">Empirically Calibrated with Space Omics and Medical Atlas (SOMA)</h3>
         
         <div class="grid-2">
           <div class="deck-card">
-            <h4>NASA OSDR Accesión OSD-575</h4>
-            <p style="margin-bottom: 12px;">Misión Inspiration4 (Space Omics and Medical Atlas SOMA). 4 tripulantes civiles monitoreados a ~585 km de altitud.</p>
+            <h4>NASA OSDR Accession OSD-575</h4>
+            <p style="margin-bottom: 12px;">Inspiration4 Commercial Spaceflight Mission. 4 civilian crew members monitored pre-, in-, and post-flight (~585 km orbit).</p>
             <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; font-size: 13px; font-family: monospace;">
-              <div>Tripulante 1: Hematocrito 46.2% (+11% vs L-30)</div>
-              <div>Tripulante 2: Hematocrito 44.8% (+9% vs L-30)</div>
-              <div>Tripulante 3: Hematocrito 47.1% (+13% vs L-30)</div>
+              <div>Crew 1: Hematocrit 46.2% (+11% vs L-30)</div>
+              <div>Crew 2: Hematocrit 44.8% (+9% vs L-30)</div>
+              <div>Crew 3: Hematocrit 47.1% (+13% vs L-30)</div>
+              <div>Crew 4: Hematocrit 45.0% (+10% vs L-30)</div>
             </div>
             <p style="margin-top: 10px; font-size: 12px; color: #66d8d1;">
-              * Regla biofísica: En microgravedad la contracción plasmática aumenta el hematocrito adaptativo; el software evita clasificarlo erróneamente como deshidratación.
+              * Biophysical flight rule: In microgravity, plasma volume contraction creates an adaptive 9–13% hemoconcentration. Mins-Health prevents false terrestrial dehydration alarms.
             </p>
           </div>
 
           <div class="deck-card">
-            <h4>Estándares Oficiales NASA Integrados</h4>
+            <h4>Official NASA Aerospace Standards</h4>
             <ul style="font-size: 14px; color: #cbd5e1; line-height: 1.8; padding-left: 20px; margin: 0;">
-              <li><strong>NASA-STD-3001 Vol 1 & 2:</strong> Umbrales de presión arterial, taquicardia y saturación.</li>
-              <li><strong>NASA HRP Risk Matrix:</strong> Radiación SPE, descondicionamiento cardiovascular, estrés de confinamiento y SANS.</li>
-              <li><strong>NASA PVT (Psychomotor Vigilance Test):</strong> Detección de fatiga psicomotora y lapsus cognitivos en cabina.</li>
-              <li><strong>Límite de Carrera de Radiación:</strong> Control estricto de dosis acumulada (NASA 600 mSv).</li>
+              <li><strong>NASA-STD-3001 Vol 1 & 2:</strong> Permissible operational health thresholds for blood pressure, core temperature, and cardiac rhythm.</li>
+              <li><strong>NASA HRP Risk Matrix:</strong> Acute radiation events (SPE), cardiovascular deconditioning, confinement stress, and SANS.</li>
+              <li><strong>NASA PVT (Psychomotor Vigilance Test):</strong> Real-time detection of cognitive lapses and operational neuromuscular fatigue.</li>
+              <li><strong>Radiation Career Limit:</strong> Continuous monitoring against NASA's 600 mSv permissible lifetime dose standard.</li>
             </ul>
           </div>
         </div>
       </section>
 
-      <!-- SLIDE 5: GEMELO DIGITAL Y ANATOMÍA 3D -->
+      <!-- SLIDE 5: 3D ANATOMICAL DIGITAL TWIN -->
       <section>
-        <h2>Gemelo Digital 3D de Alta Fidelidad</h2>
-        <h3 style="font-size: 1.05em; color: #94a3b8;">Integración de anatomía abierta BodyParts3D y Three.js</h3>
+        <h2>High-Fidelity 3D Anatomical Twin</h2>
+        <h3 style="font-size: 1.05em; color: #94a3b8;">Integration of Open-Source BodyParts3D and Three.js</h3>
         
         <div class="grid-2">
           <div class="deck-card">
-            <h4>Esqueleto Real 3D (BodyParts3D)</h4>
-            <p>Decodificación de malla poligonal de esqueleto humano completo (cráneo, columna vertebral, costillas y pelvis) desde el repositorio abierto <em>ivancamilo10/mitina</em>.</p>
+            <h4>Real 3D Human Skeleton (BodyParts3D)</h4>
+            <p>Rigorous polygonal mesh decoding of a complete human skeleton (cranium, cervical/thoracic spine, ribcage, and pelvic girdle) adapted from the open-source repository <em>ivancamilo10/mitina</em>.</p>
             <p style="margin-top: 12px; font-size: 13px; color: #94a3b8;">
-              El traje traslúcido frosted elimina líneas de polígonos genéricos, permitiendo la visualización limpia de los órganos diana sin estorbar la navegación.
+              The frosted translucent astronaut suit eliminates intrusive wireframe mesh lines, ensuring an unobstructed view of internal organs and clinical hotspots.
             </p>
           </div>
 
           <div class="deck-card">
-            <h4>Corazón Anatómico Sistólico Real</h4>
-            <p>Construcción procedural con arco aórtico (3 troncos supraaórticos), tronco pulmonar y arterias coronarias (descendente anterior LAD).</p>
+            <h4>Real Systolic Anatomical 3D Heart</h4>
+            <p>Procedural vascular construction complete with the aortic arch, three supra-aortic vessels, pulmonary trunk, and left anterior descending (LAD) coronary arteries.</p>
             <p style="margin-top: 12px; font-size: 13px; color: #94a3b8;">
-              Pulsación y torsión ventricular matemática en tiempo real sincronizada con la telemetría viva de BPM del astronauta.
+              Dynamic mathematical ventricular torsion and systolic contraction pulsation synchronized in real time with the astronaut's live heart rate.
             </p>
           </div>
         </div>
       </section>
 
-      <!-- SLIDE 6: PROTOCOLO SBAR Y DSN -->
+      <!-- SLIDE 6: SBAR HANDOVER & DSN TELEMETRY -->
       <section>
-        <h2>Traspaso Clínico SBAR & Enlace DSN</h2>
-        <h3 style="font-size: 1.05em; color: #94a3b8;">Paquetes médicos estructurados con firma de integridad</h3>
+        <h2>SBAR Clinical Handover & DSN Uplink</h2>
+        <h3 style="font-size: 1.05em; color: #94a3b8;">Structured Aerospace Handover with Cryptographic Integrity</h3>
         
         <div class="grid-2">
           <div class="deck-card">
-            <h4>Estructura Estándar Hospitalaria SBAR</h4>
+            <h4>Standard Hospital SBAR Protocol</h4>
             <div style="font-size: 13px; line-height: 1.6; color: #cbd5e1;">
-              <div><strong style="color: #66d8d1;">S (Situation):</strong> Contingencia actual, estado de triage y valores críticos.</div>
-              <div><strong style="color: #9975ff;">B (Background):</strong> Misión (ISS/Luna/Marte), dosis acumulada y basales.</div>
-              <div><strong style="color: #f59e0b;">A (Assessment):</strong> Análisis sinérgico de causas y factores de riesgo.</div>
-              <div><strong style="color: #10b981;">R (Recommendation):</strong> Contra-medidas inmediatas y fármacos sugeridos.</div>
+              <div><strong style="color: #66d8d1;">S (Situation):</strong> Active contingency, triage state, and critical physiological deviations.</div>
+              <div><strong style="color: #9975ff;">B (Background):</strong> Mission context (ISS/Moon/Mars), accumulated career dose, and baseline values.</div>
+              <div><strong style="color: #f59e0b;">A (Assessment):</strong> Multi-hazard synergistic breakdown and clinical root causes.</div>
+              <div><strong style="color: #10b981;">R (Recommendation):</strong> Immediate crew countermeasures, prescribed countermeasures, and pharmacological steps.</div>
             </div>
           </div>
 
           <div class="deck-card">
-            <h4>Telemetría DSN con Firma CRC32</h4>
-            <p>Generación de paquetes comprimidos con comprobación de redundancia cíclica (CRC32) para transmisión robusta a través de la Red de Espacio Profundo.</p>
+            <h4>DSN Uplink with CRC32 Checksum</h4>
+            <p>Generates compact, bandwidth-efficient telemetry packets stamped with cyclic redundancy checks (CRC32) for deep space communications channels.</p>
             <div style="margin-top: 15px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px; font-family: monospace; font-size: 12px; color: #66d8d1;">
               DSN-PACKET: VANCE-01-20261115-SPE<br>
               CHECKSUM: CRC32(0x89AB4F12) · VERIFIED<br>
-              TIME-DELAY: ~1.28 s (Luna) / 20 min (Marte)
+              TIME-DELAY: ~1.28 s (Moon) / ~20 min (Mars)
             </div>
           </div>
         </div>
       </section>
 
-      <!-- SLIDE 7: SUITE DE SIMULACIÓN Y MULTI-TRIPULACIÓN -->
+      <!-- SLIDE 7: CONTINGENCY SUITE & MULTI-CREW -->
       <section>
-        <h2>Suite de Contingencias & Multi-Tripulación</h2>
-        <h3 style="font-size: 1.05em; color: #94a3b8;">Herramientas para evaluación en vivo del jurado NASA</h3>
+        <h2>Contingency Injection & Multi-Crew Support</h2>
+        <h3 style="font-size: 1.05em; color: #94a3b8;">Evaluator Tools for Interactive Live Demonstrations</h3>
         
         <div class="grid-2">
           <div class="deck-card">
-            <h4>Inyección de Contingencias en 1 Clic</h4>
+            <h4>1-Click Emergency Flight Contingencies</h4>
             <ul style="font-size: 13px; color: #cbd5e1; line-height: 1.7; padding-left: 18px; margin: 0;">
-              <li><strong>Tormenta Solar Crítica (SPE):</strong> Fiebre 39.1°C, TA 168 mmHg, dosis 120 µSv/h.</li>
-              <li><strong>Microfuga en Traje EVA:</strong> Taquicardia súbita 126 BPM, hipoxia y descenso rápido de glucosa.</li>
-              <li><strong>Aislamiento Prolongado:</strong> Sueño < 4.5h, fatiga cognitiva severa y alteración anímica.</li>
-              <li><strong>Normalización Inmediata:</strong> Botón de calma para restablecer telemetría basal.</li>
+              <li><strong>Solar Proton Event (SPE):</strong> Core temp 39.1°C, BP 168/104 mmHg, radiation flux 120 µSv/h.</li>
+              <li><strong>EVA Spacesuit Micro-leak:</strong> Acute tachycardia 126 BPM, drop in glucose, and accelerated breathing.</li>
+              <li><strong>Chronic Sleep Debt & Isolation:</strong> Sleep &lt; 4.5h, severe cognitive fatigue, and mood collapse.</li>
+              <li><strong>Nominal Calm Recovery:</strong> One-click reset to nominal flight equilibrium.</li>
             </ul>
           </div>
 
           <div class="deck-card">
-            <h4>Roster de Tripulantes Artemis 2026</h4>
-            <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px;">Conmutación instantánea de perfiles y líneas base individuales:</p>
+            <h4>Artemis 2026 Crew Expedition Roster</h4>
+            <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 12px;">Instant switching of personalized physiological profiles:</p>
             <div style="font-size: 12px; line-height: 1.6; color: #94a3b8;">
-              <div>• <strong>Cmdr. Alex Vance</strong> (Comandante · 142.5 mSv acumulados)</div>
-              <div>• <strong>Dr. Jessica Watkins</strong> (Oficial Médico · 88.0 mSv acumulados)</div>
-              <div>• <strong>Pilot Reid Wiseman</strong> (Piloto de Sistemas · 165.2 mSv acumulados)</div>
-              <div>• <strong>Spec. Jeremy Hansen</strong> (Soporte Vital · 110.0 mSv acumulados)</div>
+              <div>• <strong>Cmdr. Alex Vance</strong> (Mission Commander · 142.5 mSv accumulated)</div>
+              <div>• <strong>Dr. Jessica Watkins</strong> (Crew Medical Officer · 88.0 mSv accumulated)</div>
+              <div>• <strong>Pilot Reid Wiseman</strong> (Flight Propulsion Pilot · 165.2 mSv accumulated)</div>
+              <div>• <strong>Spec. Jeremy Hansen</strong> (Life Support Specialist · 110.0 mSv accumulated)</div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- SLIDE 8: ARQUITECTURA TECNOLÓGICA -->
+      <!-- SLIDE 8: TECH STACK & RIGOROUS TESTING -->
       <section>
-        <h2>Stack Tecnológico & Calidad de Código</h2>
-        <h3 style="font-size: 1.05em; color: #94a3b8;">Software moderno de grado aeroespacial</h3>
+        <h2>Technical Architecture & Rigorous Testing</h2>
+        <h3 style="font-size: 1.05em; color: #94a3b8;">Aerospace-Grade Modern Software Engineering</h3>
         
         <div class="grid-3">
           <div class="deck-card">
-            <h4>Frontend Moderno</h4>
-            <p>Next.js 15 App Router, React 19, TypeScript estricto, Tailwind CSS con paleta espacial de alto contraste.</p>
+            <h4>Modern Frontend</h4>
+            <p>Next.js 15 App Router, React 19, strict TypeScript, Tailwind CSS with high-contrast aerospace color palette.</p>
           </div>
 
           <div class="deck-card">
-            <h4>Gráficos & Audio</h4>
-            <p>Three.js WebGL para renderizado 3D de esqueleto y órganos, Web Audio API para síntesis de audio táctico de cabina.</p>
+            <h4>3D Visuals & Synthesized Audio</h4>
+            <p>Three.js WebGL for skeletal and organ rendering, Web Audio API for tactical cockpit audio synthesis.</p>
           </div>
 
           <div class="deck-card">
-            <h4>Testing Automatizado</h4>
-            <p>Suite completa de pruebas de humo e integración con Playwright (100% de tests aprobados en 6 viewports).</p>
+            <h4>Automated Testing Suite</h4>
+            <p>Playwright end-to-end integration and smoke tests (100% passing across 6 responsive viewports from 800px to 1920px).</p>
           </div>
         </div>
 
         <div style="margin-top: 24px;" class="tag-grid">
-          <span class="tag-pill" style="border-color: #10b981; color: #6ee7b7;">Cero Emojis (Iconografía Médica SVG Lucide)</span>
-          <span class="tag-pill" style="border-color: #66d8d1; color: #a5f3fc;">Soporte Bilingüe Español / English</span>
-          <span class="tag-pill">Consistencia Temporal Estricta 2026</span>
-          <span class="tag-pill">Visor 3D Central 100% Despejado</span>
+          <span class="tag-pill" style="border-color: #10b981; color: #6ee7b7;">Zero Emojis (Lucide Medical SVG Icons)</span>
+          <span class="tag-pill" style="border-color: #66d8d1; color: #a5f3fc;">Bilingual Spanish & English Support</span>
+          <span class="tag-pill">Strict 2026 Temporal Consistency</span>
+          <span class="tag-pill">100% Clean Central 3D Viewport</span>
         </div>
       </section>
 
-      <!-- SLIDE 9: IMPACTO Y CONCLUSIÓN -->
+      <!-- SLIDE 9: OPERATIONAL IMPACT -->
       <section data-background-gradient="radial-gradient(circle at center, #1b1633 0%, #08090d 100%)">
-        <h2>Impacto en la Exploración Espacial</h2>
-        <h3 style="color: #66d8d1; font-weight: 500;">Hacia la Nueva Frontera (The Next Frontier)</h3>
+        <h2>Impact on Human Space Exploration</h2>
+        <h3 style="color: #66d8d1; font-weight: 500;">Pioneering The Next Frontier</h3>
         
-        <p style="font-size: 18px; color: #cbd5e1; max-width: 820px; margin: 20px auto 30px auto; line-height: 1.6;">
-          Mins-Health transforma los datos biométricos crudos en decisiones médicas claras y accionables. 
-          Al empoderar a la tripulación con autonomía clínica total cuando la Tierra está a millones de kilómetros, 
-          garantizamos la salud y el éxito de las misiones que llevarán a la humanidad de vuelta a la Luna y por primera vez a Marte.
+        <p style="font-size: 18px; color: #cbd5e1; max-width: 840px; margin: 20px auto 30px auto; line-height: 1.6;">
+          Mins-Health transforms raw biosensors and environmental telemetry into immediate, unambiguous clinical decisions. 
+          By empowering deep space crews with complete medical autonomy when Earth is reduced to a pale blue dot, 
+          we safeguard the lives of the pioneers carrying humanity back to the Moon and onward to Mars.
         </p>
 
         <div class="brand-badge" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #6ee7b7; font-size: 16px; padding: 10px 24px;">
-          Proyecto Listo para Evaluación del Jurado · NASA Space Apps Challenge 2026
+          Ready for NASA Space Apps Challenge 2026 Jury Evaluation
         </div>
       </section>
 
     </div>
   </div>
 
-  <!-- Scripts Reveal.js -->
+  <!-- Reveal.js Scripts CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/highlight/highlight.min.js"></script>
   <script>

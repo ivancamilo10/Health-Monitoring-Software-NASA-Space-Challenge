@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mins-Health · Autonomous Bio-Astronautics System (NASA Space Apps 2026)</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Three.js & OrbitControls CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --primary: #9975ff;
+      --secondary: #66d8d1;
+      --danger: #f43f5e;
+      --warning: #f59e0b;
+      --success: #10b981;
+    }
+    body {
+      background-color: #08090d;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      overflow: hidden;
+      user-select: none;
+    }
+    .glass-panel {
+      background: rgba(17, 18, 24, 0.88);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+    .glass-panel-hover:hover {
+      background: rgba(25, 27, 36, 0.95);
+      border-color: rgba(153, 117, 255, 0.35);
+    }
+    .btn-primary-gradient {
+      background: linear-gradient(135deg, #794ff5 0%, #9975ff 50%, #bca6ff 100%);
+      color: #ffffff;
+      border-radius: 0.5rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(153, 117, 255, 0.3);
+    }
+    .btn-primary-gradient:hover {
+      box-shadow: 0 6px 20px rgba(153, 117, 255, 0.5);
+      transform: translateY(-1px);
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(153, 117, 255, 0.4); }
+  </style>
+</head>
+<body class="h-screen w-screen flex flex-col bg-[#08090d]">
+
+  <!-- ==========================================
+       TOP HEADER BAR
+       ========================================== -->
+  <header class="h-16 px-4 bg-[#0c0d12]/95 backdrop-blur-xl border-b border-white/10 flex items-center justify-between gap-3 flex-shrink-0 z-30 select-none relative">
+    
+    <!-- BRAND & MISSION -->
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-[#171822] border border-white/15 flex items-center justify-center p-1.5 shadow-inner">
+        <!-- SVG Space Apps Logo -->
+        <svg viewBox="0 0 24 24" fill="none" class="w-full h-full text-[#9975ff]" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 3a9 9 0 0 1 9 9"/>
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 15a3 3 0 0 1-3-3"/>
+        </svg>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-base font-bold text-white tracking-tight">Mins-Health</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-slate-300 font-mono">2026</span>
+          <span class="text-[11px] px-2 py-0.5 rounded-full bg-[#9975ff]/20 text-[#bca6ff] font-medium border border-[#9975ff]/30">
+            by Mins Solutions TI
+          </span>
+        </div>
+        <p class="text-[10px] text-slate-400 hidden xl:block leading-none mt-0.5">
+          NASA Space Apps Challenge 2026 · The Next Frontier
+        </p>
+      </div>
+
+      <div class="hidden lg:block w-px h-6 bg-white/10 mx-1"></div>
+
+      <!-- ASTRONAUT ROSTER SELECTOR -->
+      <div class="relative hidden sm:block">
+        <select id="crewSelect" class="bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white font-semibold cursor-pointer focus:outline-none">
+          <option value="vance" class="bg-[#111218] text-white">Cmdr. Alex Vance (Commander / EVA Lead)</option>
+          <option value="watkins" class="bg-[#111218] text-white">Dr. Jessica Watkins (Medical Officer)</option>
+          <option value="wiseman" class="bg-[#111218] text-white">Pilot Reid Wiseman (Flight Pilot)</option>
+          <option value="hansen" class="bg-[#111218] text-white">Spec. Jeremy Hansen (Life Support)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- MISSION DESTINATION & DSN LATENCY -->
+    <div class="flex items-center gap-2">
+      <div class="flex items-center bg-black/40 p-1 rounded-lg border border-white/10 text-xs font-semibold">
+        <button id="btnISS" onclick="setMission('ISS')" class="px-3 py-1.5 rounded-md bg-[#9975ff] text-white">ISS</button>
+        <button id="btnMoon" onclick="setMission('MOON')" class="px-3 py-1.5 rounded-md text-slate-400 hover:text-white">Moon</button>
+        <button id="btnMars" onclick="setMission('MARS')" class="px-3 py-1.5 rounded-md text-slate-400 hover:text-white">Mars</button>
+      </div>
+
+      <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-300">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#66d8d1] opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-[#66d8d1]"></span>
+        </span>
+        <span class="text-slate-400">Earth Delay:</span>
+        <span id="delayDisplay" class="font-semibold text-white font-mono tracking-tight">24 ms (Live)</span>
+      </div>
+    </div>
+
+    <!-- ACTION BUTTONS & SLIDES LINK -->
+    <div class="flex items-center gap-2">
+      <!-- Presentation Deck Link -->
+      <a href="./presentation.html" target="_blank" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 font-semibold text-xs cursor-pointer transition-all" title="Open Official Reveal.js Presentation Slides">
+        <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
+        <span class="hidden md:inline">Pitch Deck (Slides)</span>
+      </a>
+
+      <!-- DSN Telemetry Uplink -->
+      <button onclick="openModal('dsnModal')" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300 font-semibold text-xs cursor-pointer transition-all" title="Open DSN Telemetry & SBAR Handover">
+        <i data-lucide="radio" class="w-3.5 h-3.5 animate-pulse"></i>
+        <span class="hidden sm:inline">DSN Uplink</span>
+      </button>
+
+      <!-- Daily Health Checkup -->
+      <button onclick="openModal('checkupModal')" class="btn-primary-gradient flex items-center gap-1.5 px-4 py-2 font-semibold text-xs cursor-pointer shadow-md">
+        <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+        <span>Daily Checkup</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================
+       MAIN COCKPIT: 3 DEDICATED ZONES
+       ========================================== -->
+  <main class="flex-1 flex flex-col lg:flex-row overflow-hidden relative z-10">
+
+    <!-- ========================================
+         ZONE 1: HOW AM I? (PHYSIOLOGICAL BENTO)
+         ======================================== -->
+    <section class="w-full lg:w-[380px] xl:w-[420px] flex-shrink-0 bg-[#0c0d12]/60 border-r border-white/10 p-3.5 flex flex-col gap-3 overflow-y-auto">
+      
+      <!-- Physiological Status Overview Banner -->
+      <div id="overviewBanner" class="p-3.5 rounded-2xl glass-panel border border-emerald-500/30 transition-all">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider">How am I?</h2>
+            <span class="text-xs text-slate-300">· Astronaut Vitals</span>
+          </div>
+          <span id="overallBadge" class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+            <span id="overallBadgeText">Normal</span>
+          </span>
+        </div>
+        <p id="primaryAdvice" class="text-xs text-slate-200 leading-relaxed">
+          <strong class="text-white">Primary Advice:</strong> All physiological indicators in nominal flight balance. Continue mission timeline.
+        </p>
+      </div>
+
+      <!-- 6 Main Biometric Bento Tiles -->
+      <div class="grid grid-cols-2 gap-2.5">
+        
+        <!-- 1. Blood Pressure -->
+        <div onclick="selectHotspot('blood_pressure')" class="p-3 rounded-xl glass-panel glass-panel-hover cursor-pointer border border-white/10">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs text-slate-400 font-medium">Blood Pressure</span>
+            <i data-lucide="eye" class="w-3.5 h-3.5 text-cyan-400"></i>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <span id="val_bp" class="text-2xl font-extrabold text-white font-mono">112</span>
+            <span class="text-[10px] text-slate-400">mmHg</span>
+          </div>
+          <div class="flex items-center justify-between mt-1 text-[11px]">
+            <span id="status_bp" class="text-emerald-400 font-semibold">Normal</span>
+            <span class="text-slate-500">Base: 115</span>
+          </div>
+        </div>
+
+        <!-- 2. Heart Rate (With Live SVG Waveform) -->
+        <div onclick="selectHotspot('heart_rate')" class="p-3 rounded-xl glass-panel glass-panel-hover cursor-pointer border border-white/10">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs text-slate-400 font-medium">Heart Rate</span>
+            <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-400 animate-pulse"></i>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <span id="val_hr" class="text-2xl font-extrabold text-white font-mono">60</span>
+            <span class="text-[10px] text-slate-400">BPM</span>
+          </div>
+          <!-- Live SVG Pulse Waveform -->
+          <svg class="w-full h-4 text-emerald-400 mt-1" viewBox="0 0 100 20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M0,10 L30,10 L35,3 L40,17 L45,2 L50,14 L55,10 L100,10" />
+          </svg>
+          <div class="flex items-center justify-between text-[11px] mt-0.5">
+            <span id="status_hr" class="text-emerald-400 font-semibold">Normal</span>
+            <span class="text-slate-500">Base: 64</span>
+          </div>
+        </div>
+
+        <!-- 3. Blood Glucose -->
+        <div onclick="selectHotspot('glucose')" class="p-3 rounded-xl glass-panel glass-panel-hover cursor-pointer border border-white/10">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs text-slate-400 font-medium">Glucose</span>
+            <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <span id="val_glucose" class="text-2xl font-extrabold text-white font-mono">88</span>
+            <span class="text-[10px] text-slate-400">mg/dL</span>
+          </div>
+          <div class="flex items-center justify-between mt-1 text-[11px]">
+            <span id="status_glucose" class="text-emerald-400 font-semibold">Normal</span>
+            <span class="text-slate-500">Base: 90</span>
+          </div>
+        </div>
+
+        <!-- 4. Core Body Temperature -->
+        <div onclick="selectHotspot('core_temp')" class="p-3 rounded-xl glass-panel glass-panel-hover cursor-pointer border border-white/10">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs text-slate-400 font-medium">Core Temp</span>
+            <i data-lucide="thermometer" class="w-3.5 h-3.5 text-orange-400"></i>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <span id="val_temp" class="text-2xl font-extrabold text-white font-mono">36.6</span>
+            <span class="text-[10px] text-slate-400">°C</span>
+          </div>
+          <div class="flex items-center justify-between mt-1 text-[11px]">
+            <span id="status_temp" class="text-emerald-400 font-semibold">Normal</span>
+            <span class="text-slate-500">Base: 36.7</span>
+          </div>
+        </div>
+
+        <!-- 5. Sleep Recovery -->
+        <div onclick="selectHotspot('sleep_hours')" class="p-3 rounded-xl glass-panel glass-panel-hover cursor-pointer border border-white/10">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs text-slate-400 font-medium">Sleep Hours</span>
+            <i data-lucide="moon" class="w-3.5 h-3.5 text-indigo-400"></i>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <span id="val_sleep" class="text-2xl font-extrabold text-white font-mono">7.2</span>
+            <span class="text-[10px] text-slate-400">hours</span>
+          </div>
+          <div class="flex items-center justify-between mt-1 text-[11px]">
+            <span id="status_sleep" class="text-emerald-400 font-semibold">Normal</span>
+            <span class="text-slate-500">Base: 7.5</span>
+          </div>
+        </div>
+
+        <!-- 6. Mood & Well-being -->
+        <div onclick="selectHotspot('mood')" class="p-3 rounded-xl glass-panel glass-panel-hover cursor-pointer border border-white/10">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs text-slate-400 font-medium">Mood & Energy</span>
+            <i data-lucide="brain" class="w-3.5 h-3.5 text-purple-400"></i>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <span id="val_mood" class="text-2xl font-extrabold text-white font-mono">5</span>
+            <span class="text-[10px] text-slate-400">/ 5</span>
+          </div>
+          <div class="flex items-center justify-between mt-1 text-[11px]">
+            <span id="status_mood" class="text-emerald-400 font-semibold">Optimal</span>
+            <span class="text-slate-500">Base: 4.5</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 7. Cosmic Radiation & Lifetime Progress -->
+      <div onclick="selectHotspot('radiation_dose')" class="p-3.5 rounded-xl glass-panel glass-panel-hover cursor-pointer border border-white/10">
+        <div class="flex items-center justify-between mb-1.5">
+          <div class="flex items-center gap-2">
+            <i data-lucide="radio" class="w-4 h-4 text-[#66d8d1]"></i>
+            <span class="text-xs font-bold text-white uppercase tracking-wider">Cosmic Radiation</span>
+          </div>
+          <span id="status_radiation" class="text-xs text-emerald-400 font-semibold">Nominal Flux</span>
+        </div>
+        <div class="flex items-baseline justify-between mb-1">
+          <div class="flex items-baseline gap-1">
+            <span id="val_radiation" class="text-xl font-bold font-mono text-white">490</span>
+            <span class="text-xs text-slate-400">µSv/day</span>
+          </div>
+          <span class="text-[11px] text-slate-400">Career: <strong id="careerRad" class="text-white">142.5</strong> / 600 mSv</span>
+        </div>
+        <!-- Career Progress Bar -->
+        <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden mt-1">
+          <div id="radBar" class="h-full bg-gradient-to-r from-emerald-500 via-[#9975ff] to-rose-500 rounded-full" style="width: 23.75%;"></div>
+        </div>
+      </div>
+
+      <!-- Quick 1-Click Contingency Evaluator Injections -->
+      <div class="p-3 rounded-xl bg-black/40 border border-white/10 mt-auto">
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+          <span>Flight Contingency Simulators</span>
+          <span class="text-[10px] text-purple-400">1-Click</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-xs font-semibold">
+          <button onclick="injectScenario('SPE')" class="p-2 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 transition-all text-left">
+            Solar Storm (SPE)
+          </button>
+          <button onclick="injectScenario('EVA')" class="p-2 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 transition-all text-left">
+            Suit Micro-leak
+          </button>
+          <button onclick="injectScenario('SLEEP')" class="p-2 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 transition-all text-left">
+            Sleep Debt (PVT)
+          </button>
+          <button onclick="injectScenario('NOMINAL')" class="p-2 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 transition-all text-left">
+            Nominal Reset
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================
+         ZONE 2: WHERE? (3D DIGITAL TWIN VIEWPORT)
+         ======================================== -->
+    <section class="flex-1 relative bg-gradient-to-b from-[#090a10] to-[#040407] overflow-hidden flex items-center justify-center">
+      
+      <!-- Discrete Top-Right Toggle: Show / Hide Organs (ZERO CENTER CLUTTER) -->
+      <div class="absolute top-3.5 right-4 z-20">
+        <button id="toggleOrgansBtn" onclick="toggleXray()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold glass-panel text-slate-200 hover:text-white hover:bg-white/10 transition-all cursor-pointer shadow-lg border border-white/15">
+          <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+          <span id="xrayBtnText">Show Organs & Skeleton</span>
+        </button>
+      </div>
+
+      <!-- Three.js Canvas Container -->
+      <div id="threeContainer" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
+
+      <!-- Quick Organ Hotspot Pills (Bottom Anchored) -->
+      <div class="absolute bottom-4 inset-x-5 z-20 flex flex-wrap justify-center gap-2 pointer-events-auto">
+        <button onclick="selectHotspot('mood')" class="text-xs px-3 py-1.5 rounded-lg glass-panel text-slate-300 hover:text-white flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+          <span>Brain & Cognition</span>
+        </button>
+        <button onclick="selectHotspot('blood_pressure')" class="text-xs px-3 py-1.5 rounded-lg glass-panel text-slate-300 hover:text-white flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+          <span>Eyes & SANS</span>
+        </button>
+        <button onclick="selectHotspot('heart_rate')" class="text-xs px-3 py-1.5 rounded-lg bg-[#9975ff] text-white font-semibold flex items-center gap-1.5 shadow-lg shadow-purple-500/30">
+          <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+          <span>Heart Rhythm</span>
+        </button>
+        <button onclick="selectHotspot('core_temp')" class="text-xs px-3 py-1.5 rounded-lg glass-panel text-slate-300 hover:text-white flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-orange-400"></span>
+          <span>Core Temperature</span>
+        </button>
+        <button onclick="selectHotspot('glucose')" class="text-xs px-3 py-1.5 rounded-lg glass-panel text-slate-300 hover:text-white flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          <span>Metabolism & Glucose</span>
+        </button>
+        <button onclick="selectHotspot('radiation_dose')" class="text-xs px-3 py-1.5 rounded-lg glass-panel text-slate-300 hover:text-white flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span>Cosmic Radiation</span>
+        </button>
+      </div>
+
+    </section>
+
+    <!-- ========================================
+         ZONE 3: WHAT TO DO? (CLINICAL REASONING & SBAR)
+         ======================================== -->
+    <section class="w-full lg:w-[400px] xl:w-[440px] flex-shrink-0 bg-[#0c0d12]/80 border-l border-white/10 p-4 flex flex-col gap-3.5 overflow-y-auto">
+      
+      <!-- Header: Selected Zone Details -->
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div>
+          <h2 class="text-sm font-bold text-white uppercase tracking-wider">What to do?</h2>
+          <span class="text-xs text-slate-300">· Clinical Protocol & Countermeasures</span>
+        </div>
+        <span id="zoneStatusBadge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+          Nominal
+        </span>
+      </div>
+
+      <!-- Focused Indicator Overview -->
+      <div class="glass-panel p-3.5 rounded-xl border border-white/10">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 id="drawerTitle" class="text-base font-bold text-white">Heart Rhythm (Cardiovascular)</h3>
+            <p id="drawerZone" class="text-xs text-slate-400">Anatomical Zone: Left Hemithorax</p>
+          </div>
+          <div id="drawerValue" class="text-2xl font-mono font-extrabold text-white">60 <span class="text-xs font-normal text-slate-400">BPM</span></div>
+        </div>
+        <p id="drawerExplanation" class="text-xs text-slate-300 mt-2.5 leading-relaxed">
+          Without gravity, the cardiovascular system works against lower hydrostatic resistance. Cardiac output is stable, myocardial oxygen demand is nominal.
+        </p>
+      </div>
+
+      <!-- Multi-Hazard Synergy Alert (HRP Risk Matrix) -->
+      <div id="synergyCard" class="p-3.5 rounded-xl bg-orange-950/30 border border-orange-500/30 text-xs text-orange-200">
+        <div class="flex items-center gap-2 mb-1">
+          <i data-lucide="sparkles" class="w-4 h-4 text-orange-400"></i>
+          <strong class="text-white font-semibold">Active Synergistic Flight Risk</strong>
+        </div>
+        <p id="synergyText" class="text-slate-300 leading-relaxed">
+          Microgravity fluid shift combined with high workload increases intracranial pressure. Monitor visual acuity and intracranial vascular resistance.
+        </p>
+      </div>
+
+      <!-- Actionable Checklist (Crew Self-Care Steps) -->
+      <div class="space-y-2">
+        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Prescribed Action Steps</h4>
+        <label class="flex items-start gap-2.5 p-2.5 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-200 cursor-pointer">
+          <input type="checkbox" checked class="mt-0.5 rounded border-white/20 text-[#9975ff] focus:ring-0">
+          <span>Complete prescribed 45-min cycle ergometer aerobic exercise to sustain venous return.</span>
+        </label>
+        <label class="flex items-start gap-2.5 p-2.5 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-200 cursor-pointer">
+          <input type="checkbox" checked class="mt-0.5 rounded border-white/20 text-[#9975ff] focus:ring-0">
+          <span>Maintain strict electrolytic hydration log (minimum 1.8 L daily target).</span>
+        </label>
+        <label class="flex items-start gap-2.5 p-2.5 rounded-lg bg-white/5 border border-white/10 text-xs text-slate-200 cursor-pointer">
+          <input type="checkbox" class="mt-0.5 rounded border-white/20 text-[#9975ff] focus:ring-0">
+          <span>Conduct evening fundoscopic imaging if visual blind spots or headaches manifest.</span>
+        </label>
+      </div>
+
+      <!-- SBAR Handover & PDF Action Buttons -->
+      <div class="pt-2 border-t border-white/10 mt-auto flex flex-col gap-2">
+        <button onclick="downloadSBAR()" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300 font-semibold text-xs transition-all cursor-pointer">
+          <i data-lucide="file-down" class="w-4 h-4"></i>
+          <span>Download SBAR Medical Handover (CRC32 Signed)</span>
+        </button>
+
+        <button onclick="window.print()" class="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-medium text-xs transition-all cursor-pointer">
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span>Print Clinical Summary (PDF)</span>
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ==========================================
+       MODAL 1: DSN TELEMETRY & SBAR HANDOVER
+       ========================================== -->
+  <div id="dsnModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="w-full max-w-2xl bg-[#0f1016] border border-white/15 rounded-2xl shadow-2xl p-5 text-left">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="radio" class="w-5 h-5 text-cyan-400"></i>
+          <div>
+            <h3 class="text-sm font-bold text-white">Deep Space Network (DSN) Telemetry Packet</h3>
+            <p class="text-[11px] text-slate-400">Flight Surgeon SBAR Handover with CRC32 Checksum Verification</p>
+          </div>
+        </div>
+        <button onclick="closeModal('dsnModal')" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="bg-black/60 p-4 rounded-xl border border-white/10 font-mono text-xs text-cyan-300 space-y-2 mb-4 overflow-x-auto">
+        <div>// NASA SBAR CLINICAL TELEMETRY HANDOVER</div>
+        <div>MISSION_DESTINATION: <span id="dsnMission">ISS (LEO Orbit)</span></div>
+        <div>CREW_MEMBER: <span id="dsnCrew">Cmdr. Alex Vance (AV-01)</span></div>
+        <div>TIMESTAMP: 2026-11-15T23:55:00Z</div>
+        <div>INTEGRITY_CHECKSUM: <span class="text-emerald-400 font-bold">CRC32(0x89AB4F12) · VERIFIED</span></div>
+        <div class="border-t border-white/10 pt-2 text-slate-300">
+          [SITUATION]: Telemetry within flight baselines. No unmitigated cardiovascular or radiation contingencies.<br>
+          [BACKGROUND]: Day 42 of Expedition. Total cumulative career dose: 142.5 mSv.<br>
+          [ASSESSMENT]: Autonomous Edge Engine confirms nominal status under NASA-STD-3001 Vol 1 standards.<br>
+          [RECOMMENDATION]: Sustain scheduled dietary electrolytes, exercise countermeasures, and circadian rhythm.
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <button onclick="downloadSBAR()" class="btn-primary-gradient px-4 py-2 text-xs font-semibold">
+          Export JSON Packet
+        </button>
+        <button onclick="closeModal('dsnModal')" class="px-4 py-2 rounded-lg bg-white/10 text-white text-xs font-semibold">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 2: DAILY HEALTH CHECKUP WIZARD
+       ========================================== -->
+  <div id="checkupModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="w-full max-w-lg bg-[#0f1016] border border-white/15 rounded-2xl shadow-2xl p-5 text-left">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+        <div class="flex items-center gap-2">
+          <i data-lucide="clipboard-list" class="w-5 h-5 text-[#9975ff]"></i>
+          <h3 class="text-sm font-bold text-white">Daily 2-Minute Health Checkup</h3>
+        </div>
+        <button onclick="closeModal('checkupModal')" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Resting Heart Rate (BPM): <span id="sliderHrVal" class="text-white font-mono">60</span></label>
+          <input type="range" min="40" max="140" value="60" oninput="updateInput('hr', this.value)" class="w-full accent-[#9975ff]">
+        </div>
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Systolic Blood Pressure (mmHg): <span id="sliderBpVal" class="text-white font-mono">112</span></label>
+          <input type="range" min="90" max="180" value="112" oninput="updateInput('bp', this.value)" class="w-full accent-[#9975ff]">
+        </div>
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Core Temperature (°C): <span id="sliderTempVal" class="text-white font-mono">36.6</span></label>
+          <input type="range" min="35.0" max="40.0" step="0.1" value="36.6" oninput="updateInput('temp', this.value)" class="w-full accent-[#9975ff]">
+        </div>
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">Restorative Sleep (Hours): <span id="sliderSleepVal" class="text-white font-mono">7.2</span></label>
+          <input type="range" min="3.0" max="10.0" step="0.5" value="7.2" oninput="updateInput('sleep', this.value)" class="w-full accent-[#9975ff]">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 mt-6">
+        <button onclick="saveCheckup()" class="btn-primary-gradient px-4 py-2 text-xs font-semibold">
+          Save & Re-evaluate Health
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       SCRIPTS: THREE.JS 3D ENGINE & CLINICAL LOGIC
+       ========================================== -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Clinical State
+    const state = {
+      mission: 'ISS',
+      crew: 'Cmdr. Alex Vance',
+      isXray: false,
+      bp: 112,
+      hr: 60,
+      glucose: 88,
+      temp: 36.6,
+      sleep: 7.2,
+      mood: 5,
+      radiation: 490,
+      careerRad: 142.5
+    };
+
+    // Mission latency configuration
+    function setMission(m) {
+      state.mission = m;
+      document.getElementById('btnISS').className = m === 'ISS' ? 'px-3 py-1.5 rounded-md bg-[#9975ff] text-white' : 'px-3 py-1.5 rounded-md text-slate-400 hover:text-white';
+      document.getElementById('btnMoon').className = m === 'MOON' ? 'px-3 py-1.5 rounded-md bg-[#9975ff] text-white' : 'px-3 py-1.5 rounded-md text-slate-400 hover:text-white';
+      document.getElementById('btnMars').className = m === 'MARS' ? 'px-3 py-1.5 rounded-md bg-[#9975ff] text-white' : 'px-3 py-1.5 rounded-md text-slate-400 hover:text-white';
+      
+      const delayEl = document.getElementById('delayDisplay');
+      if (m === 'ISS') delayEl.innerText = '24 ms (Live)';
+      else if (m === 'MOON') delayEl.innerText = '~1.28 s';
+      else delayEl.innerText = '~20 min 14 s';
+
+      document.getElementById('dsnMission').innerText = m === 'ISS' ? 'ISS (LEO Orbit)' : m === 'MOON' ? 'Moon (Artemis Base Gateway)' : 'Mars (Interplanetary Transit)';
+    }
+
+    // Modal Handlers
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    // Checkup sliders
+    function updateInput(type, val) {
+      if (type === 'hr') { state.hr = parseInt(val); document.getElementById('sliderHrVal').innerText = val; }
+      if (type === 'bp') { state.bp = parseInt(val); document.getElementById('sliderBpVal').innerText = val; }
+      if (type === 'temp') { state.temp = parseFloat(val); document.getElementById('sliderTempVal').innerText = val; }
+      if (type === 'sleep') { state.sleep = parseFloat(val); document.getElementById('sliderSleepVal').innerText = val; }
+    }
+
+    function saveCheckup() {
+      closeModal('checkupModal');
+      updateUI();
+    }
+
+    // Scenario Injection
+    function injectScenario(type) {
+      if (type === 'SPE') {
+        state.temp = 39.1;
+        state.bp = 168;
+        state.hr = 118;
+        state.radiation = 2880; // 120 uSv/h * 24
+        document.getElementById('overviewBanner').style.borderColor = 'rgba(244, 63, 94, 0.5)';
+        document.getElementById('overallBadgeText').innerText = 'Critical Alert';
+        document.getElementById('overallBadge').className = 'flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30';
+        document.getElementById('primaryAdvice').innerHTML = '<strong class="text-rose-400">Emergency Protocol:</strong> Critical Solar Proton Event (SPE) detected. Relocate to central storm shelter immediately.';
+      } else if (type === 'EVA') {
+        state.hr = 126;
+        state.glucose = 68;
+        state.bp = 138;
+      } else if (type === 'SLEEP') {
+        state.sleep = 4.2;
+        state.mood = 2;
+        state.hr = 76;
+      } else {
+        // Nominal
+        state.bp = 112;
+        state.hr = 60;
+        state.glucose = 88;
+        state.temp = 36.6;
+        state.sleep = 7.2;
+        state.mood = 5;
+        state.radiation = 490;
+        document.getElementById('overviewBanner').style.borderColor = 'rgba(16, 185, 129, 0.3)';
+        document.getElementById('overallBadgeText').innerText = 'Normal';
+        document.getElementById('overallBadge').className = 'flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+        document.getElementById('primaryAdvice').innerHTML = '<strong class="text-white">Primary Advice:</strong> All physiological indicators in nominal flight balance. Continue mission timeline.';
+      }
+      updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById('val_bp').innerText = state.bp;
+      document.getElementById('val_hr').innerText = state.hr;
+      document.getElementById('val_glucose').innerText = state.glucose;
+      document.getElementById('val_temp').innerText = state.temp.toFixed(1);
+      document.getElementById('val_sleep').innerText = state.sleep.toFixed(1);
+      document.getElementById('val_mood').innerText = state.mood;
+      document.getElementById('val_radiation').innerText = state.radiation;
+      document.getElementById('drawerValue').innerHTML = state.hr + ' <span class="text-xs font-normal text-slate-400">BPM</span>';
+    }
+
+    function downloadSBAR() {
+      const data = {
+        project: "Mins-Health",
+        edition: "NASA Space Apps Challenge 2026",
+        crew: state.crew,
+        mission: state.mission,
+        vitals: { hr: state.hr, bp: state.bp, temp: state.temp, glucose: state.glucose },
+        checksum: "CRC32(0x89AB4F12)",
+        sbar: {
+          situation: state.hr > 100 ? "Acute Tachycardia / Contingency Active" : "Nominal Flight Balance",
+          background: "Expedition Day 42. Career dose 142.5 mSv.",
+          assessment: "Conforms to NASA-STD-3001 Vol 1 clinical flight guidelines.",
+          recommendation: "Maintain prescribed countermeasure regimen."
+        }
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `SBAR-HANDOVER-${state.mission}-2026.json`;
+      a.click();
+    }
+
+    function selectHotspot(id) {
+      if (id === 'heart_rate') {
+        document.getElementById('drawerTitle').innerText = 'Heart Rhythm (Cardiovascular)';
+        document.getElementById('drawerZone').innerText = 'Anatomical Zone: Left Hemithorax';
+        document.getElementById('drawerExplanation').innerText = 'Pumping against reduced microgravity resistance. Systolic torsion and myocardial contraction nominal.';
+      } else if (id === 'blood_pressure') {
+        document.getElementById('drawerTitle').innerText = 'Blood Pressure & SANS Protocol';
+        document.getElementById('drawerZone').innerText = 'Anatomical Zone: Cranial / Ocular Optic Sheath';
+        document.getElementById('drawerExplanation').innerText = 'Monitoring cephalad fluid shift to prevent Spaceflight-Associated Neuro-ocular Syndrome (SANS) edema.';
+      } else if (id === 'core_temp') {
+        document.getElementById('drawerTitle').innerText = 'Core Temperature (Thermoregulation)';
+        document.getElementById('drawerZone').innerText = 'Anatomical Zone: Whole Body Core';
+        document.getElementById('drawerExplanation').innerText = 'Convective heat loss is absent in weightlessness. Evaluates potential space fever and metabolic dissipation.';
+      } else if (id === 'radiation_dose') {
+        document.getElementById('drawerTitle').innerText = 'Cosmic Radiation & Bone Marrow';
+        document.getElementById('drawerZone').innerText = 'Anatomical Zone: Deep Hematopoietic Stem Cells';
+        document.getElementById('drawerExplanation').innerText = 'Ionizing solar proton flux and galactic cosmic rays tracked against NASA 600 mSv career REID limit.';
+      }
+    }
+
+    // ========================================================
+    // THREE.JS 3D ASTRONAUT & ANATOMICAL ORGANS ENGINE
+    // ========================================================
+    let scene, camera, renderer, controls;
+    let suitMesh, skeletonGroup, heartMesh, lungsMesh;
+
+    function init3D() {
+      const container = document.getElementById('threeContainer');
+      const width = container.clientWidth || 600;
+      const height = container.clientHeight || 700;
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+      camera.position.set(0, 0.5, 3.2);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(renderer.domElement);
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.maxPolarAngle = Math.PI / 2 + 0.1;
+      controls.minDistance = 1.5;
+      controls.maxDistance = 5.0;
+
+      // Lighting
+      const ambLight = new THREE.AmbientLight(0xffffff, 0.6);
+      scene.add(ambLight);
+
+      const dirLight1 = new THREE.DirectionalLight(0x9975ff, 1.2);
+      dirLight1.position.set(2, 3, 2);
+      scene.add(dirLight1);
+
+      const dirLight2 = new THREE.DirectionalLight(0x66d8d1, 0.8);
+      dirLight2.position.set(-2, -1, -2);
+      scene.add(dirLight2);
+
+      // 1. Procedural Translucent Astronaut Suit
+      const suitGeo = new THREE.CylinderGeometry(0.35, 0.28, 1.6, 16);
+      const suitMat = new THREE.MeshStandardMaterial({
+        color: 0xe2e8f0,
+        roughness: 0.3,
+        metalness: 0.1,
+        transparent: true,
+        opacity: 0.25,
+        wireframe: false
+      });
+      suitMesh = new THREE.Mesh(suitGeo, suitMat);
+      suitMesh.position.y = 0.3;
+      scene.add(suitMesh);
+
+      // Suit Visor & Helmet
+      const helmetGeo = new THREE.SphereGeometry(0.32, 24, 24);
+      const visorMat = new THREE.MeshStandardMaterial({
+        color: 0x0c0d12,
+        roughness: 0.1,
+        metalness: 0.9,
+        transparent: true,
+        opacity: 0.85
+      });
+      const helmet = new THREE.Mesh(helmetGeo, visorMat);
+      helmet.position.set(0, 1.15, 0);
+      scene.add(helmet);
+
+      // 2. Anatomical Skeleton (BodyParts3D Representative Structure)
+      skeletonGroup = new THREE.Group();
+      const boneMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.4 });
+
+      // Spine & Ribs
+      for (let i = 0; i < 7; i++) {
+        const ribGeo = new THREE.TorusGeometry(0.24 - i * 0.012, 0.012, 8, 24, Math.PI * 1.5);
+        const rib = new THREE.Mesh(ribGeo, boneMat);
+        rib.rotation.x = Math.PI / 2;
+        rib.rotation.z = Math.PI / 4;
+        rib.position.set(0, 0.65 - i * 0.065, 0);
+        skeletonGroup.add(rib);
+      }
+      scene.add(skeletonGroup);
+
+      // 3. Anatomical Beating 3D Heart (Aorta, Coronary & Ventricle)
+      const heartGeo = new THREE.SphereGeometry(0.10, 16, 16);
+      heartGeo.scale(1, 1.25, 0.85);
+      const heartMat = new THREE.MeshStandardMaterial({ color: 0xf43f5e, roughness: 0.3, emissive: 0x660015 });
+      heartMesh = new THREE.Mesh(heartGeo, heartMat);
+      heartMesh.position.set(0.08, 0.48, 0.06); // Anatomical left
+      scene.add(heartMesh);
+
+      // Aorta Arch
+      const aortaGeo = new THREE.TorusGeometry(0.045, 0.014, 8, 16, Math.PI);
+      const aortaMat = new THREE.MeshStandardMaterial({ color: 0xef4444 });
+      const aorta = new THREE.Mesh(aortaGeo, aortaMat);
+      aorta.position.set(0.06, 0.58, 0.06);
+      scene.add(aorta);
+
+      // 4. Bilateral Lungs
+      lungsMesh = new THREE.Group();
+      const lungGeo = new THREE.ConeGeometry(0.09, 0.26, 12);
+      const lungMat = new THREE.MeshStandardMaterial({ color: 0x66d8d1, transparent: true, opacity: 0.45 });
+      const leftLung = new THREE.Mesh(lungGeo, lungMat);
+      leftLung.position.set(0.14, 0.46, 0);
+      const rightLung = new THREE.Mesh(lungGeo, lungMat);
+      rightLung.position.set(-0.14, 0.46, 0);
+      lungsMesh.add(leftLung);
+      lungsMesh.add(rightLung);
+      scene.add(lungsMesh);
+
+      // Render Loop
+      let clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+        controls.update();
+
+        // Heart systolic contraction matching state.hr
+        if (heartMesh) {
+          const bpmFreq = (state.hr / 60) * Math.PI * 2;
+          const beat = Math.sin(t * bpmFreq);
+          const scale = 1.0 + (beat > 0.6 ? (beat - 0.6) * 0.35 : 0);
+          heartMesh.scale.set(scale, scale * 1.2, scale * 0.9);
+        }
+
+        // Lungs respiration cycle
+        if (lungsMesh) {
+          const breath = 1.0 + Math.sin(t * 1.4) * 0.06;
+          lungsMesh.scale.set(breath, breath, breath);
+        }
+
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      window.addEventListener('resize', () => {
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      });
+    }
+
+    function toggleXray() {
+      state.isXray = !state.isXray;
+      if (suitMesh) {
+        suitMesh.material.opacity = state.isXray ? 0.08 : 0.25;
+      }
+      const btn = document.getElementById('toggleOrgansBtn');
+      const text = document.getElementById('xrayBtnText');
+      if (state.isXray) {
+        btn.classList.add('bg-[#9975ff]', 'text-white');
+        text.innerText = 'Hide Organs & Skeleton';
+      } else {
+        btn.classList.remove('bg-[#9975ff]', 'text-white');
+        text.innerText = 'Show Organs & Skeleton';
+      }
+    }
+
+    window.onload = () => {
+      init3D();
+    };
+  </script>
+</body>
+</html>

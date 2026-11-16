@@ -129,17 +129,6 @@ npm run start
 
 ---
 
-## 🎤 5. 3-Minute Pitch Script for NASA Judges
-
-Click the **"Guided Demo (3m)"** button inside the cockpit to start the automated demo player:
-
-1. **Minute 0:00 - 0:35:** *Opening:* Present Mins-Health and the nominal initial calm state (all vitals nominal, sleep at 6.4h in Watch).
-2. **Minute 0:35 - 1:15:** *Prolonged Isolation:* Demonstrate hazard synergy when sleep drops to 3.8h and mood drops to 2/5 (single unified systemic alert).
-3. **Minute 1:15 - 2:00:** *Solar Particle Event (SPE):* Inject radiation surge at 2800 µSv/day, activate the **3D Holographic X-Ray Layer** to inspect internal organs, and display storm shelter protocol.
-4. **Minute 2:00 - 2:35:** *Autonomy & SBAR Handover:* Generate and export the encrypted SBAR clinical handover packet with CRC32 checksum.
-5. **Minute 2:35 - 3:00:** *Local-First Demonstration & Closing:* Demonstrate zero latency under disconnected conditions and explain Earth dual-use in polar stations and isolated rural zones.
-
----
 
 ## 📜 6. Credits & NASA References
 Refer to [CREDITS.md](CREDITS.md) and [TECHNICAL_CODE_DOCUMENTATION.md](TECHNICAL_CODE_DOCUMENTATION.md) for complete citations of NASA-STD-3001, NASA OSDR OSD-575, and CSA Bio-Monitor data.

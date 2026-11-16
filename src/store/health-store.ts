@@ -390,8 +390,13 @@ export const useHealthStore = create<HealthState>()(
       },
     }),
     {
-      name: "mins-health-telemetry-v2",
+      name: "mins-health-telemetry-v3",
       storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.evaluateHealth();
+        }
+      },
     }
   )
 );

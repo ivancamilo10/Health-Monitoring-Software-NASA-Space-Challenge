@@ -16,6 +16,7 @@
 import { HEALTH_INDICATORS, IndicatorId } from "../data/indicators";
 import { BaselineStats } from "./baseline";
 import { MissionDestination } from "./missions";
+import { SIMPLE_INDICATORS_EN, SIMPLE_INDICATORS_ES } from "../data/i18n";
 
 export type EvaluationState =
   | "HABITUAL"
@@ -403,10 +404,14 @@ export function generateMissionDecisionReport(
       (lang === "en" ? "Notify crew for medical monitoring." : "Notificar a la tripulación para seguimiento.");
   } else if (worstState === "VIGILAR") {
     const vigilarEval = Object.values(evaluations).find((e) => e.state === "VIGILAR");
+    const indicatorName =
+      lang === "en"
+        ? (vigilarEval ? SIMPLE_INDICATORS_EN[vigilarEval.indicatorId]?.name : "Sleep & rest")
+        : (vigilarEval?.name || "Horas de Sueño");
     primaryAction =
       lang === "en"
-        ? `Preventive watch: mild deviation recorded. Maintain regular hydration and monitoring.`
-        : `Vigilancia preventiva: variación leve en ${vigilarEval?.name}. Mantener hidratación y registro regular.`;
+        ? `Preventive watch: mild variation in ${indicatorName}. Maintain regular hydration and monitoring.`
+        : `Vigilancia preventiva: variación leve en ${indicatorName}. Mantener hidratación y registro regular.`;
   }
 
   const stateLabels: Record<EvaluationState, string> =

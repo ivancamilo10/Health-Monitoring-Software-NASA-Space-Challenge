@@ -195,6 +195,30 @@ export function BentoTelemetryRail({
   const envTypical = TYPICAL_ENVIRONMENT_RADIATION[mission];
   const careerPercent = ((careerRadiationAccumulatedMilliSv / careerRadiationLimitMilliSv) * 100).toFixed(1);
 
+  // Garantiza que el consejo prioritario refleje siempre el idioma actual incluso si proviene de una caché previa
+  const displayPrimaryAction = React.useMemo(() => {
+    if (language === "en") {
+      if (decisionReport.primaryAction.includes("Vigilancia preventiva")) {
+        const vigilarEval = Object.values(decisionReport.evaluations).find((e) => e.state === "VIGILAR");
+        const indName = vigilarEval ? simpleIndicators[vigilarEval.indicatorId]?.name : "Sleep & rest";
+        return `Preventive watch: mild variation in ${indName}. Maintain regular hydration and monitoring.`;
+      }
+      if (decisionReport.primaryAction.includes("Todos los indicadores fisiológicos")) {
+        return "All physiological indicators in nominal flight balance. Continue mission timeline.";
+      }
+      if (decisionReport.primaryAction.includes("Revisión clínica prioritaria")) {
+        return "Priority clinical review with flight surgeon in Houston.";
+      }
+      if (decisionReport.primaryAction.includes("Notificar a la tripulación")) {
+        return "Notify crew for medical monitoring.";
+      }
+      if (decisionReport.primaryAction.includes("Alerta de radiación")) {
+        return "Radiation alert: consult flight surgeon and initiate mission shelter protocol.";
+      }
+    }
+    return decisionReport.primaryAction;
+  }, [decisionReport.primaryAction, language, simpleIndicators, decisionReport.evaluations]);
+
   return (
     <aside className="w-full md:w-[400px] xl:w-[440px] h-full flex flex-col justify-between gap-3 p-4 bg-[#0c0d12]/95 backdrop-blur-xl border-r border-white/10 overflow-y-auto flex-shrink-0 z-20 select-none">
       {/* ========================================================
@@ -240,7 +264,7 @@ export function BentoTelemetryRail({
           <strong className="text-white font-semibold">
             {language === "en" ? "Priority Advice: " : "Consejo prioritario: "}
           </strong>
-          {decisionReport.primaryAction}
+          {displayPrimaryAction}
         </div>
       </div>
 

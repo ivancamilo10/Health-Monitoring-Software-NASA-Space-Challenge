@@ -38,6 +38,9 @@ export default function MinsHealthSpaceCockpit() {
 
   useEffect(() => {
     setMounted(true);
+    // Guarantee fresh health evaluation synchronized with user's selected language
+    useHealthStore.getState().evaluateHealth();
+
     // Automatically trigger welcome tour only on first visit
     if (typeof window !== "undefined") {
       const seen = localStorage.getItem("mins_health_welcome_seen");

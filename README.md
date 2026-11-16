@@ -130,5 +130,5 @@ npm run start
 ---
 
 
-## 📜 6. Credits & NASA References
+## 📜 5. Credits & NASA References
 Refer to [CREDITS.md](CREDITS.md) and [TECHNICAL_CODE_DOCUMENTATION.md](TECHNICAL_CODE_DOCUMENTATION.md) for complete citations of NASA-STD-3001, NASA OSDR OSD-575, and CSA Bio-Monitor data.

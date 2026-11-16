@@ -237,7 +237,9 @@ export function BentoTelemetryRail({
 
         {/* Acción recomendada en palabras cotidianas */}
         <div className="text-sm text-slate-100 font-sans leading-relaxed">
-          <strong className="text-white font-semibold">Consejo prioritario: </strong>
+          <strong className="text-white font-semibold">
+            {language === "en" ? "Priority Advice: " : "Consejo prioritario: "}
+          </strong>
           {decisionReport.primaryAction}
         </div>
       </div>
@@ -315,7 +317,7 @@ export function BentoTelemetryRail({
                   </span>
                   {val !== null && (
                     <span className="text-slate-300 text-[11px] font-medium">
-                      ({diffSign}{diffFromMean.toFixed(1)} vs normal)
+                      ({diffSign}{diffFromMean.toFixed(1)} {language === "en" ? "vs baseline" : "vs normal"})
                     </span>
                   )}
                 </div>
@@ -366,19 +368,27 @@ export function BentoTelemetryRail({
         <div className="flex items-baseline justify-between mb-2.5">
           <div className="flex items-baseline gap-1.5">
             <span className="text-3xl font-extrabold text-white font-sans tracking-tight">
-              {radiationVal !== null ? radiationVal : "Sin datos"}
+              {radiationVal !== null ? radiationVal : (language === "en" ? "No data" : "Sin datos")}
             </span>
-            <span className="text-sm text-slate-300 font-semibold">µSv hoy</span>
+            <span className="text-sm text-slate-300 font-semibold">
+              {language === "en" ? "µSv today" : "µSv hoy"}
+            </span>
           </div>
           <span className="text-xs text-slate-300 font-medium">
-            Típico en {mission}: ~{envTypical.typicalDailyMicroSv} µSv
+            {language === "en"
+              ? `Typical in ${mission === "ISS" ? "ISS" : mission === "LUNA" ? "Moon" : "Mars"}: ~${envTypical.typicalDailyMicroSv} µSv`
+              : `Típico en ${mission}: ~${envTypical.typicalDailyMicroSv} µSv`}
           </span>
         </div>
 
         {/* Barra de progreso de carrera espacial */}
         <div className="pt-2.5 border-t border-white/10">
           <div className="flex items-center justify-between text-xs text-slate-200 mb-1.5 font-medium">
-            <span>Dosis acumulada: <strong className="text-white font-bold">{careerRadiationAccumulatedMilliSv}</strong> de {careerRadiationLimitMilliSv} mSv</span>
+            <span>
+              {language === "en" ? "Accumulated dose: " : "Dosis acumulada: "}
+              <strong className="text-white font-bold">{careerRadiationAccumulatedMilliSv}</strong>{" "}
+              {language === "en" ? "of" : "de"} {careerRadiationLimitMilliSv} mSv
+            </span>
             <span className="text-[#66d8d1] font-bold text-sm">{careerPercent}%</span>
           </div>
           <div className="w-full bg-black/40 h-2.5 rounded-full overflow-hidden border border-white/10 p-0.5">

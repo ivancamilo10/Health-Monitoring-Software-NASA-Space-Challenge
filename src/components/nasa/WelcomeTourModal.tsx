@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { UI_TEXTS_ES } from "@/data/i18n";
+import { getTexts } from "@/data/i18n";
+import { useHealthStore } from "@/store/health-store";
 import { Sparkles, HeartPulse, User, ClipboardCheck, X, ChevronRight } from "lucide-react";
 
 interface WelcomeTourModalProps {
@@ -11,6 +12,8 @@ interface WelcomeTourModalProps {
 
 export function WelcomeTourModal({ isOpen, onClose }: WelcomeTourModalProps) {
   const [step, setStep] = useState<number>(1);
+  const { language } = useHealthStore();
+  const texts = getTexts(language || "es");
 
   useEffect(() => {
     if (isOpen) {
@@ -38,10 +41,12 @@ export function WelcomeTourModal({ isOpen, onClose }: WelcomeTourModalProps) {
             </div>
             <div>
               <h3 className="text-sm font-semibold text-white tracking-tight">
-                Bienvenido a Mins-Health
+                {language === "en" ? "Welcome to Mins-Health" : "Bienvenido a Mins-Health"}
               </h3>
               <p className="text-xs text-slate-400">
-                Paso {step} de 3 · Diseñado para astronautas y evaluadores
+                {language === "en"
+                  ? `Step ${step} of 3 · Designed for astronauts and evaluators`
+                  : `Paso ${step} de 3 · Diseñado para astronautas y evaluadores`}
               </p>
             </div>
           </div>
@@ -69,13 +74,16 @@ export function WelcomeTourModal({ isOpen, onClose }: WelcomeTourModalProps) {
                 <HeartPulse className="w-6 h-6" />
               </div>
               <h4 className="text-base font-bold text-white">
-                {UI_TEXTS_ES.tourStep1Title}
+                {texts.tourStep1Title}
               </h4>
               <p className="text-sm text-slate-300 leading-relaxed font-sans">
-                {UI_TEXTS_ES.tourStep1Body}
+                {texts.tourStep1Body}
               </p>
               <div className="p-3.5 rounded-2xl glass-panel border border-white/10 text-xs text-slate-300">
-                <strong>Sin jerga:</strong> Comparamos tu lectura de hoy con lo que es <em>normal para ti</em>, no con promedios terrestres abstractos.
+                <strong>{language === "en" ? "Plain language:" : "Sin jerga:"}</strong>{" "}
+                {language === "en"
+                  ? "We compare your reading today to what is normal for you, not abstract Earth averages."
+                  : "Comparamos tu lectura de hoy con lo que es normal para ti, no con promedios terrestres abstractos."}
               </div>
             </div>
           )}
@@ -86,13 +94,16 @@ export function WelcomeTourModal({ isOpen, onClose }: WelcomeTourModalProps) {
                 <User className="w-6 h-6" />
               </div>
               <h4 className="text-base font-bold text-white">
-                {UI_TEXTS_ES.tourStep2Title}
+                {texts.tourStep2Title}
               </h4>
               <p className="text-sm text-slate-300 leading-relaxed font-sans">
-                {UI_TEXTS_ES.tourStep2Body}
+                {texts.tourStep2Body}
               </p>
               <div className="p-3.5 rounded-2xl glass-panel border border-white/10 text-xs text-slate-300">
-                <strong>Fácil de recordar:</strong> Verde = Normal · Amarillo = Vigilar · Naranja = Atención · Rojo = Pedir ayuda.
+                <strong>{language === "en" ? "Easy to remember:" : "Fácil de recordar:"}</strong>{" "}
+                {language === "en"
+                  ? "Green = Normal · Yellow = Watch · Orange = Attention · Red = Request Help."
+                  : "Verde = Normal · Amarillo = Vigilar · Naranja = Atención · Rojo = Pedir ayuda."}
               </div>
             </div>
           )}
@@ -103,13 +114,16 @@ export function WelcomeTourModal({ isOpen, onClose }: WelcomeTourModalProps) {
                 <ClipboardCheck className="w-6 h-6" />
               </div>
               <h4 className="text-base font-bold text-white">
-                {UI_TEXTS_ES.tourStep3Title}
+                {texts.tourStep3Title}
               </h4>
               <p className="text-sm text-slate-300 leading-relaxed font-sans">
-                {UI_TEXTS_ES.tourStep3Body}
+                {texts.tourStep3Body}
               </p>
               <div className="p-3.5 rounded-2xl glass-panel border border-white/10 text-xs text-slate-300">
-                <strong>Siempre funciona sin internet:</strong> Todos tus datos se procesan en la cabina y están listos aunque no haya señal con Houston.
+                <strong>{language === "en" ? "Always operational offline:" : "Siempre funciona sin internet:"}</strong>{" "}
+                {language === "en"
+                  ? "All data is evaluated inside the cockpit and available even during total loss of signal with Houston."
+                  : "Todos tus datos se procesan en la cabina y están listos aunque no haya señal con Houston."}
               </div>
             </div>
           )}
@@ -121,7 +135,7 @@ export function WelcomeTourModal({ isOpen, onClose }: WelcomeTourModalProps) {
             onClick={handleFinish}
             className="text-xs text-slate-400 hover:text-white transition-colors cursor-pointer"
           >
-            {UI_TEXTS_ES.tourSkip}
+            {texts.tourSkip}
           </button>
 
           <div className="flex items-center gap-3">
@@ -130,7 +144,7 @@ export function WelcomeTourModal({ isOpen, onClose }: WelcomeTourModalProps) {
                 onClick={() => setStep(step - 1)}
                 className="btn-secondary-glass px-4 py-2 text-xs font-semibold cursor-pointer"
               >
-                Atrás
+                {language === "en" ? "Back" : "Atrás"}
               </button>
             )}
 
@@ -139,7 +153,7 @@ export function WelcomeTourModal({ isOpen, onClose }: WelcomeTourModalProps) {
                 onClick={() => setStep(step + 1)}
                 className="btn-primary-gradient flex items-center gap-1.5 px-5 py-2 text-xs font-semibold cursor-pointer"
               >
-                <span>{UI_TEXTS_ES.tourNext}</span>
+                <span>{texts.tourNext}</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
             ) : (
@@ -147,7 +161,7 @@ export function WelcomeTourModal({ isOpen, onClose }: WelcomeTourModalProps) {
                 onClick={handleFinish}
                 className="btn-primary-gradient px-6 py-2 text-xs font-bold cursor-pointer"
               >
-                {UI_TEXTS_ES.tourDone}
+                {texts.tourDone}
               </button>
             )}
           </div>

@@ -100,6 +100,36 @@ export const ARTEMIS_CREW_ROSTER: CrewMemberProfile[] = [
   },
 ];
 
+export type DemoScenarioId =
+  | "RUTINA_NORMAL"
+  | "TORMENTA_SOLAR"
+  | "FUGA_DE_TRAJE"
+  | "AISLAMIENTO_PROLONGADO"
+  | "SIN_DATOS";
+
+export const SCENARIO_NAMES: Record<DemoScenarioId, { es: string; en: string }> = {
+  RUTINA_NORMAL: {
+    es: "Rutina Normal de Vuelo (Tranquilo)",
+    en: "Nominal Flight Routine (Stable)",
+  },
+  TORMENTA_SOLAR: {
+    es: "Tormenta Solar Crítica (SPE) - Multiórgano en Alerta",
+    en: "Critical Solar Particle Event (SPE) - Multi-Organ Alert",
+  },
+  FUGA_DE_TRAJE: {
+    es: "Fuga de Traje EVA - Despresurización & Choque Hipóxico",
+    en: "EVA Suit Leak - Rapid Depressurization & Hypoxic Shock",
+  },
+  AISLAMIENTO_PROLONGADO: {
+    es: "Aislamiento Prolongado - Desincronización Circadiana",
+    en: "Prolonged Confinement - Circadian Desynchrony",
+  },
+  SIN_DATOS: {
+    es: "Integridad de Telemetría (Campos Sin Datos en Gris)",
+    en: "Telemetry Integrity (Missing Fields in Gray)",
+  },
+};
+
 export interface HealthState {
   mission: MissionDestination;
   selectedCrewId: string;
@@ -121,6 +151,7 @@ export interface HealthState {
   
   sentPackets: FlightSurgeonReportPacket[];
   commsCountdownSeconds: number | null;
+  activeScenarioId: DemoScenarioId;
   activeScenarioName: string;
 
   // Acciones
@@ -133,7 +164,7 @@ export interface HealthState {
   setReading: (id: IndicatorId, value: number | null) => void;
   setAllReadings: (readings: Partial<Record<IndicatorId, number | null>>) => void;
   evaluateHealth: () => void;
-  loadDemoScenario: (scenario: "RUTINA_NORMAL" | "TORMENTA_SOLAR" | "FUGA_DE_TRAJE" | "AISLAMIENTO_PROLONGADO" | "SIN_DATOS") => void;
+  loadDemoScenario: (scenario: DemoScenarioId) => void;
   sendReportToEarth: () => FlightSurgeonReportPacket;
   decrementCountdown: () => void;
   resetToNominalCalm: () => void;
@@ -159,13 +190,15 @@ export const useHealthStore = create<HealthState>()(
       
       currentReadings: INITIAL_CALM_READINGS,
       baselines: DEFAULT_ASTRONAUT_BASELINES,
-      decisionReport: generateMissionDecisionReport(INITIAL_CALM_READINGS, DEFAULT_ASTRONAUT_BASELINES, "ISS"),
+      decisionReport: generateMissionDecisionReport(INITIAL_CALM_READINGS, DEFAULT_ASTRONAUT_BASELINES, "ISS", "es"),
       sentPackets: [],
       commsCountdownSeconds: null,
-      activeScenarioName: "Rutina Normal de Vuelo (Tranquilo)",
+      activeScenarioId: "RUTINA_NORMAL",
+      activeScenarioName: SCENARIO_NAMES.RUTINA_NORMAL.es,
 
       setLanguage: (language: Language) => {
         set({ language });
+        get().evaluateHealth();
         if (!get().isAudioMuted) playTelemetryClick();
       },
 
@@ -216,12 +249,18 @@ export const useHealthStore = create<HealthState>()(
       },
 
       evaluateHealth: () => {
-        const { currentReadings, baselines, mission } = get();
-        const report = generateMissionDecisionReport(currentReadings, baselines, mission);
-        set({ decisionReport: report });
+        const { currentReadings, baselines, mission, language, activeScenarioId } = get();
+        const lang = language || "es";
+        const scenId = activeScenarioId || "RUTINA_NORMAL";
+        const report = generateMissionDecisionReport(currentReadings, baselines, mission, lang);
+        set({
+          decisionReport: report,
+          activeScenarioName: SCENARIO_NAMES[scenId]?.[lang] || SCENARIO_NAMES.RUTINA_NORMAL[lang],
+        });
       },
 
-      loadDemoScenario: (scenario) => {
+      loadDemoScenario: (scenario: DemoScenarioId) => {
+        const lang = get().language || "es";
         if (scenario === "TORMENTA_SOLAR") {
           // Evento de partículas solares (SPE) agudo con síndrome agudo de radiación y fiebre espacial
           const speReadings: Record<IndicatorId, number | null> = {
@@ -237,7 +276,8 @@ export const useHealthStore = create<HealthState>()(
             mission: "MARTE",
             currentReadings: speReadings,
             careerRadiationAccumulatedMilliSv: 195.4,
-            activeScenarioName: "Tormenta Solar Crítica (SPE) - Multiórgano en Alerta",
+            activeScenarioId: "TORMENTA_SOLAR",
+            activeScenarioName: SCENARIO_NAMES.TORMENTA_SOLAR[lang],
           });
           if (!get().isAudioMuted) playEmergencyAlarm();
         } else if (scenario === "FUGA_DE_TRAJE") {
@@ -255,7 +295,8 @@ export const useHealthStore = create<HealthState>()(
             mission: "LUNA",
             currentReadings: suitLeakReadings,
             careerRadiationAccumulatedMilliSv: 154.0,
-            activeScenarioName: "Fuga de Traje EVA - Despresurización & Choque Hipóxico",
+            activeScenarioId: "FUGA_DE_TRAJE",
+            activeScenarioName: SCENARIO_NAMES.FUGA_DE_TRAJE[lang],
           });
           if (!get().isAudioMuted) playEmergencyAlarm();
         } else if (scenario === "AISLAMIENTO_PROLONGADO") {
@@ -271,7 +312,8 @@ export const useHealthStore = create<HealthState>()(
           set({
             mission: "MARTE",
             currentReadings: isolationReadings,
-            activeScenarioName: "Aislamiento Prolongado - Desincronización Circadiana",
+            activeScenarioId: "AISLAMIENTO_PROLONGADO",
+            activeScenarioName: SCENARIO_NAMES.AISLAMIENTO_PROLONGADO[lang],
           });
           if (!get().isAudioMuted) playCautionTone();
         } else if (scenario === "SIN_DATOS") {
@@ -286,7 +328,8 @@ export const useHealthStore = create<HealthState>()(
           };
           set({
             currentReadings: missingReadings,
-            activeScenarioName: "Integridad de Telemetría (Campos Sin Datos en Gris)",
+            activeScenarioId: "SIN_DATOS",
+            activeScenarioName: SCENARIO_NAMES.SIN_DATOS[lang],
           });
           if (!get().isAudioMuted) playTelemetryClick();
         } else {
@@ -294,7 +337,8 @@ export const useHealthStore = create<HealthState>()(
             mission: "ISS",
             currentReadings: INITIAL_CALM_READINGS,
             careerRadiationAccumulatedMilliSv: 142.5,
-            activeScenarioName: "Rutina Normal de Vuelo (Tranquilo)",
+            activeScenarioId: "RUTINA_NORMAL",
+            activeScenarioName: SCENARIO_NAMES.RUTINA_NORMAL[lang],
           });
           if (!get().isAudioMuted) playNominalChime();
         }
@@ -326,6 +370,7 @@ export const useHealthStore = create<HealthState>()(
 
       resetToNominalCalm: () => {
         const alex = ARTEMIS_CREW_ROSTER[0];
+        const lang = get().language || "es";
         set({
           mission: "ISS",
           selectedCrewId: alex.id,
@@ -333,7 +378,8 @@ export const useHealthStore = create<HealthState>()(
           astronautRole: alex.role,
           careerRadiationAccumulatedMilliSv: alex.careerRadiationMilliSv,
           currentReadings: alex.readings,
-          activeScenarioName: "Rutina Normal de Vuelo (Tranquilo)",
+          activeScenarioId: "RUTINA_NORMAL",
+          activeScenarioName: SCENARIO_NAMES.RUTINA_NORMAL[lang],
         });
         if (!get().isAudioMuted) playNominalChime();
         get().evaluateHealth();

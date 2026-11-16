@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useHealthStore } from "@/store/health-store";
 import { IndicatorId, HEALTH_INDICATORS } from "@/data/indicators";
-import { SIMPLE_INDICATORS_ES, UI_TEXTS_ES } from "@/data/i18n";
+import { getSimpleIndicators, getTexts } from "@/data/i18n";
 import {
   X,
   ChevronLeft,
@@ -30,7 +30,7 @@ const WIZARD_INDICATORS: IndicatorId[] = [
 ];
 
 export function CheckupWizardModal({ isOpen, onClose }: CheckupWizardModalProps) {
-  const { currentReadings, baselines, setReading, evaluateHealth, decisionReport } = useHealthStore();
+  const { currentReadings, baselines, setReading, evaluateHealth, decisionReport, language } = useHealthStore();
 
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [inputValue, setInputValue] = useState<string>("");
@@ -41,7 +41,8 @@ export function CheckupWizardModal({ isOpen, onClose }: CheckupWizardModalProps)
 
   const activeId = WIZARD_INDICATORS[currentStep];
   const def = HEALTH_INDICATORS[activeId];
-  const simple = SIMPLE_INDICATORS_ES[activeId];
+  const simpleIndicators = getSimpleIndicators(language || "es");
+  const simple = simpleIndicators[activeId];
   const baseline = baselines[activeId];
   const currentVal = currentReadings[activeId];
 
@@ -72,13 +73,15 @@ export function CheckupWizardModal({ isOpen, onClose }: CheckupWizardModalProps)
 
     const num = parseFloat(inputValue);
     if (isNaN(num)) {
-      setValidationError("Por favor ingresa un número válido");
+      setValidationError(language === "en" ? "Please enter a valid numeric value" : "Por favor ingresa un número válido");
       return;
     }
 
     if (num < def.inputRange.min || num > def.inputRange.max) {
       setValidationError(
-        `El valor suele estar entre ${def.inputRange.min} y ${def.inputRange.max} ${def.unit}. Si estás seguro, puedes pulsar continuar.`
+        language === "en"
+          ? `Expected range is typically between ${def.inputRange.min} and ${def.inputRange.max} ${def.unit}. If correct, you can proceed.`
+          : `El valor suele estar entre ${def.inputRange.min} y ${def.inputRange.max} ${def.unit}. Si estás seguro, puedes pulsar continuar.`
       );
     }
 
@@ -115,13 +118,15 @@ export function CheckupWizardModal({ isOpen, onClose }: CheckupWizardModalProps)
         <div className="px-6 py-4.5 border-b border-white/10 flex items-center justify-between">
           <div>
             <span className="text-[11px] font-bold text-[#bca6ff] uppercase tracking-wider block">
-              Chequeo de salud del astronauta
+              {language === "en" ? "Astronaut Daily Health Checkup" : "Chequeo de salud del astronauta"}
             </span>
             <h3 className="text-base font-bold text-white mt-0.5">
               {!isFinished ? (
-                <>Paso {currentStep + 1} de {WIZARD_INDICATORS.length}: {simple.name}</>
+                <>
+                  {language === "en" ? "Step" : "Paso"} {currentStep + 1} {language === "en" ? "of" : "de"} {WIZARD_INDICATORS.length}: {simple.name}
+                </>
               ) : (
-                "¡Chequeo de hoy completado!"
+                language === "en" ? "Today's checkup complete!" : "¡Chequeo de hoy completado!"
               )}
             </h3>
           </div>
@@ -152,7 +157,7 @@ export function CheckupWizardModal({ isOpen, onClose }: CheckupWizardModalProps)
             {/* Cómo medirlo en palabras sencillas */}
             <div className="p-4 rounded-2xl glass-panel border border-white/10 text-xs">
               <span className="text-[11px] font-semibold text-[#bca6ff] block mb-1">
-                ¿CÓMO MEDIRLO A BORDO?:
+                {language === "en" ? "HOW TO MEASURE ON BOARD:" : "¿CÓMO MEDIRLO A BORDO?:"}
               </span>
               <p className="text-slate-300 leading-relaxed font-sans">{simple.howToMeasure}</p>
             </div>
@@ -160,7 +165,7 @@ export function CheckupWizardModal({ isOpen, onClose }: CheckupWizardModalProps)
             {/* Campo de entrada numérica */}
             <div className="space-y-2.5">
               <label className="text-xs font-medium text-slate-300 block">
-                Ingresa tu lectura de hoy ({def.unit}):
+                {language === "en" ? `Enter today's reading (${def.unit}):` : `Ingresa tu lectura de hoy (${def.unit}):`}
               </label>
 
               <div className="flex items-center gap-3">
@@ -168,7 +173,7 @@ export function CheckupWizardModal({ isOpen, onClose }: CheckupWizardModalProps)
                   type="number"
                   step="any"
                   value={inputValue !== "" ? inputValue : currentVal ?? ""}
-                  placeholder={`Ejemplo habitual: ${baseline.mean}`}
+                  placeholder={language === "en" ? `Typical baseline: ${baseline.mean}` : `Ejemplo habitual: ${baseline.mean}`}
                   onChange={(e) => {
                     setInputValue(e.target.value);
                     setValidationError(null);
@@ -189,8 +194,8 @@ export function CheckupWizardModal({ isOpen, onClose }: CheckupWizardModalProps)
                 </div>
               ) : (
                 <div className="flex items-center justify-between text-xs text-slate-400 pt-1">
-                  <span>Tu valor normal suele ser: <strong className="text-white">{baseline.mean}</strong> {def.unit}</span>
-                  <span>Rango esperado: {def.inputRange.min} a {def.inputRange.max}</span>
+                  <span>{language === "en" ? "Your baseline is typically:" : "Tu valor normal suele ser:"} <strong className="text-white">{baseline.mean}</strong> {def.unit}</span>
+                  <span>{language === "en" ? "Expected range:" : "Rango esperado:"} {def.inputRange.min} {language === "en" ? "to" : "a"} {def.inputRange.max}</span>
                 </div>
               )}
             </div>
@@ -199,7 +204,9 @@ export function CheckupWizardModal({ isOpen, onClose }: CheckupWizardModalProps)
             <div className="flex items-center gap-2.5 p-3 rounded-xl glass-panel border border-white/5 text-xs text-slate-400">
               <HelpCircle className="w-4 h-4 text-[#66d8d1] flex-shrink-0" />
               <span>
-                Si hoy no puedes tomar esta medida, pulsa <strong>"Omitir"</strong> y quedará registrada en gris sin alterar tus alertas.
+                {language === "en"
+                  ? <>If you cannot take this reading today, click <strong>"Skip"</strong>. It will be logged in gray without affecting alarms.</>
+                  : <>Si hoy no puedes tomar esta medida, pulsa <strong>"Omitir"</strong> y quedará registrada en gris sin alterar tus alertas.</>}
               </span>
             </div>
           </div>
@@ -213,38 +220,46 @@ export function CheckupWizardModal({ isOpen, onClose }: CheckupWizardModalProps)
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <h4 className="text-lg font-bold text-white">
-                Tus datos han quedado registrados
+                {language === "en" ? "Your metrics have been logged" : "Tus datos han quedado registrados"}
               </h4>
               <p className="text-xs text-slate-300 font-sans max-w-md mx-auto">
-                Comparamos automáticamente tus lecturas con tu línea base individual y las normas de salud de vuelo espacial.
+                {language === "en"
+                  ? "Readings automatically evaluated against your individual baseline and spaceflight clinical standards."
+                  : "Comparamos automáticamente tus lecturas con tu línea base individual y las normas de salud de vuelo espacial."}
               </p>
             </div>
 
             {/* Tarjeta de balance */}
             <div className="grid grid-cols-3 gap-3 text-center">
               <div className="p-3.5 rounded-2xl glass-panel border border-emerald-500/30">
-                <span className="text-[11px] text-slate-400 uppercase block font-medium">Normales</span>
+                <span className="text-[11px] text-slate-400 uppercase block font-medium">
+                  {language === "en" ? "Nominal" : "Normales"}
+                </span>
                 <span className="text-2xl font-bold text-emerald-400 mt-1 block font-sans">{normalCount}</span>
-                <span className="text-[10px] text-slate-400">Signos estables</span>
+                <span className="text-[10px] text-slate-400">{language === "en" ? "Stable vitals" : "Signos estables"}</span>
               </div>
 
               <div className="p-3.5 rounded-2xl glass-panel border border-amber-500/30">
-                <span className="text-[11px] text-slate-400 uppercase block font-medium">A vigilar</span>
+                <span className="text-[11px] text-slate-400 uppercase block font-medium">
+                  {language === "en" ? "To Watch" : "A vigilar"}
+                </span>
                 <span className="text-2xl font-bold text-amber-400 mt-1 block font-sans">{watchCount}</span>
-                <span className="text-[10px] text-slate-400">Ligera atención</span>
+                <span className="text-[10px] text-slate-400">{language === "en" ? "Mild trend" : "Ligera atención"}</span>
               </div>
 
               <div className="p-3.5 rounded-2xl glass-panel border border-rose-500/30">
-                <span className="text-[11px] text-slate-400 uppercase block font-medium">Prioritarios</span>
+                <span className="text-[11px] text-slate-400 uppercase block font-medium">
+                  {language === "en" ? "Priority" : "Prioritarios"}
+                </span>
                 <span className="text-2xl font-bold text-rose-400 mt-1 block font-sans">{helpCount}</span>
-                <span className="text-[10px] text-slate-400">Requieren ayuda</span>
+                <span className="text-[10px] text-slate-400">{language === "en" ? "Ground advice" : "Requieren ayuda"}</span>
               </div>
             </div>
 
             {/* Siguiente paso recomendado */}
             <div className="p-4 rounded-2xl glass-panel border border-[#9975ff]/30 text-xs text-slate-200">
               <strong className="text-[#bca6ff] block mb-1 font-semibold">
-                Siguiente paso recomendado:
+                {language === "en" ? "Recommended next action:" : "Siguiente paso recomendado:"}
               </strong>
               <p className="font-sans leading-relaxed">{decisionReport.primaryAction}</p>
             </div>
@@ -261,7 +276,7 @@ export function CheckupWizardModal({ isOpen, onClose }: CheckupWizardModalProps)
                 className="btn-secondary-glass flex items-center gap-1.5 px-3.5 py-2 text-xs text-slate-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
-                <span>Anterior</span>
+                <span>{language === "en" ? "Back" : "Anterior"}</span>
               </button>
 
               <div className="flex items-center gap-3">
@@ -269,14 +284,22 @@ export function CheckupWizardModal({ isOpen, onClose }: CheckupWizardModalProps)
                   onClick={handleSkip}
                   className="px-3 py-2 text-xs text-slate-400 hover:text-white transition-colors cursor-pointer"
                 >
-                  Omitir este paso
+                  {language === "en" ? "Skip step" : "Omitir este paso"}
                 </button>
 
                 <button
                   onClick={handleSaveCurrent}
                   className="btn-primary-gradient flex items-center gap-2 px-5 py-2 font-semibold text-xs cursor-pointer"
                 >
-                  <span>{currentStep === WIZARD_INDICATORS.length - 1 ? "Completar chequeo" : "Guardar y seguir"}</span>
+                  <span>
+                    {currentStep === WIZARD_INDICATORS.length - 1
+                      ? language === "en"
+                        ? "Finish checkup"
+                        : "Completar chequeo"
+                      : language === "en"
+                      ? "Save & next"
+                      : "Guardar y seguir"}
+                  </span>
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
@@ -286,7 +309,7 @@ export function CheckupWizardModal({ isOpen, onClose }: CheckupWizardModalProps)
               onClick={handleFinishAndClose}
               className="w-full py-3 btn-primary-gradient font-bold text-xs tracking-wide cursor-pointer text-center"
             >
-              Ver mi resumen en cabina
+              {language === "en" ? "View cockpit telemetry" : "Ver mi resumen en cabina"}
             </button>
           )}
         </div>

@@ -97,7 +97,9 @@ export function HeaderBar({
     commsCountdownSeconds !== null
       ? `${Math.floor(commsCountdownSeconds / 60)} min ${commsCountdownSeconds % 60} s`
       : mission === "ISS"
-      ? "24 ms (En vivo)"
+      ? language === "en"
+        ? "24 ms (Live)"
+        : "24 ms (En vivo)"
       : mission === "LUNA"
       ? `~${(1.28 + telemetryJitter).toFixed(2)} s`
       : "~20 min 14 s";
@@ -168,7 +170,7 @@ export function HeaderBar({
           {isCrewMenuOpen && (
             <div className="absolute left-0 top-full mt-2 w-80 bg-[#111218]/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.06)] p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150">
               <div className="px-3.5 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-white/10 flex items-center justify-between">
-                <span>Tripulación Expedición Artemis 2026</span>
+                <span>{language === "en" ? "Artemis Expedition Crew 2026" : "Tripulación Expedición Artemis 2026"}</span>
                 <Users className="w-4 h-4 text-purple-400" />
               </div>
               <div className="mt-1.5 space-y-1">
@@ -221,7 +223,7 @@ export function HeaderBar({
               }`}
               title={`Simular condiciones en ${m}`}
             >
-              {m === "ISS" ? "ISS" : m === "LUNA" ? "Luna" : "Marte"}
+              {m === "ISS" ? "ISS" : m === "LUNA" ? (language === "en" ? "Moon" : "Luna") : (language === "en" ? "Mars" : "Marte")}
             </button>
           ))}
         </div>
@@ -235,7 +237,7 @@ export function HeaderBar({
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#66d8d1] opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-[#66d8d1]" />
           </span>
-          <span className="text-slate-400">Tierra:</span>
+          <span className="text-slate-400">{language === "en" ? "Earth Delay:" : "Tierra:"}</span>
           <span className="font-semibold text-white font-mono tracking-tight">{delayDisplay}</span>
         </div>
       </div>
@@ -284,22 +286,23 @@ export function HeaderBar({
           title="Abrir telemetría y enlace DSN con Houston"
         >
           <Radio className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-          <span>Enlace DSN</span>
+          <span>{language === "en" ? "DSN Uplink" : "Enlace DSN"}</span>
         </button>
 
         {/* Botón principal prominente con gradiente violeta didáctico */}
         <button
           onClick={onOpenCheckupWizard}
           className="btn-primary-gradient flex items-center justify-center gap-1.5 px-3.5 md:px-4 py-2 font-semibold text-xs md:text-sm tracking-wide flex-shrink-0 cursor-pointer shadow-md shadow-purple-500/20"
-          title="Anotar tus medidas de salud del día en 2 minutos"
+          title={language === "en" ? "Log today's health metrics in 2 minutes" : "Anotar tus medidas de salud del día en 2 minutos"}
         >
           <ClipboardList className="w-4 h-4 text-white flex-shrink-0" />
           <span className="whitespace-nowrap hidden lg:inline">{texts.todayCheckupButton}</span>
-          <span className="whitespace-nowrap lg:hidden">Chequeo hoy</span>
+          <span className="whitespace-nowrap lg:hidden">{language === "en" ? "Checkup" : "Chequeo hoy"}</span>
         </button>
 
         {/* Conmutador de Idioma Bilingüe ES | EN */}
-        <div className="flex items-center bg-white/[0.06] p-0.5 rounded-lg border border-white/10 text-xs font-semibold flex-shrink-0">
+        <div className="flex items-center bg-white/[0.08] p-0.5 rounded-lg border border-white/15 text-xs font-semibold flex-shrink-0">
+          <Globe className="w-3.5 h-3.5 text-slate-400 ml-1.5 mr-0.5" />
           <button
             onClick={() => setLanguage("es")}
             className={`px-2 py-1 rounded-md transition-all cursor-pointer text-[11px] ${
@@ -331,7 +334,7 @@ export function HeaderBar({
           <button
             onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
             className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 active:bg-white/15 border border-white/10 text-xs font-semibold text-slate-200 transition-all cursor-pointer"
-            aria-label="Abrir menú de herramientas y recursos científicos"
+            aria-label={language === "en" ? "Open mission tools and scientific resources menu" : "Abrir menú de herramientas y recursos científicos"}
           >
             <span>{texts.moreMenuButton}</span>
             <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${isMoreMenuOpen ? "rotate-180 text-white" : ""}`} />
@@ -340,7 +343,7 @@ export function HeaderBar({
           {isMoreMenuOpen && (
             <div className="absolute right-0 top-full mt-2 w-80 md:w-96 bg-[#111218]/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.85),0_0_0_1px_rgba(255,255,255,0.06)] p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150">
               <div className="px-3.5 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-white/10">
-                Herramientas de Misión & Jurado NASA
+                {language === "en" ? "Mission Tools & NASA Evaluator Suite" : "Herramientas de Misión & Jurado NASA"}
               </div>
 
               <div className="mt-1 space-y-1">
@@ -356,8 +359,12 @@ export function HeaderBar({
                     <Radio className="w-4.5 h-4.5" />
                   </div>
                   <div>
-                    <div className="text-sm font-semibold text-white tracking-tight">Enlace DSN & Traspaso SBAR</div>
-                    <div className="text-xs text-slate-300 mt-0.5">Exportar paquete clínico con firma CRC32</div>
+                    <div className="text-sm font-semibold text-white tracking-tight">
+                      {language === "en" ? "DSN Uplink & SBAR Handover" : "Enlace DSN & Traspaso SBAR"}
+                    </div>
+                    <div className="text-xs text-slate-300 mt-0.5">
+                      {language === "en" ? "Export clinical packet with CRC32 signature" : "Exportar paquete clínico con firma CRC32"}
+                    </div>
                   </div>
                 </button>
 
@@ -374,7 +381,9 @@ export function HeaderBar({
                   </div>
                   <div>
                     <div className="text-sm font-semibold text-white tracking-tight">{texts.scenarioTester}</div>
-                    <div className="text-xs text-slate-300 mt-0.5">Inyectar contingencias de vuelo (SPE, EVA)</div>
+                    <div className="text-xs text-slate-300 mt-0.5">
+                      {language === "en" ? "Inject flight contingencies (SPE, EVA)" : "Inyectar contingencias de vuelo (SPE, EVA)"}
+                    </div>
                   </div>
                 </button>
 
@@ -391,7 +400,9 @@ export function HeaderBar({
                   </div>
                   <div>
                     <div className="text-sm font-semibold text-white tracking-tight">{texts.reactionTest}</div>
-                    <div className="text-xs text-slate-300 mt-0.5">Evalúa atención y fatiga mental (NASA PVT)</div>
+                    <div className="text-xs text-slate-300 mt-0.5">
+                      {language === "en" ? "Evaluate attention and mental fatigue (NASA PVT)" : "Evalúa atención y fatiga mental (NASA PVT)"}
+                    </div>
                   </div>
                 </button>
 
@@ -407,8 +418,12 @@ export function HeaderBar({
                     <Database className="w-4.5 h-4.5" />
                   </div>
                   <div>
-                    <div className="text-sm font-semibold text-white tracking-tight">Datos reales de NASA (Inspiration4)</div>
-                    <div className="text-xs text-slate-300 mt-0.5">Muestras del repositorio abierto NASA OSDR</div>
+                    <div className="text-sm font-semibold text-white tracking-tight">
+                      {language === "en" ? "NASA Real Data (Inspiration4)" : "Datos reales de NASA (Inspiration4)"}
+                    </div>
+                    <div className="text-xs text-slate-300 mt-0.5">
+                      {language === "en" ? "Samples from NASA Open Science Data Repository (OSDR)" : "Muestras del repositorio abierto NASA OSDR"}
+                    </div>
                   </div>
                 </button>
 
@@ -425,7 +440,9 @@ export function HeaderBar({
                   </div>
                   <div>
                     <div className="text-sm font-semibold text-white tracking-tight">{texts.scientificSources}</div>
-                    <div className="text-xs text-slate-300 mt-0.5">Manuales HRP y protocolos de vuelo</div>
+                    <div className="text-xs text-slate-300 mt-0.5">
+                      {language === "en" ? "HRP manuals and clinical flight rules" : "Manuales HRP y protocolos de vuelo"}
+                    </div>
                   </div>
                 </button>
 
@@ -442,7 +459,9 @@ export function HeaderBar({
                   </div>
                   <div>
                     <div className="text-sm font-semibold text-white tracking-tight">{texts.demoPitchScript}</div>
-                    <div className="text-xs text-slate-300 mt-0.5">Paso a paso para el pitch del jurado</div>
+                    <div className="text-xs text-slate-300 mt-0.5">
+                      {language === "en" ? "Step-by-step pitch for NASA evaluators" : "Paso a paso para el pitch del jurado"}
+                    </div>
                   </div>
                 </button>
 
@@ -466,7 +485,9 @@ export function HeaderBar({
                       <span>{texts.presentationSlides}</span>
                       <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">Reveal.js</span>
                     </div>
-                    <div className="text-xs text-slate-300 mt-0.5">Pitch deck interactivo open-source para jurados</div>
+                    <div className="text-xs text-slate-300 mt-0.5">
+                      {language === "en" ? "Interactive open-source deck for judges" : "Pitch deck interactivo open-source para jurados"}
+                    </div>
                   </div>
                 </button>
 

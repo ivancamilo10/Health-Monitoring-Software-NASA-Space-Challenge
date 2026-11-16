@@ -10,7 +10,7 @@ interface DemoScenariosModalProps {
 }
 
 export function DemoScenariosModal({ isOpen, onClose }: DemoScenariosModalProps) {
-  const { loadDemoScenario } = useHealthStore();
+  const { loadDemoScenario, language } = useHealthStore();
 
   if (!isOpen) return null;
 
@@ -29,10 +29,12 @@ export function DemoScenariosModal({ isOpen, onClose }: DemoScenariosModalProps)
             </div>
             <div>
               <h3 className="text-sm font-semibold text-white tracking-tight">
-                Simular situaciones de vuelo
+                {language === "en" ? "Simulate Flight Contingencies" : "Simular situaciones de vuelo"}
               </h3>
               <p className="text-xs text-slate-400">
-                Demostración clínica para el jurado NASA Space Apps
+                {language === "en"
+                  ? "Clinical demonstration for NASA Space Apps evaluation jury"
+                  : "Demostración clínica para el jurado NASA Space Apps"}
               </p>
             </div>
           </div>
@@ -52,10 +54,16 @@ export function DemoScenariosModal({ isOpen, onClose }: DemoScenariosModalProps)
           >
             <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 mb-1">
               <CheckCircle2 className="w-4 h-4" />
-              <span>1. Rutina normal de vuelo (Estable)</span>
+              <span>
+                {language === "en"
+                  ? "1. Nominal Flight Routine (Stable)"
+                  : "1. Rutina normal de vuelo (Estable)"}
+              </span>
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Casi todos los signos en Normal y sueño en Vigilar (6.4 h). Sin alarmas críticas.
+              {language === "en"
+                ? "Nearly all vitals in Nominal and sleep on Watch (6.4 h). Zero critical alarms."
+                : "Casi todos los signos en Normal y sueño en Vigilar (6.4 h). Sin alarmas críticas."}
             </p>
           </button>
 
@@ -66,10 +74,16 @@ export function DemoScenariosModal({ isOpen, onClose }: DemoScenariosModalProps)
           >
             <div className="flex items-center gap-2 text-xs font-bold text-rose-400 mb-1">
               <AlertOctagon className="w-4 h-4" />
-              <span>2. Tormenta solar aguda (SPE) - Multiórgano Crítico</span>
+              <span>
+                {language === "en"
+                  ? "2. Acute Solar Particle Event (SPE) - Critical Multi-Organ"
+                  : "2. Tormenta solar aguda (SPE) - Multiórgano Crítico"}
+              </span>
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Radiación 3400 µSv/día, fiebre central 39.1 °C ("Space Fever"), presión 168 mmHg y taquicardia 126 BPM. Alerta unificada de refugio.
+              {language === "en"
+                ? "Radiation 3400 µSv/day, core fever 39.1 °C ('Space Fever'), BP 168 mmHg and tachycardia 126 BPM. Unified storm shelter alert."
+                : "Radiación 3400 µSv/día, fiebre central 39.1 °C ('Space Fever'), presión 168 mmHg y taquicardia 126 BPM. Alerta unificada de refugio."}
             </p>
           </button>
 
@@ -80,10 +94,16 @@ export function DemoScenariosModal({ isOpen, onClose }: DemoScenariosModalProps)
           >
             <div className="flex items-center gap-2 text-xs font-bold text-red-400 mb-1">
               <AlertOctagon className="w-4 h-4 animate-pulse" />
-              <span>3. Fuga de traje espacial (EVA) - Despresurización</span>
+              <span>
+                {language === "en"
+                  ? "3. EVA Spacesuit Leak - Depressurization & Hypoxia"
+                  : "3. Fuga de traje espacial (EVA) - Despresurización"}
+              </span>
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Presión cae en shock a 76 mmHg, pulso salta a 152 BPM por hipoxia y temperatura corporal desciende a 34.6 °C por pérdida térmica en vacío.
+              {language === "en"
+                ? "Pressure drops in shock to 76 mmHg, pulse spikes to 152 BPM from hypoxia, and body temp drops to 34.6 °C from vacuum thermal loss."
+                : "Presión cae en shock a 76 mmHg, pulso salta a 152 BPM por hipoxia y temperatura corporal desciende a 34.6 °C por pérdida térmica en vacío."}
             </p>
           </button>
 
@@ -94,10 +114,16 @@ export function DemoScenariosModal({ isOpen, onClose }: DemoScenariosModalProps)
           >
             <div className="flex items-center gap-2 text-xs font-bold text-orange-400 mb-1">
               <Moon className="w-4 h-4" />
-              <span>4. Aislamiento prolongado (Sueño 3.2 h & Ánimo 1/5)</span>
+              <span>
+                {language === "en"
+                  ? "4. Prolonged Confinement (Sleep 3.2 h & Mood 1/5)"
+                  : "4. Aislamiento prolongado (Sueño 3.2 h & Ánimo 1/5)"}
+              </span>
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Desincronización circadiana por distancia a la Tierra. Activa patrón de fatiga y confinamiento.
+              {language === "en"
+                ? "Circadian desynchrony due to distance from Earth. Activates operational fatigue and confinement stress pattern."
+                : "Desincronización circadiana por distancia a la Tierra. Activa patrón de fatiga y confinamiento."}
             </p>
           </button>
 
@@ -108,10 +134,16 @@ export function DemoScenariosModal({ isOpen, onClose }: DemoScenariosModalProps)
           >
             <div className="flex items-center gap-2 text-xs font-bold text-slate-200 mb-1">
               <HelpCircle className="w-4 h-4 text-[#66d8d1]" />
-              <span>5. Integridad de telemetría (Dato faltante = Gris)</span>
+              <span>
+                {language === "en"
+                  ? "5. Telemetry Integrity (Missing Data = Gray)"
+                  : "5. Integridad de telemetría (Dato faltante = Gris)"}
+              </span>
             </div>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Demuestra que un sensor desconectado se cataloga como Sin Datos y no engaña al sistema.
+              {language === "en"
+                ? "Demonstrates that an uncalibrated or missing sensor is categorized as No Data and never falsely reported as normal."
+                : "Demuestra que un sensor desconectado se cataloga como Sin Datos y no engaña al sistema."}
             </p>
           </button>
         </div>

@@ -157,7 +157,8 @@ export interface HazardSynergyPattern {
  * Evalúa las desviaciones concurrentes para detectar patrones de sinergia entre peligros
  */
 export function evaluateHazardSynergy(
-  deviatedIndicators: IndicatorId[]
+  deviatedIndicators: IndicatorId[],
+  lang: "es" | "en" = "es"
 ): HazardSynergyPattern | null {
   if (deviatedIndicators.length < 2) {
     return null;
@@ -173,13 +174,20 @@ export function evaluateHazardSynergy(
   if (hasRadiation && (hasSleep || hasCardio)) {
     return {
       id: "SPE_SYSTEMIC_CASCADE",
-      title: "Patrón Sinergia: Radiación Espacial Aguda y Respuesta Cardiorrespiratoria",
+      title:
+        lang === "en"
+          ? "Synergy Pattern: Acute Space Radiation & Cardiorespiratory Response"
+          : "Patrón Sinergia: Radiación Espacial Aguda y Respuesta Cardiorrespiratoria",
       involvedHazards: ["RADIACION", "ENTORNO_CERRADO", "GRAVEDAD"],
       involvedIndicators: ["radiation_dose", "sleep_hours", "heart_rate"],
       whyTogetherTheyMatterMore:
-        "La radiación ionizante elevada de una tormenta solar (SPE) combinada con el déficit de sueño deteriora la capacidad de reparación del ADN celular y dispara taquicardia refleja por sobrecarga autonómica. El riesgo conjunto es 3 veces mayor que la suma de riesgos individuales.",
+        lang === "en"
+          ? "Elevated ionizing radiation from a Solar Particle Event (SPE) combined with sleep deficit impairs cellular DNA repair and induces reflex autonomic tachycardia. Joint risk is 3x higher than sum of individual risks."
+          : "La radiación ionizante elevada de una tormenta solar (SPE) combinada con el déficit de sueño deteriora la capacidad de reparación del ADN celular y dispara taquicardia refleja por sobrecarga autonómica. El riesgo conjunto es 3 veces mayor que la suma de riesgos individuales.",
       systemicClinicalAction:
-        "Alerta de radiación: consulta con el cirujano de vuelo y revisa el protocolo de refugio blindado de la misión. Restringe actividades operacionales exigentes y verifica blindaje de cabina.",
+        lang === "en"
+          ? "Radiation alert: consult flight surgeon and initiate storm shelter protocol. Restrict high-demand operational EVA activities and inspect cabin shielding."
+          : "Alerta de radiación: consulta con el cirujano de vuelo y revisa el protocolo de refugio blindado de la misión. Restringe actividades operacionales exigentes y verifica blindaje de cabina.",
       verificationBadge: "Propuesta, por verificar contra recursos HRP",
     };
   }
@@ -188,13 +196,20 @@ export function evaluateHazardSynergy(
   if (hasSleep && hasMood) {
     return {
       id: "ISOLATION_CIRCADIAN_DECLINE",
-      title: "Patrón Sinergia: Desincronización Circadiana y Fatiga por Confinamiento",
+      title:
+        lang === "en"
+          ? "Synergy Pattern: Circadian Desynchrony & Confinement Fatigue"
+          : "Patrón Sinergia: Desincronización Circadiana y Fatiga por Confinamiento",
       involvedHazards: ["AISLAMIENTO", "DISTANCIA"],
       involvedIndicators: ["mood", "sleep_hours"],
       whyTogetherTheyMatterMore:
-        "La caída simultánea del estado anímico y el sueño genera un ciclo de retroalimentación negativa: el déficit de sueño amplifica la irritabilidad y el aislamiento socio-operacional, aumentando la probabilidad de lapsos cognitivos críticos en tareas de atraque o control de soporte vital.",
+        lang === "en"
+          ? "Concurrent drop in mood and sleep duration triggers a compounding loop: sleep deficit amplifies irritability and social isolation, increasing probability of critical cognitive lapses in docking or life support maintenance."
+          : "La caída simultánea del estado anímico y el sueño genera un ciclo de retroalimentación negativa: el déficit de sueño amplifica la irritabilidad y el aislamiento socio-operacional, aumentando la probabilidad de lapsos cognitivos críticos en tareas de atraque o control de soporte vital.",
       systemicClinicalAction:
-        "Coordina con la tripulación para redistribuir la carga de tareas técnicas. Implementa el protocolo de espectro lumínico cálido circadiano ARCHeR y programa una sesión de descarga con el oficial médico de a bordo.",
+        lang === "en"
+          ? "Coordinate with crew to rebalance technical workload. Implement ARCHeR circadian warm lighting and schedule a debrief with crew medical officer."
+          : "Coordina con la tripulación para redistribuir la carga de tareas técnicas. Implementa el protocolo de espectro lumínico cálido circadiano ARCHeR y programa una sesión de descarga con el oficial médico de a bordo.",
       verificationBadge: "Propuesta, por verificar contra recursos HRP",
     };
   }
@@ -203,13 +218,20 @@ export function evaluateHazardSynergy(
   if (hasCardio && hasMetabolic) {
     return {
       id: "CARDIO_METABOLIC_FLUID_SHIFT",
-      title: "Patrón Sinergia: Redistribución de Fluidos Cefálica y Carga Térmica",
+      title:
+        lang === "en"
+          ? "Synergy Pattern: Cephalic Fluid Shift & Thermal Strain"
+          : "Patrón Sinergia: Redistribución de Fluidos Cefálica y Carga Térmica",
       involvedHazards: ["GRAVEDAD", "ENTORNO_CERRADO"],
       involvedIndicators: ["blood_pressure", "heart_rate", "core_temp"],
       whyTogetherTheyMatterMore:
-        "En microgravedad, la pérdida de convección de aire eleva la temperatura corporal ('Space Fever'), lo que exige mayor vasodilatación periférica en un sistema vascular ya depletado por la redistribución cefálica. Esto incrementa el riesgo de síncope o hipertensión ocular (SANS).",
+        lang === "en"
+          ? "In weightlessness, lost natural air convection increases core body temperature ('Space Fever'), demanding peripheral vasodilation in a vascular tree already contracted from cephalad fluid shift. Raises risk of syncope or ocular pressure."
+          : "En microgravedad, la pérdida de convección de aire eleva la temperatura corporal ('Space Fever'), lo que exige mayor vasodilatación periférica en un sistema vascular ya depletado por la redistribución cefálica. Esto incrementa el riesgo de síncope o hipertensión ocular (SANS).",
       systemicClinicalAction:
-        "Activa ventilación forzada personal de cabina, aplica manguitos en muslos (Thigh Cuffs) y aumenta la hidratación programada con sales isotónicas.",
+        lang === "en"
+          ? "Activate crew forced personal airflow ventilation, apply thigh cuffs, and increase structured hydration with electrolyte mineral salts."
+          : "Activa ventilación forzada personal de cabina, aplica manguitos en muslos (Thigh Cuffs) y aumenta la hidratación programada con sales isotónicas.",
       verificationBadge: "Propuesta, por verificar contra recursos HRP",
     };
   }
@@ -217,13 +239,20 @@ export function evaluateHazardSynergy(
   // PATRÓN GENÉRICO MULTI-SISTÉMICO
   return {
     id: "MULTISYSTEM_STRESS_PATTERN",
-    title: "Patrón Sinergia: Sobrecarga Fisiológica Multi-factorial",
+    title:
+      lang === "en"
+        ? "Synergy Pattern: Multi-Factorial Physiological Strain"
+        : "Patrón Sinergia: Sobrecarga Fisiológica Multi-factorial",
     involvedHazards: ["GRAVEDAD", "ENTORNO_CERRADO", "AISLAMIENTO"],
     involvedIndicators: deviatedIndicators,
     whyTogetherTheyMatterMore:
-      "Múltiples subsistemas fisiológicos presentan variaciones simultáneas. En misiones de espacio profundo, las alteraciones metabólicas y hemodinámicas combinadas reducen la resiliencia homeostática general del tripulante.",
+      lang === "en"
+        ? "Multiple physiological subsystems exhibit concurrent deviations. In deep space missions, combined hemodynamic and metabolic shifts diminish overall crew homeostatic reserve."
+        : "Múltiples subsistemas fisiológicos presentan variaciones simultáneas. En misiones de espacio profundo, las alteraciones metabólicas y hemodinámicas combinadas reducen la resiliencia homeostática general del tripulante.",
     systemicClinicalAction:
-      "Pausa programada de tareas operacionales de alta exigencia, evaluación conjunta con la tripulación y consulta planificada con el cirujano de vuelo en tierra.",
+      lang === "en"
+        ? "Scheduled pause of high-demand operational tasks, joint crew assessment, and scheduled flight surgeon consultation."
+        : "Pausa programada de tareas operacionales de alta exigencia, evaluación conjunta con la tripulación y consulta planificada con el cirujano de vuelo en tierra.",
     verificationBadge: "Propuesta, por verificar contra recursos HRP",
   };
 }

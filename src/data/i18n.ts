@@ -14,6 +14,7 @@ export interface IndicatorSimpleText {
   whatAffectsItInSpace: string;
   whenToAskForHelp: string;
   technicalTermTooltip: string;
+  actions: string[];
 }
 
 export const SIMPLE_INDICATORS_ES: Record<string, IndicatorSimpleText> = {
@@ -27,6 +28,11 @@ export const SIMPLE_INDICATORS_ES: Record<string, IndicatorSimpleText> = {
     whatAffectsItInSpace: "La falta de gravedad redistribuye la sangre hacia el pecho y la cabeza (efecto 'cara hinchada').",
     whenToAskForHelp: "Si tu presión máxima sube de 140 o la mínima supera 90 mmHg, o si notas la visión borrosa.",
     technicalTermTooltip: "Fuerza con la que la sangre empuja las paredes de tus arterias. En el espacio vigila el síndrome visual SANS.",
+    actions: [
+      "Repetir la medición tras 10 minutos de reposo absoluto",
+      "Verificar ajuste y calibración del manguito",
+      "Consultar con el oficial médico si la elevación persiste"
+    ]
   },
   heart_rate: {
     id: "heart_rate",
@@ -38,6 +44,11 @@ export const SIMPLE_INDICATORS_ES: Record<string, IndicatorSimpleText> = {
     whatAffectsItInSpace: "Sin gravedad el corazón no tiene que bombear contra la resistencia terrestre, por lo que puede latir más lento o fatigarse antes al hacer ejercicio.",
     whenToAskForHelp: "Si en reposo supera los 100 latidos por minuto o baja de 45 latidos por minuto de forma sostenida.",
     technicalTermTooltip: "Número de veces que late tu corazón en un minuto. Tu valor de reposo se compara con tu promedio personal habitual.",
+    actions: [
+      "Realizar 5 minutos de respiración guiada diafragmática",
+      "Revisar el registro continuo del pulsioxímetro",
+      "Ajustar la intensidad del siguiente bloque de ejercicio"
+    ]
   },
   glucose: {
     id: "glucose",
@@ -49,6 +60,11 @@ export const SIMPLE_INDICATORS_ES: Record<string, IndicatorSimpleText> = {
     whatAffectsItInSpace: "La comida espacial empaquetada y la falta de gravedad modifican la sensibilidad a la insulina.",
     whenToAskForHelp: "Si en ayunas supera 126 mg/dL o baja de 70 mg/dL.",
     technicalTermTooltip: "Nivel de glucosa circulante. En microgravedad el cuerpo procesa los azúcares de forma más lenta.",
+    actions: [
+      "Registrar la hora y composición de la última ingesta nutricional",
+      "Repetir la glucemia capilar antes de la siguiente comida principal",
+      "Mantener hidratación con sales electrolíticas si hay hiperglucemia"
+    ]
   },
   core_temp: {
     id: "core_temp",
@@ -60,6 +76,11 @@ export const SIMPLE_INDICATORS_ES: Record<string, IndicatorSimpleText> = {
     whatAffectsItInSpace: "En ingravidez el sudor no gotea para enfriar la piel; se acumula en una película y el cuerpo se calienta más rápido ('fiebre espacial').",
     whenToAskForHelp: "Si supera los 38.0 °C o si desciende por debajo de 35.5 °C.",
     technicalTermTooltip: "Temperatura de los órganos internos. Los astronautas suelen presentar entre 0.5 °C y 1 °C más de temperatura corporal durante misiones.",
+    actions: [
+      "Repetir la medición con el sensor ótico de respaldo",
+      "Comprobar el flujo del sistema de ventilación del traje o módulo",
+      "Hidratación oral guiada y reposo térmico"
+    ]
   },
   sleep_hours: {
     id: "sleep_hours",
@@ -71,6 +92,11 @@ export const SIMPLE_INDICATORS_ES: Record<string, IndicatorSimpleText> = {
     whatAffectsItInSpace: "Ver 16 amaneceres al día en la estación y el ruido constante de los ventiladores dificultan mantener el reloj biológico.",
     whenToAskForHelp: "Si duermes menos de 5 horas durante dos días seguidos o sientes que te duermes involuntariamente en tus tareas.",
     technicalTermTooltip: "Tiempo total de sueño reparador. Es el factor número uno de fatiga cognitiva en misiones espaciales prolongadas.",
+    actions: [
+      "Ajustar la iluminación de cabina a modo circadiano nocturno (luz roja tenue)",
+      "Verificar tapones auditivos o cancelación activa de ruido",
+      "Programar una siesta táctica de 20 minutos si el cronograma lo permite"
+    ]
   },
   mood: {
     id: "mood",
@@ -82,6 +108,11 @@ export const SIMPLE_INDICATORS_ES: Record<string, IndicatorSimpleText> = {
     whatAffectsItInSpace: "Estar a millones de kilómetros de casa, sin luz solar natural y con comunicaciones que tardan minutos en llegar.",
     whenToAskForHelp: "Si puntúas 1 o 2 durante varios días seguidos o sientes agobio insoportable.",
     technicalTermTooltip: "Evaluación psicométrica rápida de bienestar emocional y cohesión de tripulación para prevenir estrés de confinamiento.",
+    actions: [
+      "Tomar 15 minutos de descanso no estructurado en la cúpula de observación",
+      "Compartir impresiones con el compañero de tripulación asignado",
+      "Programar enlace privado con el equipo de soporte psicológico de Tierra"
+    ]
   },
   radiation_dose: {
     id: "radiation_dose",
@@ -93,6 +124,11 @@ export const SIMPLE_INDICATORS_ES: Record<string, IndicatorSimpleText> = {
     whatAffectsItInSpace: "Fuera del escudo magnético de la Tierra la radiación es entre 10 y 100 veces mayor, especialmente camino a Marte o la Luna.",
     whenToAskForHelp: "Si hay una tormenta solar súbita con tasa mayor a 100 µSv al día, para acudir al área blindada de la nave.",
     technicalTermTooltip: "Dosis de radiación ionizante absorbida. Se mide en microsieverts (µSv) diarios y milisieverts (mSv) acumulados en toda la carrera.",
+    actions: [
+      "Verificar la tasa de dosis en tiempo real en los dosímetros del módulo",
+      "Permanecer en el compartimento de mayor blindaje si hay alerta SPE",
+      "Reportar la lectura acumulada en el siguiente parte de telemetría DSN"
+    ]
   },
 };
 
@@ -107,6 +143,11 @@ export const SIMPLE_INDICATORS_EN: Record<string, IndicatorSimpleText> = {
     whatAffectsItInSpace: "Microgravity redistributes blood toward the chest and head (the 'puffy-face' effect).",
     whenToAskForHelp: "If systolic exceeds 140 or diastolic exceeds 90 mmHg, or if you experience blurred vision.",
     technicalTermTooltip: "Force exerted by circulating blood against arterial walls. Monitors spaceflight-associated neuro-ocular syndrome.",
+    actions: [
+      "Repeat measurement after 10 minutes of absolute rest",
+      "Verify cuff placement, seal, and sensor calibration",
+      "Consult crew medical officer if elevation persists"
+    ]
   },
   heart_rate: {
     id: "heart_rate",
@@ -118,6 +159,11 @@ export const SIMPLE_INDICATORS_EN: Record<string, IndicatorSimpleText> = {
     whatAffectsItInSpace: "Without gravity, the heart pumps against less resistance, altering autonomic cardiac regulation.",
     whenToAskForHelp: "If resting heart rate exceeds 100 BPM or drops below 45 BPM consistently.",
     technicalTermTooltip: "Beats per minute during rest. Compared against your personalized astronaut baseline.",
+    actions: [
+      "Perform 5 minutes of guided diaphragmatic pacing",
+      "Review continuous pulse oximetry trend on cabin display",
+      "Adjust intensity of next prescribed exercise block"
+    ]
   },
   glucose: {
     id: "glucose",
@@ -129,6 +175,11 @@ export const SIMPLE_INDICATORS_EN: Record<string, IndicatorSimpleText> = {
     whatAffectsItInSpace: "Space packaged diet and microgravity alter insulin sensitivity and carbohydrate kinetics.",
     whenToAskForHelp: "If fasting glucose exceeds 126 mg/dL or drops below 70 mg/dL.",
     technicalTermTooltip: "Circulating blood glucose level. Microgravity slows glucose processing and clearance.",
+    actions: [
+      "Log composition and timestamp of last flight food pack intake",
+      "Repeat capillary glucose test before subsequent main meal",
+      "Maintain hydration with electrolyte mineral salts"
+    ]
   },
   core_temp: {
     id: "core_temp",
@@ -140,6 +191,11 @@ export const SIMPLE_INDICATORS_EN: Record<string, IndicatorSimpleText> = {
     whatAffectsItInSpace: "Sweat does not evaporate naturally in weightlessness, creating a heat film on skin ('space fever').",
     whenToAskForHelp: "If core temperature exceeds 38.0 °C or falls below 35.5 °C.",
     technicalTermTooltip: "Internal vital temperature. Astronauts average 0.5–1.0 °C higher core temperature during long-duration flight.",
+    actions: [
+      "Re-measure with backup tympanic optical ear sensor",
+      "Inspect module airflow velocity and spacesuit cooling loop",
+      "Initiate guided oral hydration and thermal rest"
+    ]
   },
   sleep_hours: {
     id: "sleep_hours",
@@ -151,6 +207,11 @@ export const SIMPLE_INDICATORS_EN: Record<string, IndicatorSimpleText> = {
     whatAffectsItInSpace: "Experiencing 16 sunrises daily and constant ventilation noise disrupts circadian entrainment.",
     whenToAskForHelp: "If sleep duration is less than 5 hours for two consecutive days or inadvertent micro-sleep occurs.",
     technicalTermTooltip: "Total restorative sleep time. Primary driver of cognitive and operational fatigue in spaceflight.",
+    actions: [
+      "Dim cabin illumination to circadian night mode (subdued red)",
+      "Verify acoustic earplugs or active noise cancellation headset",
+      "Schedule a 20-minute restorative power nap if timeline allows"
+    ]
   },
   mood: {
     id: "mood",
@@ -162,6 +223,11 @@ export const SIMPLE_INDICATORS_EN: Record<string, IndicatorSimpleText> = {
     whatAffectsItInSpace: "Distance from Earth, artificial illumination, and delayed communication with family and ground control.",
     whenToAskForHelp: "If rating is 1 or 2 for consecutive days or high subjective overwhelm is felt.",
     technicalTermTooltip: "Psychometric assessment of emotional well-being and crew cohesion to mitigate isolation stress.",
+    actions: [
+      "Take 15 minutes of unstructured respite in observation cupola",
+      "Debrief subjective fatigue with designated crew companion",
+      "Schedule private consultation with ground psychological support"
+    ]
   },
   radiation_dose: {
     id: "radiation_dose",
@@ -173,6 +239,11 @@ export const SIMPLE_INDICATORS_EN: Record<string, IndicatorSimpleText> = {
     whatAffectsItInSpace: "Beyond Earth's magnetosphere, radiation flux is 10 to 100 times higher, especially en route to the Moon or Mars.",
     whenToAskForHelp: "If a sudden solar proton event (SPE) exceeds 100 µSv/day, requiring relocation to the storm shelter.",
     technicalTermTooltip: "Absorbed ionizing radiation dose in daily µSv and cumulative career mSv against NASA REID safety limits.",
+    actions: [
+      "Cross-check real-time dosimeter readings across module sensors",
+      "Relocate to maximum shielding storm shelter compartment if SPE alerts",
+      "Log cumulative mission dose into next DSN telemetry packet"
+    ]
   },
 };
 

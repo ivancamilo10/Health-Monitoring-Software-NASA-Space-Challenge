@@ -7,7 +7,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { useHealthStore } from "@/store/health-store";
 import { IndicatorId } from "@/data/indicators";
 import { EvaluationState } from "@/core/rules";
-import { UI_TEXTS_ES } from "@/data/i18n";
+import { getTexts, getSimpleIndicators } from "@/data/i18n";
 import {
   createAnatomicalHeart,
   createAnatomicalLungs,
@@ -107,7 +107,9 @@ export function AstronautGLBViewer({
   onSelectIndicator,
 }: AstronautGLBViewerProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const { decisionReport, currentReadings, activeScenarioName, resetToNominalCalm } = useHealthStore();
+  const { decisionReport, currentReadings, activeScenarioName, resetToNominalCalm, language } = useHealthStore();
+  const texts = getTexts(language);
+  const simpleIndicators = getSimpleIndicators(language);
 
   const [isXrayActive, setIsXrayActive] = useState<boolean>(false);
   const [isLoadingModel, setIsLoadingModel] = useState<boolean>(true);
@@ -153,6 +155,21 @@ export function AstronautGLBViewer({
   };
 
   const getStatusSimpleName = (state: EvaluationState) => {
+    if (language === "en") {
+      switch (state) {
+        case "ESCALAR_TIERRA":
+          return "Request Help";
+        case "ATENCION":
+          return "Attention";
+        case "VIGILAR":
+          return "Watch";
+        case "HABITUAL":
+          return "Normal";
+        case "SIN_DATOS":
+        default:
+          return "No data";
+      }
+    }
     switch (state) {
       case "ESCALAR_TIERRA":
         return "Pedir ayuda";
@@ -573,19 +590,19 @@ export function AstronautGLBViewer({
               <AlertTriangle className="w-3.5 h-3.5 animate-pulse" />
             </span>
             <span className="text-xs font-bold text-rose-200 uppercase tracking-wide whitespace-nowrap flex-shrink-0">
-              EMERGENCIA CLÍNICA CRÍTICA:
+              {language === "en" ? "CRITICAL CLINICAL EMERGENCY:" : "EMERGENCIA CLÍNICA CRÍTICA:"}
             </span>
             <span className="text-xs text-rose-100 truncate font-medium">
               {activeScenarioName || decisionReport.primaryAction}
             </span>
             {tempReading && tempReading >= 38.5 && (
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/30 text-rose-200 font-mono font-semibold flex-shrink-0">
-                Fiebre {tempReading}°C
+                {language === "en" ? "Fever" : "Fiebre"} {tempReading}°C
               </span>
             )}
             {bpReading && bpReading >= 160 && (
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/30 text-rose-200 font-mono font-semibold flex-shrink-0">
-                TA {bpReading} mmHg
+                {language === "en" ? "BP" : "TA"} {bpReading} mmHg
               </span>
             )}
           </div>
@@ -596,7 +613,7 @@ export function AstronautGLBViewer({
             title="Restablecer telemetría nominal de calma"
           >
             <RotateCcw className="w-3 h-3" />
-            <span>Normalizar</span>
+            <span>{language === "en" ? "Normalize" : "Normalizar"}</span>
           </button>
         </div>
       )}
@@ -620,7 +637,15 @@ export function AstronautGLBViewer({
           title="Alternar vista de órganos y esqueleto 3D"
         >
           <Layers className="w-3.5 h-3.5" />
-          <span>{isXrayActive ? "Ocultar órganos" : "Ver órganos"}</span>
+          <span>
+            {isXrayActive
+              ? language === "en"
+                ? "Hide Organs"
+                : "Ocultar órganos"
+              : language === "en"
+              ? "Show Organs"
+              : "Ver órganos"}
+          </span>
         </button>
       </div>
 
@@ -630,7 +655,9 @@ export function AstronautGLBViewer({
           <div className="glass-panel px-6 py-4 rounded-xl flex items-center gap-3">
             <div className="w-5 h-5 rounded-full border-2 border-[#9975ff] border-t-transparent animate-spin" />
             <span className="text-xs font-semibold text-white tracking-wide">
-              Cargando modelo 3D y anatomía médica...
+              {language === "en"
+                ? "Loading 3D model & medical anatomy..."
+                : "Cargando modelo 3D y anatomía médica..."}
             </span>
           </div>
         </div>
@@ -712,9 +739,12 @@ export function AstronautGLBViewer({
               {/* Tooltip moderno Liquid Glass */}
               {isHovered && !isSelected && (
                 <div className="absolute left-11 top-1/2 -translate-y-1/2 whitespace-nowrap glass-panel px-3 py-1.5 text-xs text-white shadow-xl z-40 animate-in fade-in zoom-in-95 duration-150 rounded-lg">
-                  <div className="font-semibold text-white">{node.simpleName}</div>
+                  <div className="font-semibold text-white">
+                    {simpleIndicators[node.id]?.name || node.simpleName}
+                  </div>
                   <div className="text-[11px] text-slate-300">
-                    Estado: <strong style={{ color }}>{simpleStateName}</strong>
+                    {language === "en" ? "Status:" : "Estado:"}{" "}
+                    <strong style={{ color }}>{simpleStateName}</strong>
                   </div>
                 </div>
               )}
@@ -746,7 +776,7 @@ export function AstronautGLBViewer({
                 className="w-2 h-2 rounded-full flex-shrink-0"
                 style={{ backgroundColor: color }}
               />
-              <span>{node.simpleName}</span>
+              <span>{simpleIndicators[node.id]?.name || node.simpleName}</span>
             </button>
           );
         })}

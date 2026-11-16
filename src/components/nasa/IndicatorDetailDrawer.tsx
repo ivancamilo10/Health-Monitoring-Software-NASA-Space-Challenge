@@ -64,7 +64,7 @@ export function IndicatorDetailDrawer({
   const deviatedKeys = (Object.keys(HEALTH_INDICATORS) as IndicatorId[]).filter(
     (k) => decisionReport.evaluations[k]?.state !== "HABITUAL" && decisionReport.evaluations[k]?.state !== "SIN_DATOS"
   );
-  const activeSynergy = evaluateHazardSynergy(deviatedKeys);
+  const activeSynergy = evaluateHazardSynergy(deviatedKeys, language || "es");
 
   const toggleAction = (idx: number) => {
     setCompletedActions((prev) => ({ ...prev, [idx]: !prev[idx] }));
@@ -74,32 +74,32 @@ export function IndicatorDetailDrawer({
     switch (state) {
       case "ESCALAR_TIERRA":
         return {
-          label: "Pedir ayuda a tierra",
+          label: language === "en" ? "Request Help from Ground" : "Pedir ayuda a tierra",
           color: "#f43f5e",
           bgColor: "rgba(244, 63, 94, 0.15)",
         };
       case "ATENCION":
         return {
-          label: "Requiere atención",
+          label: language === "en" ? "Attention Required" : "Requiere atención",
           color: "#f97316",
           bgColor: "rgba(249, 115, 22, 0.15)",
         };
       case "VIGILAR":
         return {
-          label: "Vigilar",
+          label: language === "en" ? "Watch" : "Vigilar",
           color: "#f59e0b",
           bgColor: "rgba(245, 158, 11, 0.15)",
         };
       case "HABITUAL":
         return {
-          label: "Normal",
+          label: language === "en" ? "Normal" : "Normal",
           color: "#10b981",
           bgColor: "rgba(16, 185, 129, 0.15)",
         };
       case "SIN_DATOS":
       default:
         return {
-          label: "Sin datos",
+          label: language === "en" ? "No Data" : "Sin datos",
           color: "#94a3b8",
           bgColor: "rgba(148, 163, 184, 0.12)",
         };
@@ -111,25 +111,35 @@ export function IndicatorDetailDrawer({
   // Mensaje en lenguaje claro para el Bloque 1 ("¿Cómo estás?")
   const getPlainExplanation = () => {
     if (val === null) {
-      return `Aún no has registrado tu lectura de hoy para ${simple.name}. Puedes pulsar 'Hacer mi chequeo de hoy' para anotarla.`;
+      return language === "en"
+        ? `You haven't recorded today's measurement for ${simple.name} yet. Click 'Log checkup' to record it.`
+        : `Aún no has registrado tu lectura de hoy para ${simple.name}. Puedes pulsar 'Hacer mi chequeo de hoy' para anotarla.`;
     }
 
     const diff = val - baseline.mean;
     const isWithinNormal = Math.abs(diff) <= baseline.standardDeviation;
 
     if (isWithinNormal) {
-      return `Tu valor de hoy es ${val} ${def.unit}. Está dentro de tu rango normal personal (tu promedio habitual suele ser ${baseline.mean} ${def.unit}). Todo en orden.`;
+      return language === "en"
+        ? `Your reading today is ${val} ${def.unit}. It is within your personal baseline (your typical average is ${baseline.mean} ${def.unit}). Everything nominal.`
+        : `Tu valor de hoy es ${val} ${def.unit}. Está dentro de tu rango normal personal (tu promedio habitual suele ser ${baseline.mean} ${def.unit}). Todo en orden.`;
     }
 
     if (evalData.state === "VIGILAR") {
-      return `Tu valor de hoy es ${val} ${def.unit}, lo que representa una ligera variación respecto a tu promedio habitual de ${baseline.mean} ${def.unit}. No es motivo de alarma, pero conviene seguirlo de cerca.`;
+      return language === "en"
+        ? `Your reading today is ${val} ${def.unit}, representing a mild variation from your typical baseline of ${baseline.mean} ${def.unit}. No alarm needed, but monitor closely.`
+        : `Tu valor de hoy es ${val} ${def.unit}, lo que representa una ligera variación respecto a tu promedio habitual de ${baseline.mean} ${def.unit}. No es motivo de alarma, pero conviene seguirlo de cerca.`;
     }
 
     if (evalData.state === "ATENCION") {
-      return `Tu valor de hoy es ${val} ${def.unit}, alejándose de tu promedio normal de ${baseline.mean} ${def.unit}. Sigue las recomendaciones de autocuidado a bordo.`;
+      return language === "en"
+        ? `Your reading today is ${val} ${def.unit}, shifting away from your normal baseline of ${baseline.mean} ${def.unit}. Follow on-board self-care recommendations.`
+        : `Tu valor de hoy es ${val} ${def.unit}, alejándose de tu promedio normal de ${baseline.mean} ${def.unit}. Sigue las recomendaciones de autocuidado a bordo.`;
     }
 
-    return `Tu valor de hoy (${val} ${def.unit}) supera el umbral de seguridad clínica. Avisa al resto de la tripulación y prepara la consulta con el médico de vuelo en Houston.`;
+    return language === "en"
+      ? `Your reading today (${val} ${def.unit}) exceeds clinical safety thresholds. Alert the crew and prepare flight surgeon consultation with Houston.`
+      : `Tu valor de hoy (${val} ${def.unit}) supera el umbral de seguridad clínica. Avisa al resto de la tripulación y prepara la consulta con el médico de vuelo en Houston.`;
   };
 
   // Exportación SBAR
@@ -178,7 +188,9 @@ export function IndicatorDetailDrawer({
             <h2 className="text-sm font-bold text-white uppercase tracking-wider">
               {texts.zoneRightTitle}
             </h2>
-            <span className="text-xs text-slate-300 font-medium">· Plan y recomendaciones</span>
+            <span className="text-xs text-slate-300 font-medium">
+              · {language === "en" ? "Plan & recommendations" : "Plan y recomendaciones"}
+            </span>
           </div>
           <button
             onClick={onClose}
@@ -196,7 +208,7 @@ export function IndicatorDetailDrawer({
               {simple.name}
             </h3>
             <span className="text-xs text-slate-300 mt-0.5 block font-medium">
-              Zona anatómica: {simple.bodyZone}
+              {language === "en" ? "Anatomical zone:" : "Zona anatómica:"} {simple.bodyZone}
             </span>
           </div>
 
@@ -219,10 +231,10 @@ export function IndicatorDetailDrawer({
         <div className="p-4 rounded-2xl glass-panel border border-white/10 shadow-lg">
           <div className="flex items-baseline justify-between mb-2">
             <span className="text-sm font-bold text-[#bca6ff] uppercase tracking-wide">
-              ¿Cómo estás hoy?
+              {language === "en" ? "How are you today?" : "¿Cómo estás hoy?"}
             </span>
             <div className="text-right text-xs text-slate-300 font-medium">
-              Tu normal: <strong className="text-white">{baseline.mean}</strong> {def.unit}
+              {language === "en" ? "Your baseline:" : "Tu normal:"} <strong className="text-white">{baseline.mean}</strong> {def.unit}
             </div>
           </div>
 
@@ -236,7 +248,7 @@ export function IndicatorDetailDrawer({
           <div className="p-3.5 rounded-2xl bg-orange-950/30 border border-orange-500/30 text-xs text-orange-200 space-y-1.5">
             <div className="flex items-center gap-2 font-bold text-orange-300">
               <Sparkles className="w-4 h-4 text-orange-400 flex-shrink-0" />
-              <span>Cuidado combinado: {activeSynergy.title}</span>
+              <span>{language === "en" ? "Combined Synergy Alert:" : "Cuidado combinado:"} {activeSynergy.title}</span>
             </div>
             <p className="text-xs text-slate-300 leading-relaxed font-sans">
               {activeSynergy.whyTogetherTheyMatterMore}
@@ -252,7 +264,7 @@ export function IndicatorDetailDrawer({
             <ShieldCheck className="w-5 h-5 text-[#bca6ff] flex-shrink-0 mt-0.5" />
             <div>
               <span className="text-xs font-bold text-[#bca6ff] block uppercase tracking-wide">
-                Paso recomendado:
+                {language === "en" ? "Recommended Step:" : "Paso recomendado:"}
               </span>
               <p className="text-sm leading-relaxed font-medium text-white mt-0.5">
                 {evalData.escalation.actionRequired}
@@ -264,15 +276,15 @@ export function IndicatorDetailDrawer({
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs text-slate-300">
               <span className="font-bold uppercase text-xs tracking-wide text-slate-200">
-                Tareas de autocuidado:
+                {language === "en" ? "Self-Care Tasks:" : "Tareas de autocuidado:"}
               </span>
               <span className="text-emerald-400 font-semibold">
-                {Object.values(completedActions).filter(Boolean).length} de {def.acciones.length} completadas
+                {Object.values(completedActions).filter(Boolean).length} {language === "en" ? "of" : "de"} {(simple.actions || def.acciones).length} {language === "en" ? "completed" : "completadas"}
               </span>
             </div>
 
             <div className="space-y-2 pr-1">
-              {def.acciones.map((acc, idx) => {
+              {(simple.actions || def.acciones).map((acc, idx) => {
                 const isChecked = !!completedActions[idx];
                 return (
                   <button
@@ -317,19 +329,27 @@ export function IndicatorDetailDrawer({
               {/* 4 Preguntas clave explicadas en palabras sencillas */}
               <div className="space-y-2.5">
                 <div>
-                  <strong className="text-white block font-semibold text-xs">¿Cómo se mide en el espacio?:</strong>
+                  <strong className="text-white block font-semibold text-xs">
+                    {language === "en" ? "How is it measured in space?:" : "¿Cómo se mide en el espacio?:"}
+                  </strong>
                   <p className="text-slate-300 text-xs leading-relaxed mt-0.5">{simple.howToMeasure}</p>
                 </div>
                 <div>
-                  <strong className="text-white block font-semibold text-xs">¿Por qué importa este examen?:</strong>
+                  <strong className="text-white block font-semibold text-xs">
+                    {language === "en" ? "Why does this test matter?:" : "¿Por qué importa este examen?:"}
+                  </strong>
                   <p className="text-slate-300 text-xs leading-relaxed mt-0.5">{simple.whyItMatters}</p>
                 </div>
                 <div>
-                  <strong className="text-white block font-semibold text-xs">¿Qué lo afecta en el espacio?:</strong>
+                  <strong className="text-white block font-semibold text-xs">
+                    {language === "en" ? "What affects it in space?:" : "¿Qué lo afecta en el espacio?:"}
+                  </strong>
                   <p className="text-slate-300 text-xs leading-relaxed mt-0.5">{simple.whatAffectsItInSpace}</p>
                 </div>
                 <div>
-                  <strong className="text-white block font-semibold text-xs">¿Cuándo pedir ayuda?:</strong>
+                  <strong className="text-white block font-semibold text-xs">
+                    {language === "en" ? "When to ask for help?:" : "¿Cuándo pedir ayuda?:"}
+                  </strong>
                   <p className="text-slate-300 text-xs leading-relaxed mt-0.5">{simple.whenToAskForHelp}</p>
                 </div>
               </div>
@@ -337,13 +357,26 @@ export function IndicatorDetailDrawer({
               {/* Parámetros estadísticos y fuentes técnicas */}
               <div className="pt-2.5 border-t border-white/10 space-y-1 text-xs text-slate-400">
                 <div>
-                  Línea base personal: <strong className="text-white">{baseline.mean} {def.unit}</strong> (desviación típica: ± {baseline.standardDeviation})
+                  {language === "en" ? "Personal baseline:" : "Línea base personal:"}{" "}
+                  <strong className="text-white">{baseline.mean} {def.unit}</strong>{" "}
+                  {language === "en" ? "(standard deviation: ± " : "(desviación típica: ± "}
+                  {baseline.standardDeviation})
                 </div>
                 <div>
-                  Rango normal esperado: {(baseline.mean - baseline.standardDeviation).toFixed(1)} a {(baseline.mean + baseline.standardDeviation).toFixed(1)} {def.unit}
+                  {language === "en" ? "Expected normal range:" : "Rango normal esperado:"}{" "}
+                  {(baseline.mean - baseline.standardDeviation).toFixed(1)} {language === "en" ? "to" : "a"}{" "}
+                  {(baseline.mean + baseline.standardDeviation).toFixed(1)} {def.unit}
                 </div>
                 <div className="text-[11px] text-slate-500 pt-1">
-                  Fuente científica: {def.fuenteReferencia} ({def.isProvisional ? "Regla provisional de vuelo" : "Norma clínica NASA-STD / CSA"})
+                  {language === "en" ? "Scientific source:" : "Fuente científica:"} {def.fuenteReferencia} (
+                  {def.isProvisional
+                    ? language === "en"
+                      ? "Provisional flight rule"
+                      : "Regla provisional de vuelo"
+                    : language === "en"
+                    ? "NASA-STD / CSA Clinical standard"
+                    : "Norma clínica NASA-STD / CSA"}
+                  )
                 </div>
               </div>
             </div>
@@ -357,7 +390,11 @@ export function IndicatorDetailDrawer({
       <div className="pt-4 border-t border-white/10 space-y-2.5 mt-4">
         <div className="text-xs text-slate-300 flex items-center gap-1.5 font-medium">
           <Info className="w-4 h-4 text-[#66d8d1]" />
-          <span>Para enviar a los cirujanos de vuelo en Houston:</span>
+          <span>
+            {language === "en"
+              ? "To transmit to flight surgeons in Houston:"
+              : "Para enviar a los cirujanos de vuelo en Houston:"}
+          </span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -367,7 +404,7 @@ export function IndicatorDetailDrawer({
             title="Abrir telemetría y transmisión en vivo por la Red de Espacio Profundo"
           >
             <Radio className="w-4 h-4 text-white animate-pulse" />
-            <span>Transmitir por Enlace DSN</span>
+            <span>{language === "en" ? "Transmit via DSN Uplink" : "Transmitir por Enlace DSN"}</span>
           </button>
         </div>
 
@@ -378,7 +415,7 @@ export function IndicatorDetailDrawer({
             title="Descargar paquete de datos clínicos con código de verificación para Houston"
           >
             <FileDown className="w-4 h-4 text-[#66d8d1]" />
-            <span>Exportar JSON</span>
+            <span>{language === "en" ? "Export JSON" : "Exportar JSON"}</span>
           </button>
 
           <button
@@ -387,7 +424,7 @@ export function IndicatorDetailDrawer({
             title="Imprimir o guardar reporte clínico aeroespacial en formato PDF legible"
           >
             <Printer className="w-4 h-4 text-[#bca6ff]" />
-            <span>Imprimir PDF</span>
+            <span>{language === "en" ? "Print PDF" : "Imprimir PDF"}</span>
           </button>
         </div>
       </div>

@@ -1,13 +1,26 @@
-# 🚀 Mins-Health — by Mins Solutions TI
+# Mins-Health — by Mins Solutions TI
 ### Autonomous Deep Space Clinical Monitoring & Triage Platform
 **NASA Space Apps Challenge 2026** &bull; Global Theme: *The Next Frontier*  
 **Challenge:** *"Create Health Monitoring Software for Astronauts on Space Missions"*  
-**Team:** Mins Solutions TI (Colombia 🇨🇴)  
+**Team:** Mins Solutions TI (Colombia)  
 - **Ivan Mejia Triana** (`@ivanmejia1082`) — *Team Owner & Lead Architect*
 - **Giordi Gutiérrez Villegas** (`@giordigutierrez1`) — *Biomedical Systems & Clinical Logic*
 - **Camilo Canedo** (`@camilote777`) — *Full-Stack Developer & Telemetry*
 - **Samuel Buzón** (`@samuel.buzon`) — *3D Visualization & Interaction Design*
 - **Ali Riascos** (`@aliii___`) — *Scientific Evidence & Mission QA*
+
+---
+
+## Quick Deliverables & Review Links
+
+For NASA Space Apps Challenge evaluators and jury members:
+
+1. **Standalone 3D Interactive Cockpit Demo:**  
+   Open [`demo.html`](./demo.html) directly in any modern browser (Chrome, Edge, Safari, Firefox). It is 100% self-contained with the embedded 3D astronaut GLB model, anatomical systolic heart, live canvas waveforms, emergency simulation suite, and bilingual EN/ES toggle. No Node.js or web server required!
+2. **Official Pitch Deck Slides:**  
+   Open [`presentation.html`](./presentation.html) for the 10-slide aerospace presentation powered by Reveal.js (use arrow keys to navigate, `F` for fullscreen, `S` for speaker notes). Zero AI claims, strictly deterministic bio-astronautics framing.
+3. **Full Next.js 15 Web Application:**  
+   Run `npm install && npm run dev` and open `http://localhost:3000` for the complete reactive full-stack web application.
 
 ---
 
